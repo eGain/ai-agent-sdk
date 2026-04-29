@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug Browser Test",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}/examples/browser-test",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack://@egain/ai-agent/*": "${workspaceFolder}/src/*",
+        "/@fs/*": "${workspaceFolder}/*",
+        "/@id/*": "${workspaceFolder}/*"
+      },
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}/examples/browser-test",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack://@egain/ai-agent/*": "${workspaceFolder}/src/*",
+        "/@fs/*": "${workspaceFolder}/*",
+        "/@id/*": "${workspaceFolder}/*"
+      }
+    }
+  ]
+}
+

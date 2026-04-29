@@ -1,0 +1,36 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/index.ts"],
+  "out": "./docs-src/api-generated",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "hideGenerator": true,
+  "disableSources": false,
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Core",
+    "Features",
+    "Advanced",
+    "Authentication",
+    "Connection",
+    "Message",
+    "Events",
+    "Logging",
+    "Errors",
+    "API",
+    "Types",
+    "*"
+  ],
+  "sort": ["source-order", "alphabetical"],
+  "excludeExternals": true,
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "gitRevision": "main",
+  "name": "@eGainDev/ai-agent-sdk API Reference",
+  "includeVersion": true
+}

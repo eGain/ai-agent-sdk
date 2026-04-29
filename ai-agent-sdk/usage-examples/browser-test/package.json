@@ -1,0 +1,21 @@
+{
+  "name": "browser-test",
+  "version": "1.0.0",
+  "description": "Browser test project for @eGainDev/ai-agent-sdk SDK",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite",
+    "start:clean": "rm -rf node_modules/.vite .vite && vite --force",
+    "clean": "rm -rf node_modules/.vite .vite dist",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "@eGainDev/ai-agent-sdk": "file:../../"
+  }
+}

@@ -1,0 +1,15 @@
+node_modules/
+dist/
+# Package-root .vitepress is Vite cache only (docs live under docs-src/.vitepress)
+/.vitepress/
+docs-src/.vitepress/cache/
+*.log
+.DS_Store
+*.tsbuildinfo
+coverage/
+.vitest/
+*.test.js
+*.tgz
+.env
+
+

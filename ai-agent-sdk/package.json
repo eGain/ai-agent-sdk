@@ -1,0 +1,87 @@
+{
+  "name": "@eGainDev/ai-agent-sdk",
+  "version": "0.0.14",
+  "description": "TypeScript SDK for eGain's AI Agent platform",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./browser": {
+      "browser": "./dist/browser.js",
+      "default": "./dist/browser.js"
+    }
+  },
+  "browser": "./dist/browser.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && npm run copy:msal",
+    "copy:msal": "node scripts/copy-msal.js",
+    "build:browser": "node scripts/build-browser.js",
+    "build:all": "npm run build && npm run build:browser",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "dev": "npm run build && npm run test:watch",
+    "prepublishOnly": "npm run clean && npm run build:all && npm run test",
+    "link": "npm link",
+    "pack": "npm run build:all && npm pack",
+    "example": "node usage-examples/basic-usage.js",
+    "publish:dry-run": "npm run clean && npm run build:all && npm run test && npm pack",
+    "publish-package": "node scripts/publish.js",
+    "docs:dev": "vitepress dev docs-src",
+    "docs:build": "vitepress build docs-src",
+    "docs:preview": "vitepress preview docs-src",
+    "docs:api": "typedoc",
+    "docs": "npm run docs:api && npm run docs:build"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eGainDev/ai-agent.git"
+  },
+  "keywords": [
+    "egain",
+    "ai",
+    "agent",
+    "websocket",
+    "sdk"
+  ],
+  "author": "Ajaz Ahmed",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "dotenv": "^17.2.3",
+    "esbuild": "^0.19.0",
+    "nodemon": "^3.1.11",
+    "rollup": "^4.9.0",
+    "typedoc": "^0.25.0",
+    "typedoc-plugin-markdown": "^3.17.0",
+    "typescript": "^5.0.0",
+    "vitepress": "^1.0.0",
+    "vitest": "^1.0.0",
+    "ws": "^8.16.0"
+  },
+  "peerDependencies": {
+    "ws": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ws": {
+      "optional": true
+    }
+  }
+}
