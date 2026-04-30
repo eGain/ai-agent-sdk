@@ -42,9 +42,7 @@
     "docs:api": "typedoc",
     "docs": "npm run docs:api && npm run docs:build"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
+  // publishConfig removed for npmjs.org publishing
   "repository": {
     "type": "git",
     "url": "https://github.com/eGain/ai-agent-sdk.git"
