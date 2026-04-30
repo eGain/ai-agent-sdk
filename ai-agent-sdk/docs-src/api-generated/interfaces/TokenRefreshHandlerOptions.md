@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.0.14](../README.md) / TokenRefreshHandlerOptions
+[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / TokenRefreshHandlerOptions
 
 # Interface: TokenRefreshHandlerOptions
 

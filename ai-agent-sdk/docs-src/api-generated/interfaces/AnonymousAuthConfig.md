@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.0.14](../README.md) / AnonymousAuthConfig
+[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / AnonymousAuthConfig
 
 # Interface: AnonymousAuthConfig
 

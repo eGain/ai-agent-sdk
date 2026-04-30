@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.0.14](../README.md) / CallerInfo
+[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / CallerInfo
 
 # Interface: CallerInfo
 

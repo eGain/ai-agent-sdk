@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.0.14](../README.md) / MessageObject
+[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / MessageObject
 
 # Interface: MessageObject
 

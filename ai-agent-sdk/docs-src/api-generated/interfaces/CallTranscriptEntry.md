@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.0.14](../README.md) / CallTranscriptEntry
+[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / CallTranscriptEntry
 
 # Interface: CallTranscriptEntry
 

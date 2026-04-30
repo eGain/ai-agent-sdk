@@ -1,6 +1,6 @@
 @eGain/ai-agent-sdk API Reference
 
-# @eGain/ai-agent-sdk API Reference - v0.0.14
+# @eGain/ai-agent-sdk API Reference - v0.1.0
 
 # @eGain/ai-agent-sdk
 
