@@ -29,18 +29,6 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ai-agent-sdk
-
-      - name: Run tests
-        run: npm test --if-present
-        working-directory: ai-agent-sdk
-
-      - name: Build
-        run: npm run build --if-present
-        working-directory: ai-agent-sdk
-
       - name: Publish to npm
         run: npm publish --provenance --access public
         working-directory: ai-agent-sdk
