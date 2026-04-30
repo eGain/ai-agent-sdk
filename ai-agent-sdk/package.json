@@ -1,5 +1,5 @@
 {
-  "name": "@eGain/ai-agent-sdk",
+  "name": "@egain/ai-agent-sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for eGain's AI Agent platform",
   "type": "module",
