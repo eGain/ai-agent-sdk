@@ -24,7 +24,7 @@ Unique identifier (string or number)
 
 #### Defined in
 
-[core/types/PortalTypes.ts:31](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L31)
+[core/types/PortalTypes.ts:31](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L31)
 
 ___
 
@@ -36,7 +36,7 @@ Display name of the profile
 
 #### Defined in
 
-[core/types/PortalTypes.ts:33](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L33)
+[core/types/PortalTypes.ts:33](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L33)
 
 ___
 
@@ -48,4 +48,4 @@ Whether this profile was last used in the current portal
 
 #### Defined in
 
-[core/types/PortalTypes.ts:35](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L35)
+[core/types/PortalTypes.ts:35](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L35)

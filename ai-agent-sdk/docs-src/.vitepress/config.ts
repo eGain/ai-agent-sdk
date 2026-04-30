@@ -1,16 +1,18 @@
 import { defineConfig } from 'vitepress'
 import pkg from '../../package.json'
 
+const base = process.env.VITEPRESS_BASE ?? '/'
+
 export default defineConfig({
   title: 'AiAgentSdk',
   description: 'TypeScript SDK for eGain\'s AI Agent platform',
-  base: '/',
+  base,
   outDir: '../../docs',
   // Examples nav targets are reserved; pages live under repo usage-examples/ until migrated
   ignoreDeadLinks: [/^\/examples(?:\/|$)/],
   
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#B91D8F' }],
   ],
 

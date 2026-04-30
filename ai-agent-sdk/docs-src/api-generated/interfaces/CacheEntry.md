@@ -36,7 +36,7 @@ The cached value
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:111](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L111)
+[core/api/CacheAdapter.ts:111](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L111)
 
 ___
 
@@ -48,4 +48,4 @@ Timestamp when the entry was created (ms since epoch)
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:113](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L113)
+[core/api/CacheAdapter.ts:113](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L113)

@@ -29,7 +29,7 @@ true
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:16](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L16)
+[core/auth/AnonymousAuthStrategy.ts:16](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L16)
 
 ___
 
@@ -47,7 +47,7 @@ Storage type: 'local' (localStorage), 'session' (sessionStorage), or 'memory'
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:22](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L22)
+[core/auth/AnonymousAuthStrategy.ts:22](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L22)
 
 ___
 
@@ -65,7 +65,7 @@ Prefix for cache keys
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:28](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L28)
+[core/auth/AnonymousAuthStrategy.ts:28](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L28)
 
 ___
 
@@ -83,4 +83,4 @@ Time-to-live in milliseconds
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:34](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L34)
+[core/auth/AnonymousAuthStrategy.ts:34](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L34)

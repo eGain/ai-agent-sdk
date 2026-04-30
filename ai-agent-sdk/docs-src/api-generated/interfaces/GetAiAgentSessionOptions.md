@@ -19,7 +19,7 @@ Agent ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:108](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L108)
+[core/api/ApiHelper.ts:108](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L108)
 
 ___
 
@@ -31,4 +31,4 @@ Authentication token
 
 #### Defined in
 
-[core/api/ApiHelper.ts:113](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L113)
+[core/api/ApiHelper.ts:113](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L113)

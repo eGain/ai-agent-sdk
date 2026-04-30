@@ -35,7 +35,7 @@ Filter entries from this timestamp onwards (inclusive)
 
 #### Defined in
 
-[core/message/Transcript.ts:196](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L196)
+[core/message/Transcript.ts:196](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L196)
 
 ___
 
@@ -47,7 +47,7 @@ Filter entries up to this timestamp (inclusive)
 
 #### Defined in
 
-[core/message/Transcript.ts:201](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L201)
+[core/message/Transcript.ts:201](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L201)
 
 ___
 
@@ -59,7 +59,7 @@ Filter by direction: 'sent', 'received', or 'both'
 
 #### Defined in
 
-[core/message/Transcript.ts:206](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L206)
+[core/message/Transcript.ts:206](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L206)
 
 ___
 
@@ -71,7 +71,7 @@ Filter by message persona (e.g., 'agent', 'customer')
 
 #### Defined in
 
-[core/message/Transcript.ts:211](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L211)
+[core/message/Transcript.ts:211](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L211)
 
 ___
 
@@ -83,4 +83,4 @@ Filter by message role (e.g., 'human', 'context')
 
 #### Defined in
 
-[core/message/Transcript.ts:216](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L216)
+[core/message/Transcript.ts:216](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L216)

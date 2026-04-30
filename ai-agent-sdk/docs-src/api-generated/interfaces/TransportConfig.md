@@ -28,7 +28,7 @@ Connection endpoint URL
 
 #### Defined in
 
-[core/connection/Transport.ts:37](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L37)
+[core/connection/Transport.ts:37](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L37)
 
 ___
 
@@ -46,7 +46,7 @@ Connection timeout in milliseconds
 
 #### Defined in
 
-[core/connection/Transport.ts:43](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L43)
+[core/connection/Transport.ts:43](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L43)
 
 ___
 
@@ -59,4 +59,4 @@ If not provided, uses globalLogger
 
 #### Defined in
 
-[core/connection/Transport.ts:49](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L49)
+[core/connection/Transport.ts:49](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L49)

@@ -23,7 +23,7 @@ API domain/base URL
 
 #### Defined in
 
-[core/api/ApiHelper.ts:51](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L51)
+[core/api/ApiHelper.ts:51](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L51)
 
 ___
 
@@ -41,7 +41,7 @@ Language code (e.g., "en-us", "da-dk")
 
 #### Defined in
 
-[core/api/ApiHelper.ts:57](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L57)
+[core/api/ApiHelper.ts:57](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L57)
 
 ___
 
@@ -53,7 +53,7 @@ Cache configuration options
 
 #### Defined in
 
-[core/api/ApiHelper.ts:62](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L62)
+[core/api/ApiHelper.ts:62](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L62)
 
 ___
 
@@ -74,4 +74,4 @@ If omitted, each call must pass `authToken` explicitly.
 
 #### Defined in
 
-[core/api/ApiHelper.ts:68](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L68)
+[core/api/ApiHelper.ts:68](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L68)

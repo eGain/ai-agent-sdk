@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[core/api/ApiHelper.ts:72](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L72)
+[core/api/ApiHelper.ts:72](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L72)
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 #### Defined in
 
-[core/api/ApiHelper.ts:73](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L73)
+[core/api/ApiHelper.ts:73](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L73)
 
 ___
 
@@ -42,4 +42,4 @@ ___
 
 #### Defined in
 
-[core/api/ApiHelper.ts:74](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L74)
+[core/api/ApiHelper.ts:74](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L74)

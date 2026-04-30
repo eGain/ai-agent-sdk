@@ -33,7 +33,7 @@ BaseMessageParams.messageId
 
 #### Defined in
 
-[core/message/MessageTypes.ts:7](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L7)
+[core/message/MessageTypes.ts:7](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L7)
 
 ___
 
@@ -47,7 +47,7 @@ BaseMessageParams.from
 
 #### Defined in
 
-[core/message/MessageTypes.ts:8](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
+[core/message/MessageTypes.ts:8](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
 
 ___
 
@@ -61,7 +61,7 @@ BaseMessageParams.to
 
 #### Defined in
 
-[core/message/MessageTypes.ts:9](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)
+[core/message/MessageTypes.ts:9](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)
 
 ___
 
@@ -73,7 +73,7 @@ Message content
 
 #### Defined in
 
-[core/message/MessageTypes.ts:53](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L53)
+[core/message/MessageTypes.ts:53](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L53)
 
 ___
 
@@ -85,7 +85,7 @@ Persona (defaults to "customer")
 
 #### Defined in
 
-[core/message/MessageTypes.ts:57](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L57)
+[core/message/MessageTypes.ts:57](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L57)
 
 ___
 
@@ -97,4 +97,4 @@ Role (defaults to "human")
 
 #### Defined in
 
-[core/message/MessageTypes.ts:61](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L61)
+[core/message/MessageTypes.ts:61](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L61)

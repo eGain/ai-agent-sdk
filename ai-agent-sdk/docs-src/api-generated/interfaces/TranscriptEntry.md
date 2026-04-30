@@ -39,7 +39,7 @@ The message object
 
 #### Defined in
 
-[core/message/Transcript.ts:114](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L114)
+[core/message/Transcript.ts:114](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L114)
 
 ___
 
@@ -51,7 +51,7 @@ Whether the message was sent or received
 
 #### Defined in
 
-[core/message/Transcript.ts:116](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L116)
+[core/message/Transcript.ts:116](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L116)
 
 ___
 
@@ -63,7 +63,7 @@ Timestamp when the message was recorded
 
 #### Defined in
 
-[core/message/Transcript.ts:118](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L118)
+[core/message/Transcript.ts:118](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L118)
 
 ___
 
@@ -75,7 +75,7 @@ Session ID associated with this message
 
 #### Defined in
 
-[core/message/Transcript.ts:120](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L120)
+[core/message/Transcript.ts:120](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L120)
 
 ___
 
@@ -87,4 +87,4 @@ Agent ID associated with this message
 
 #### Defined in
 
-[core/message/Transcript.ts:122](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L122)
+[core/message/Transcript.ts:122](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L122)

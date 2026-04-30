@@ -37,7 +37,7 @@ Unique message identifier for idempotency
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:94](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L94)
+[core/queue/MessageQueue.ts:94](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L94)
 
 ___
 
@@ -49,7 +49,7 @@ The message payload to be sent
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:96](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L96)
+[core/queue/MessageQueue.ts:96](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L96)
 
 ___
 
@@ -61,7 +61,7 @@ Timestamp when the message was queued
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:98](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L98)
+[core/queue/MessageQueue.ts:98](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L98)
 
 ___
 
@@ -73,4 +73,4 @@ Number of send attempts made
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:100](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L100)
+[core/queue/MessageQueue.ts:100](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L100)

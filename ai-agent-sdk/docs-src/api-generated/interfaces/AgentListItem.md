@@ -24,7 +24,7 @@ Unique agent identifier
 
 #### Defined in
 
-[core/types/PortalTypes.ts:45](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L45)
+[core/types/PortalTypes.ts:45](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L45)
 
 ___
 
@@ -36,7 +36,7 @@ Display name of the agent
 
 #### Defined in
 
-[core/types/PortalTypes.ts:47](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L47)
+[core/types/PortalTypes.ts:47](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L47)
 
 ___
 
@@ -48,4 +48,4 @@ Optional description
 
 #### Defined in
 
-[core/types/PortalTypes.ts:49](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L49)
+[core/types/PortalTypes.ts:49](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L49)

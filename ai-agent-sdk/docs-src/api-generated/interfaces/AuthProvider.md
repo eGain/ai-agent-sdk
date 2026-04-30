@@ -33,4 +33,4 @@ handle token refresh if needed
 
 #### Defined in
 
-[core/auth/AuthProvider.ts:11](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthProvider.ts#L11)
+[core/auth/AuthProvider.ts:11](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthProvider.ts#L11)

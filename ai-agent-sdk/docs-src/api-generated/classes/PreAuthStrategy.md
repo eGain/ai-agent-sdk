@@ -44,7 +44,7 @@ Uses a pre-obtained access token without completing authentication flow
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:57](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L57)
+[core/auth/PreAuthStrategy.ts:57](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L57)
 
 ## Methods
 
@@ -66,7 +66,7 @@ Set the callback to be called when token is about to expire
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:162](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L162)
+[core/auth/PreAuthStrategy.ts:162](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L162)
 
 ___
 
@@ -93,7 +93,7 @@ Ensures the token is available and ready to use
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:174](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L174)
+[core/auth/PreAuthStrategy.ts:174](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L174)
 
 ___
 
@@ -113,7 +113,7 @@ Authenticate using pre-auth token
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:213](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L213)
+[core/auth/PreAuthStrategy.ts:213](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L213)
 
 ___
 
@@ -129,7 +129,7 @@ Check if the user is currently authenticated
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:234](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L234)
+[core/auth/PreAuthStrategy.ts:234](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L234)
 
 ___
 
@@ -150,7 +150,7 @@ If refresh function is provided and token is expired, attempts to refresh
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:242](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L242)
+[core/auth/PreAuthStrategy.ts:242](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L242)
 
 ___
 
@@ -174,7 +174,7 @@ If authenticated, calls postAuthentication callback with the new token
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:252](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L252)
+[core/auth/PreAuthStrategy.ts:252](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L252)
 
 ___
 
@@ -190,7 +190,7 @@ Refresh the token using the provided refresh function
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:266](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L266)
+[core/auth/PreAuthStrategy.ts:266](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L266)
 
 ___
 
@@ -210,4 +210,4 @@ Cleanup resources
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:277](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L277)
+[core/auth/PreAuthStrategy.ts:277](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L277)

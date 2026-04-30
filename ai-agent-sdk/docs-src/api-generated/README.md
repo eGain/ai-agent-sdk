@@ -201,7 +201,7 @@ Agent event type identifiers
 
 #### Defined in
 
-[core/AiAgent.ts:212](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L212)
+[core/AiAgent.ts:212](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L212)
 
 ___
 
@@ -228,7 +228,7 @@ This is called after authenticate() completes successfully
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:8](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L8)
+[core/auth/AuthStrategy.ts:8](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L8)
 
 ___
 
@@ -240,7 +240,7 @@ Authentication types supported by the service
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:16](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L16)
+[core/auth/AuthenticationService.ts:16](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L16)
 
 ___
 
@@ -252,7 +252,7 @@ Union type of all authentication service configurations
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:74](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L74)
+[core/auth/AuthenticationService.ts:74](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L74)
 
 ___
 
@@ -268,7 +268,7 @@ Input types that AuthenticationService can accept
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:87](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L87)
+[core/auth/AuthenticationService.ts:87](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L87)
 
 ___
 
@@ -294,7 +294,7 @@ Callback type for token expiring notification
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:6](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L6)
+[core/auth/PreAuthStrategy.ts:6](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L6)
 
 ___
 
@@ -306,7 +306,7 @@ Type definitions for persona values
 
 #### Defined in
 
-[core/message/types.ts:36](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L36)
+[core/message/types.ts:36](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L36)
 
 ___
 
@@ -318,7 +318,7 @@ Type definitions for role values
 
 #### Defined in
 
-[core/message/types.ts:41](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L41)
+[core/message/types.ts:41](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L41)
 
 ## Variables
 
@@ -332,7 +332,7 @@ Default console output: enabled
 
 #### Defined in
 
-[core/logging/globalLogger.ts:9](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/globalLogger.ts#L9)
+[core/logging/globalLogger.ts:9](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/globalLogger.ts#L9)
 
 ___
 
@@ -344,7 +344,7 @@ Message type constants
 
 #### Defined in
 
-[core/message/types.ts:4](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L4)
+[core/message/types.ts:4](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L4)
 
 ___
 
@@ -354,7 +354,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:11](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L11)
+[core/message/types.ts:11](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L11)
 
 ___
 
@@ -364,7 +364,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:27](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L27)
+[core/message/types.ts:27](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L27)
 
 ## Functions
 
@@ -388,7 +388,7 @@ The string name of the level
 
 #### Defined in
 
-[core/logging/LogLevel.ts:19](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L19)
+[core/logging/LogLevel.ts:19](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L19)
 
 ___
 
@@ -412,7 +412,7 @@ The numeric value
 
 #### Defined in
 
-[core/logging/LogLevel.ts:28](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L28)
+[core/logging/LogLevel.ts:28](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L28)
 
 ___
 
@@ -438,7 +438,7 @@ True if the level should be logged
 
 #### Defined in
 
-[core/logging/LogLevel.ts:39](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L39)
+[core/logging/LogLevel.ts:39](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L39)
 
 ___
 
@@ -462,7 +462,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:90](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L90)
+[core/message/MessageTypes.ts:90](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L90)
 
 ___
 
@@ -486,7 +486,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:109](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L109)
+[core/message/MessageTypes.ts:109](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L109)
 
 ___
 
@@ -510,7 +510,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:128](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L128)
+[core/message/MessageTypes.ts:128](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L128)
 
 ___
 
@@ -534,7 +534,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:149](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L149)
+[core/message/MessageTypes.ts:149](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L149)
 
 ___
 
@@ -558,7 +558,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:165](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L165)
+[core/message/MessageTypes.ts:165](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L165)
 
 ___
 
@@ -583,7 +583,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:191](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L191)
+[core/message/MessageTypes.ts:191](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L191)
 
 ## Features Caching
 
@@ -608,7 +608,7 @@ const entry: CacheEntry<UserData> = {
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:109](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L109)
+[core/api/CacheAdapter.ts:109](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L109)
 
 • **CacheAdapter**: `Object`
 
@@ -655,7 +655,7 @@ class CustomCacheAdapter implements CacheAdapter {
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:160](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L160)
+[core/api/CacheAdapter.ts:160](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L160)
 
 • **MemoryCacheAdapter**: `Object`
 
@@ -682,7 +682,7 @@ console.log(entry?.value.name); // "John"
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:219](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L219)
+[core/api/CacheAdapter.ts:219](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L219)
 
 • **StorageCacheAdapter**: `Object`
 
@@ -709,7 +709,7 @@ sessionCache.set('config', {
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:283](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L283)
+[core/api/CacheAdapter.ts:283](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L283)
 
 ### CacheStorageType
 
@@ -723,7 +723,7 @@ Cache storage type options.
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:367](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L367)
+[core/api/CacheAdapter.ts:367](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L367)
 
 ___
 
@@ -764,4 +764,4 @@ const persistentCache = createCacheAdapter('local');
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:394](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L394)
+[core/api/CacheAdapter.ts:394](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L394)

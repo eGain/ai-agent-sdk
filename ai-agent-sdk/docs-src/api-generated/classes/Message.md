@@ -62,7 +62,7 @@ Create a new Message instance
 
 #### Defined in
 
-[core/message/Message.ts:21](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L21)
+[core/message/Message.ts:21](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L21)
 
 ## Properties
 
@@ -72,7 +72,7 @@ Create a new Message instance
 
 #### Defined in
 
-[core/message/Message.ts:7](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L7)
+[core/message/Message.ts:7](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L7)
 
 ___
 
@@ -82,7 +82,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:8](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L8)
+[core/message/Message.ts:8](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L8)
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:9](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L9)
+[core/message/Message.ts:9](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L9)
 
 ___
 
@@ -102,7 +102,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:10](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L10)
+[core/message/Message.ts:10](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L10)
 
 ___
 
@@ -112,7 +112,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:11](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L11)
+[core/message/Message.ts:11](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L11)
 
 ___
 
@@ -122,7 +122,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:12](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L12)
+[core/message/Message.ts:12](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L12)
 
 ___
 
@@ -132,7 +132,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:13](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L13)
+[core/message/Message.ts:13](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L13)
 
 ___
 
@@ -142,7 +142,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:14](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L14)
+[core/message/Message.ts:14](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L14)
 
 ___
 
@@ -152,7 +152,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:15](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L15)
+[core/message/Message.ts:15](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L15)
 
 ___
 
@@ -162,7 +162,7 @@ ___
 
 #### Defined in
 
-[core/message/Message.ts:16](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L16)
+[core/message/Message.ts:16](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L16)
 
 ## Methods
 
@@ -182,7 +182,7 @@ If message is invalid
 
 #### Defined in
 
-[core/message/Message.ts:51](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L51)
+[core/message/Message.ts:51](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L51)
 
 ___
 
@@ -201,7 +201,7 @@ JSON string
 
 #### Defined in
 
-[core/message/Message.ts:68](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L68)
+[core/message/Message.ts:68](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L68)
 
 ___
 
@@ -224,7 +224,7 @@ Create a Message instance from JSON data (typically from WebSocket)
 
 #### Defined in
 
-[core/message/Message.ts:91](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L91)
+[core/message/Message.ts:91](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L91)
 
 ___
 
@@ -242,7 +242,7 @@ Can also be identified by the 'from' field if it's set to an agent ID
 
 #### Defined in
 
-[core/message/Message.ts:128](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L128)
+[core/message/Message.ts:128](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L128)
 
 ___
 
@@ -260,7 +260,7 @@ Can also be identified by the 'from' field if it's set to a customer/client ID
 
 #### Defined in
 
-[core/message/Message.ts:146](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L146)
+[core/message/Message.ts:146](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L146)
 
 ___
 
@@ -282,4 +282,4 @@ Create a copy of this message with updated fields
 
 #### Defined in
 
-[core/message/Message.ts:164](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Message.ts#L164)
+[core/message/Message.ts:164](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Message.ts#L164)
