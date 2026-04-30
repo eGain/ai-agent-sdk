@@ -80,26 +80,26 @@ agent.on("initialized", async () => {
 await agent.initialize();
 ```
 
-See the [Portal initialization](https://silver-adventure-o37mv53.pages.github.io/guide/portal-initialization.html) guide for the full flow.
+See the [Portal initialization](https://egain.github.io/ai-agent-sdk/guide/portal-initialization.html) guide for the full flow.
 
 ## Documentation
 
 Published docs and TypeDoc on the site below describe the **current release** (version at top of this file).
 
-📚 **[Full Documentation](https://silver-adventure-o37mv53.pages.github.io/)**
+📚 **[Full Documentation](https://egain.github.io/ai-agent-sdk/)**
 
 | Guide | Description |
 |-------|-------------|
-| [Getting Started](https://silver-adventure-o37mv53.pages.github.io/guide/) | Introduction and concepts |
-| [Installation](https://silver-adventure-o37mv53.pages.github.io/guide/installation.html) | Setup instructions |
-| [Quick Start](https://silver-adventure-o37mv53.pages.github.io/guide/quick-start.html) | First integration |
-| [Authentication](https://silver-adventure-o37mv53.pages.github.io/guide/authentication.html) | Auth strategies |
-| [Events](https://silver-adventure-o37mv53.pages.github.io/guide/events.html) | Event handling |
-| [Portal initialization](https://silver-adventure-o37mv53.pages.github.io/guide/portal-initialization.html) | CC portal / agent / profile pipeline |
-| [Platform connectors](https://silver-adventure-o37mv53.pages.github.io/guide/platform-connectors.html) | Connector scripts and `HookContract` |
-| [Message Flow](https://silver-adventure-o37mv53.pages.github.io/guide/message-flow.html) | Sending/receiving messages |
-| [API Reference](https://silver-adventure-o37mv53.pages.github.io/api-generated/README.html) | TypeDoc: classes, interfaces, and methods |
-| [Types](https://silver-adventure-o37mv53.pages.github.io/api-generated/README.html) | `Portal`, `UserProfile`, `AgentListItem`, API options (see TypeDoc index) |
+| [Getting Started](https://egain.github.io/ai-agent-sdk/guide/) | Introduction and concepts |
+| [Installation](https://egain.github.io/ai-agent-sdk/guide/installation.html) | Setup instructions |
+| [Quick Start](https://egain.github.io/ai-agent-sdk/guide/quick-start.html) | First integration |
+| [Authentication](https://egain.github.io/ai-agent-sdk/guide/authentication.html) | Auth strategies |
+| [Events](https://egain.github.io/ai-agent-sdk/guide/events.html) | Event handling |
+| [Portal initialization](https://egain.github.io/ai-agent-sdk/guide/portal-initialization.html) | CC portal / agent / profile pipeline |
+| [Platform connectors](https://egain.github.io/ai-agent-sdk/guide/platform-connectors.html) | Connector scripts and `HookContract` |
+| [Message Flow](https://egain.github.io/ai-agent-sdk/guide/message-flow.html) | Sending/receiving messages |
+| [API Reference](https://egain.github.io/ai-agent-sdk/api-generated/README.html) | TypeDoc: classes, interfaces, and methods |
+| [Types](https://egain.github.io/ai-agent-sdk/api-generated/README.html) | `Portal`, `UserProfile`, `AgentListItem`, API options (see TypeDoc index) |
 
 ## Authentication Options
 

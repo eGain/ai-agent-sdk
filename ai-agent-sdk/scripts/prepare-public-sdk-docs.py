@@ -2,6 +2,9 @@
 """
 Rewrite private SDK identifiers to public ones for docs synced to eGain/ai-agent-sdk.
 
+Env: PRIVATE_SDK_DOCS_BASE / PUBLIC_SDK_DOCS_BASE (optional) rewrite internal vs public
+GitHub Pages URLs (e.g. README links).
+
 Modes:
   (default)  Rewrite package metadata, docs-src, and src before `npm run docs`.
   --sanitize-built <dir>  After VitePress build, rewrite text assets under <dir>
@@ -42,18 +45,31 @@ def replacements_from_env() -> list[tuple[str, str]]:
     private_repo = os.environ.get("PRIVATE_SDK_REPO", "https://github.com/eGainDev/ai-agent")
     public_repo = os.environ.get("PUBLIC_SDK_REPO", "https://github.com/eGain/ai-agent-sdk")
     public_git_revision = os.environ.get("PUBLIC_SDK_DOCS_GIT_REVISION", "master")
+    private_docs_base = os.environ.get(
+        "PRIVATE_SDK_DOCS_BASE", "https://silver-adventure-o37mv53.pages.github.io"
+    ).rstrip("/")
+    public_docs_base = os.environ.get(
+        "PUBLIC_SDK_DOCS_BASE", "https://egain.github.io/ai-agent-sdk"
+    ).rstrip("/")
 
     # Longest keys first so repo URL matches before any shorter accidental overlap.
-    return [
+    out: list[tuple[str, str]] = [
         (private_package, public_package),
         (private_repo + ".git", public_repo + ".git"),
         (private_repo, public_repo),
         (private_scope, public_scope),
-        # TypeDoc source links: public repo default branch is master, not main.
-        ('"gitRevision": "main"', f'"gitRevision": "{public_git_revision}"'),
-        # Catch full GitHub URLs if anything still used main after repo rewrites.
-        (f"{public_repo}/blob/main/", f"{public_repo}/blob/{public_git_revision}/"),
     ]
+    if private_docs_base != public_docs_base:
+        out.append((private_docs_base, public_docs_base))
+    out.extend(
+        [
+            # TypeDoc source links: public repo default branch is master, not main.
+            ('"gitRevision": "main"', f'"gitRevision": "{public_git_revision}"'),
+            # Catch full GitHub URLs if anything still used main after repo rewrites.
+            (f"{public_repo}/blob/main/", f"{public_repo}/blob/{public_git_revision}/"),
+        ]
+    )
+    return out
 
 
 def apply_to_files(paths: list[Path], replacements: list[tuple[str, str]]) -> int:
