@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / CallTranscriptEntry
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / CallTranscriptEntry
 
 # Interface: CallTranscriptEntry
 
@@ -25,7 +25,7 @@ and the AI Agent backend.
 
 #### Defined in
 
-[core/platform/HookContract.ts:24](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L24)
+[core/platform/HookContract.ts:24](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L24)
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 #### Defined in
 
-[core/platform/HookContract.ts:25](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L25)
+[core/platform/HookContract.ts:25](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L25)
 
 ___
 
@@ -45,4 +45,4 @@ ___
 
 #### Defined in
 
-[core/platform/HookContract.ts:26](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L26)
+[core/platform/HookContract.ts:26](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L26)

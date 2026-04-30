@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / Portal
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / Portal
 
 # Interface: Portal
 
@@ -25,7 +25,7 @@ Unique identifier (string or number)
 
 #### Defined in
 
-[core/types/PortalTypes.ts:15](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L15)
+[core/types/PortalTypes.ts:15](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L15)
 
 ___
 
@@ -37,7 +37,7 @@ Display name of the portal
 
 #### Defined in
 
-[core/types/PortalTypes.ts:17](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L17)
+[core/types/PortalTypes.ts:17](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L17)
 
 ___
 
@@ -49,7 +49,7 @@ Optional description
 
 #### Defined in
 
-[core/types/PortalTypes.ts:19](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L19)
+[core/types/PortalTypes.ts:19](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L19)
 
 ___
 
@@ -68,4 +68,4 @@ Optional department association
 
 #### Defined in
 
-[core/types/PortalTypes.ts:21](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L21)
+[core/types/PortalTypes.ts:21](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/types/PortalTypes.ts#L21)

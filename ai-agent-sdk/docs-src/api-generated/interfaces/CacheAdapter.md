@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / CacheAdapter
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / CacheAdapter
 
 # Interface: CacheAdapter
 
@@ -86,7 +86,7 @@ The cached entry or null if not found
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:166](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L166)
+[core/api/CacheAdapter.ts:166](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L166)
 
 ___
 
@@ -115,7 +115,7 @@ Set a value in the cache
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:173](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L173)
+[core/api/CacheAdapter.ts:173](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L173)
 
 ___
 
@@ -137,7 +137,7 @@ Delete a value from the cache
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:179](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L179)
+[core/api/CacheAdapter.ts:179](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L179)
 
 ___
 
@@ -159,7 +159,7 @@ Clear all values from the cache
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:185](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L185)
+[core/api/CacheAdapter.ts:185](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L185)
 
 ___
 
@@ -183,4 +183,4 @@ Array of matching cache keys
 
 #### Defined in
 
-[core/api/CacheAdapter.ts:192](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L192)
+[core/api/CacheAdapter.ts:192](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/CacheAdapter.ts#L192)

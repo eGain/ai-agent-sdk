@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / MessageData
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / MessageData
 
 # Interface: MessageData
 
@@ -23,6 +23,9 @@ Message data structure
 - [feedback](MessageData.md#feedback)
 - [escalationEvent](MessageData.md#escalationevent)
 - [token](MessageData.md#token)
+- [workflowType](MessageData.md#workflowtype)
+- [workflowNodeType](MessageData.md#workflownodetype)
+- [inputType](MessageData.md#inputtype)
 
 ## Properties
 
@@ -32,7 +35,7 @@ Message data structure
 
 #### Defined in
 
-[core/message/types.ts:48](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L48)
+[core/message/types.ts:48](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L48)
 
 ___
 
@@ -42,7 +45,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:49](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L49)
+[core/message/types.ts:49](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L49)
 
 ___
 
@@ -52,7 +55,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:50](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L50)
+[core/message/types.ts:50](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L50)
 
 ___
 
@@ -62,7 +65,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:51](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L51)
+[core/message/types.ts:51](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L51)
 
 ___
 
@@ -83,7 +86,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:52](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L52)
+[core/message/types.ts:52](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L52)
 
 ___
 
@@ -93,7 +96,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:60](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L60)
+[core/message/types.ts:60](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L60)
 
 ___
 
@@ -103,7 +106,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:61](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L61)
+[core/message/types.ts:61](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L61)
 
 ___
 
@@ -113,7 +116,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:62](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L62)
+[core/message/types.ts:62](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L62)
 
 ___
 
@@ -130,7 +133,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:63](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L63)
+[core/message/types.ts:63](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L63)
 
 ___
 
@@ -140,7 +143,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:67](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L67)
+[core/message/types.ts:67](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L67)
 
 ___
 
@@ -150,4 +153,34 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:68](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/types.ts#L68)
+[core/message/types.ts:68](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L68)
+
+___
+
+### workflowType
+
+• `Optional` **workflowType**: ``null`` \| ``"preChatWorkflow"`` \| ``"escalationWorkflow"`` \| ``"agentWorkflow"``
+
+#### Defined in
+
+[core/message/types.ts:69](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L69)
+
+___
+
+### workflowNodeType
+
+• `Optional` **workflowNodeType**: ``null`` \| `string`
+
+#### Defined in
+
+[core/message/types.ts:70](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L70)
+
+___
+
+### inputType
+
+• `Optional` **inputType**: ``null`` \| `string`
+
+#### Defined in
+
+[core/message/types.ts:71](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/types.ts#L71)

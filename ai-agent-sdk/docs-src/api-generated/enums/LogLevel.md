@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / LogLevel
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / LogLevel
 
 # Enumeration: LogLevel
 
@@ -24,7 +24,7 @@ Lower numbers = more verbose, higher numbers = more severe
 
 #### Defined in
 
-[core/logging/LogLevel.ts:6](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L6)
+[core/logging/LogLevel.ts:6](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L6)
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 #### Defined in
 
-[core/logging/LogLevel.ts:7](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L7)
+[core/logging/LogLevel.ts:7](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L7)
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 #### Defined in
 
-[core/logging/LogLevel.ts:8](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L8)
+[core/logging/LogLevel.ts:8](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L8)
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 #### Defined in
 
-[core/logging/LogLevel.ts:9](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L9)
+[core/logging/LogLevel.ts:9](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L9)
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 #### Defined in
 
-[core/logging/LogLevel.ts:10](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L10)
+[core/logging/LogLevel.ts:10](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L10)
 
 ___
 
@@ -74,4 +74,4 @@ ___
 
 #### Defined in
 
-[core/logging/LogLevel.ts:11](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L11)
+[core/logging/LogLevel.ts:11](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/LogLevel.ts#L11)

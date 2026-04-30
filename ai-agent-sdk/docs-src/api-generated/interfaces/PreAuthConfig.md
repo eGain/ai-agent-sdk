@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / PreAuthConfig
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / PreAuthConfig
 
 # Interface: PreAuthConfig
 
@@ -22,7 +22,7 @@ Access token to use directly
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:20](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L20)
+[core/auth/PreAuthStrategy.ts:20](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L20)
 
 ___
 
@@ -43,7 +43,7 @@ If provided, will be called when token needs to be refreshed
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:26](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L26)
+[core/auth/PreAuthStrategy.ts:26](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L26)
 
 ___
 
@@ -61,4 +61,4 @@ Buffer time in milliseconds before token expiry to trigger the expiring event
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:32](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L32)
+[core/auth/PreAuthStrategy.ts:32](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L32)

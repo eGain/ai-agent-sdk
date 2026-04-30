@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / ClientCredentialsAuthServiceConfig
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / ClientCredentialsAuthServiceConfig
 
 # Interface: ClientCredentialsAuthServiceConfig
 
@@ -19,7 +19,7 @@ Client credentials authentication configuration
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:64](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L64)
+[core/auth/AuthenticationService.ts:64](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L64)
 
 ___
 
@@ -31,4 +31,4 @@ Client credentials configuration options
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:68](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L68)
+[core/auth/AuthenticationService.ts:68](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L68)

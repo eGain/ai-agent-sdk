@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / LoggerEvents
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / LoggerEvents
 
 # Interface: LoggerEvents
 
@@ -18,4 +18,4 @@ Logger event map for EventEmitter
 
 #### Defined in
 
-[core/logging/types.ts:52](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L52)
+[core/logging/types.ts:52](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/logging/types.ts#L52)

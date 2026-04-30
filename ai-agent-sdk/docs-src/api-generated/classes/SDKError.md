@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / SDKError
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / SDKError
 
 # Class: SDKError
 
@@ -51,7 +51,7 @@ Error.constructor
 
 #### Defined in
 
-[core/errors/SDKError.ts:5](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/errors/SDKError.ts#L5)
+[core/errors/SDKError.ts:5](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/errors/SDKError.ts#L5)
 
 ## Properties
 
@@ -61,7 +61,7 @@ Error.constructor
 
 #### Defined in
 
-[core/errors/SDKError.ts:7](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/errors/SDKError.ts#L7)
+[core/errors/SDKError.ts:7](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/errors/SDKError.ts#L7)
 
 ___
 
@@ -71,4 +71,4 @@ ___
 
 #### Defined in
 
-[core/errors/SDKError.ts:8](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/errors/SDKError.ts#L8)
+[core/errors/SDKError.ts:8](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/errors/SDKError.ts#L8)

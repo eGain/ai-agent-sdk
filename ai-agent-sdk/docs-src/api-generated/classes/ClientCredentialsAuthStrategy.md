@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / ClientCredentialsAuthStrategy
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / ClientCredentialsAuthStrategy
 
 # Class: ClientCredentialsAuthStrategy
 
@@ -41,7 +41,7 @@ Implements OAuth 2.0 client credentials flow
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:39](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L39)
+[core/auth/ClientCredentialsAuthStrategy.ts:39](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L39)
 
 ## Methods
 
@@ -67,7 +67,7 @@ Initialize the client credentials authentication strategy
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:44](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L44)
+[core/auth/ClientCredentialsAuthStrategy.ts:44](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L44)
 
 ___
 
@@ -87,7 +87,7 @@ Authenticate using client credentials flow
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:55](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L55)
+[core/auth/ClientCredentialsAuthStrategy.ts:55](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L55)
 
 ___
 
@@ -103,7 +103,7 @@ Check if the user is currently authenticated
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:71](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L71)
+[core/auth/ClientCredentialsAuthStrategy.ts:71](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L71)
 
 ___
 
@@ -123,7 +123,7 @@ Get authentication token using client credentials flow
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:80](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L80)
+[core/auth/ClientCredentialsAuthStrategy.ts:80](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L80)
 
 ___
 
@@ -143,4 +143,4 @@ Cleanup resources
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:111](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L111)
+[core/auth/ClientCredentialsAuthStrategy.ts:111](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L111)

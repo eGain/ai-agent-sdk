@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / AgentEventPayloadMap
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / AgentEventPayloadMap
 
 # Interface: AgentEventPayloadMap
 
@@ -37,7 +37,7 @@ Payload map for agent events
 
 #### Defined in
 
-[core/AiAgent.ts:238](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L238)
+[core/AiAgent.ts:238](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L238)
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:239](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L239)
+[core/AiAgent.ts:239](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L239)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:240](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L240)
+[core/AiAgent.ts:240](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L240)
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:241](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L241)
+[core/AiAgent.ts:241](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L241)
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:242](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L242)
+[core/AiAgent.ts:242](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L242)
 
 ___
 
@@ -113,7 +113,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:243](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L243)
+[core/AiAgent.ts:243](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L243)
 
 ___
 
@@ -130,7 +130,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:244](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L244)
+[core/AiAgent.ts:244](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L244)
 
 ___
 
@@ -146,7 +146,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:245](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L245)
+[core/AiAgent.ts:245](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L245)
 
 ___
 
@@ -156,7 +156,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:246](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L246)
+[core/AiAgent.ts:246](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L246)
 
 ___
 
@@ -173,7 +173,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:247](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L247)
+[core/AiAgent.ts:247](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L247)
 
 ___
 
@@ -189,7 +189,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:248](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L248)
+[core/AiAgent.ts:248](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L248)
 
 ___
 
@@ -205,7 +205,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:249](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L249)
+[core/AiAgent.ts:249](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L249)
 
 ___
 
@@ -221,7 +221,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:250](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L250)
+[core/AiAgent.ts:250](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L250)
 
 ___
 
@@ -237,7 +237,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:251](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L251)
+[core/AiAgent.ts:251](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L251)
 
 ___
 
@@ -253,7 +253,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:252](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L252)
+[core/AiAgent.ts:252](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L252)
 
 ___
 
@@ -269,7 +269,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:253](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L253)
+[core/AiAgent.ts:253](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L253)
 
 ___
 
@@ -292,7 +292,7 @@ Always includes at least agent (agentId, name). When CC pipeline completes: port
 
 #### Defined in
 
-[core/AiAgent.ts:255](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L255)
+[core/AiAgent.ts:255](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L255)
 
 ___
 
@@ -308,7 +308,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:263](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L263)
+[core/AiAgent.ts:263](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L263)
 
 ___
 
@@ -324,7 +324,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:264](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L264)
+[core/AiAgent.ts:264](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L264)
 
 ___
 
@@ -341,4 +341,4 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:265](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L265)
+[core/AiAgent.ts:265](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/AiAgent.ts#L265)

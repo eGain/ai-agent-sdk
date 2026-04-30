@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / AnonymousAuthConfig
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / AnonymousAuthConfig
 
 # Interface: AnonymousAuthConfig
 
@@ -20,4 +20,4 @@ Cache configuration for metadata
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:44](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L44)
+[core/auth/AnonymousAuthStrategy.ts:44](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L44)

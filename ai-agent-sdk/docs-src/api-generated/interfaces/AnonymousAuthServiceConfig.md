@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / AnonymousAuthServiceConfig
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / AnonymousAuthServiceConfig
 
 # Interface: AnonymousAuthServiceConfig
 
@@ -19,7 +19,7 @@ Anonymous authentication configuration
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:26](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L26)
+[core/auth/AuthenticationService.ts:26](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L26)
 
 ___
 
@@ -31,4 +31,4 @@ Optional anonymous auth config
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:30](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L30)
+[core/auth/AuthenticationService.ts:30](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L30)

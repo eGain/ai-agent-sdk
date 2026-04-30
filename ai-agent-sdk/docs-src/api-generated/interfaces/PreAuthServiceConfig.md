@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / PreAuthServiceConfig
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / PreAuthServiceConfig
 
 # Interface: PreAuthServiceConfig
 
@@ -20,7 +20,7 @@ Pre-auth authentication configuration
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:48](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L48)
+[core/auth/AuthenticationService.ts:48](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L48)
 
 ___
 
@@ -32,7 +32,7 @@ Access token to use directly
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:52](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L52)
+[core/auth/AuthenticationService.ts:52](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L52)
 
 ___
 
@@ -53,4 +53,4 @@ If provided, will be called when token needs to be refreshed
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:57](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L57)
+[core/auth/AuthenticationService.ts:57](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L57)

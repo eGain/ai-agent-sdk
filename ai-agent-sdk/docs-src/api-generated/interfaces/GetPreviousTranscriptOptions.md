@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / GetPreviousTranscriptOptions
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / GetPreviousTranscriptOptions
 
 # Interface: GetPreviousTranscriptOptions
 
@@ -21,7 +21,7 @@ API domain
 
 #### Defined in
 
-[core/api/ApiHelper.ts:154](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L154)
+[core/api/ApiHelper.ts:154](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L154)
 
 ___
 
@@ -33,7 +33,7 @@ Agent ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:159](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L159)
+[core/api/ApiHelper.ts:159](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L159)
 
 ___
 
@@ -45,7 +45,7 @@ Session ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:164](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L164)
+[core/api/ApiHelper.ts:164](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L164)
 
 ___
 
@@ -57,4 +57,4 @@ Authentication token (required if `ApiHelper` was constructed without `getToken`
 
 #### Defined in
 
-[core/api/ApiHelper.ts:169](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L169)
+[core/api/ApiHelper.ts:169](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L169)

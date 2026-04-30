@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / MessageQueue
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / MessageQueue
 
 # Class: MessageQueue
 
@@ -84,7 +84,7 @@ Create a new MessageQueue
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:158](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L158)
+[core/queue/MessageQueue.ts:158](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L158)
 
 ## Methods
 
@@ -126,7 +126,7 @@ const id2 = queue.enqueue({ text: "World" }, "my-message-id");
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:183](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L183)
+[core/queue/MessageQueue.ts:183](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L183)
 
 ___
 
@@ -156,7 +156,7 @@ if (next) {
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:216](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L216)
+[core/queue/MessageQueue.ts:216](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L216)
 
 ___
 
@@ -185,7 +185,7 @@ if (message) {
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:235](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L235)
+[core/queue/MessageQueue.ts:235](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L235)
 
 ___
 
@@ -227,7 +227,7 @@ try {
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:262](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L262)
+[core/queue/MessageQueue.ts:262](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L262)
 
 ___
 
@@ -261,7 +261,7 @@ console.log(removed ? "Removed" : "Not found");
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:286](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L286)
+[core/queue/MessageQueue.ts:286](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L286)
 
 ___
 
@@ -279,7 +279,7 @@ Number of queued messages
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:299](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L299)
+[core/queue/MessageQueue.ts:299](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L299)
 
 ___
 
@@ -297,7 +297,7 @@ True if no messages are queued
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:307](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L307)
+[core/queue/MessageQueue.ts:307](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L307)
 
 ___
 
@@ -315,7 +315,7 @@ Use with caution - all queued messages will be lost.
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:316](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L316)
+[core/queue/MessageQueue.ts:316](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L316)
 
 ___
 
@@ -335,4 +335,4 @@ Array of all queued messages
 
 #### Defined in
 
-[core/queue/MessageQueue.ts:327](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L327)
+[core/queue/MessageQueue.ts:327](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/queue/MessageQueue.ts#L327)

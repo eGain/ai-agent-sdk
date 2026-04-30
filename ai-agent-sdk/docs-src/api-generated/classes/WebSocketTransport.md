@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / WebSocketTransport
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / WebSocketTransport
 
 # Class: WebSocketTransport
 
@@ -69,7 +69,7 @@ await transport.send({ text: 'Hello' });
 
 #### Defined in
 
-[core/connection/WebSocketTransport.ts:39](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L39)
+[core/connection/WebSocketTransport.ts:39](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L39)
 
 ## Methods
 
@@ -89,7 +89,7 @@ Get the transport type identifier
 
 #### Defined in
 
-[core/connection/WebSocketTransport.ts:47](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L47)
+[core/connection/WebSocketTransport.ts:47](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L47)
 
 ___
 
@@ -109,7 +109,7 @@ Check if the WebSocket is currently connected
 
 #### Defined in
 
-[core/connection/WebSocketTransport.ts:54](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L54)
+[core/connection/WebSocketTransport.ts:54](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L54)
 
 ___
 
@@ -129,7 +129,7 @@ Establish the WebSocket connection
 
 #### Defined in
 
-[core/connection/WebSocketTransport.ts:61](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L61)
+[core/connection/WebSocketTransport.ts:61](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L61)
 
 ___
 
@@ -149,7 +149,7 @@ Close the WebSocket connection
 
 #### Defined in
 
-[core/connection/WebSocketTransport.ts:137](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L137)
+[core/connection/WebSocketTransport.ts:137](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L137)
 
 ___
 
@@ -175,7 +175,7 @@ Send data through the WebSocket
 
 #### Defined in
 
-[core/connection/WebSocketTransport.ts:150](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L150)
+[core/connection/WebSocketTransport.ts:150](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/WebSocketTransport.ts#L150)
 
 ___
 
@@ -220,7 +220,7 @@ agent.on("message", (event) => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:64](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
+[core/events/EventEmitter.ts:64](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
 
 ___
 
@@ -265,7 +265,7 @@ agent.once("connected", () => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:88](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
+[core/events/EventEmitter.ts:88](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
 
 ___
 
@@ -316,7 +316,7 @@ agent.off("message");
 
 #### Defined in
 
-[core/events/EventEmitter.ts:117](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
+[core/events/EventEmitter.ts:117](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
 
 ___
 
@@ -348,7 +348,7 @@ Remove all event handlers
 
 #### Defined in
 
-[core/events/EventEmitter.ts:180](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
+[core/events/EventEmitter.ts:180](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
 
 ___
 
@@ -380,4 +380,4 @@ Get the number of listeners for an event
 
 #### Defined in
 
-[core/events/EventEmitter.ts:194](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)
+[core/events/EventEmitter.ts:194](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)

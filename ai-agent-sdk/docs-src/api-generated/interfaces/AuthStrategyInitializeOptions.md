@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / AuthStrategyInitializeOptions
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / AuthStrategyInitializeOptions
 
 # Interface: AuthStrategyInitializeOptions
 
@@ -22,7 +22,7 @@ The deployment information for the authentication strategy
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:42](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L42)
+[core/auth/AuthStrategy.ts:42](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L42)
 
 ___
 
@@ -34,7 +34,7 @@ The scopes for the authentication strategy
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:46](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L46)
+[core/auth/AuthStrategy.ts:46](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L46)
 
 ___
 
@@ -46,4 +46,4 @@ Callback to be called after authentication completes
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:50](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L50)
+[core/auth/AuthStrategy.ts:50](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L50)

@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / GetMyPortalsOptions
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / GetMyPortalsOptions
 
 # Interface: GetMyPortalsOptions
 
@@ -23,7 +23,7 @@ Authentication token (required if `ApiHelper` was constructed without `getToken`
 
 #### Defined in
 
-[core/api/ApiHelper.ts:197](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L197)
+[core/api/ApiHelper.ts:197](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L197)
 
 ___
 
@@ -41,7 +41,7 @@ Language code (e.g., "en-us", "da-dk")
 
 #### Defined in
 
-[core/api/ApiHelper.ts:203](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L203)
+[core/api/ApiHelper.ts:203](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L203)
 
 ___
 
@@ -53,7 +53,7 @@ Optional user ID for cache keying
 
 #### Defined in
 
-[core/api/ApiHelper.ts:208](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L208)
+[core/api/ApiHelper.ts:208](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L208)
 
 ___
 
@@ -65,4 +65,4 @@ Optional short URL template for filtering (from agent theme)
 
 #### Defined in
 
-[core/api/ApiHelper.ts:213](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L213)
+[core/api/ApiHelper.ts:213](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L213)

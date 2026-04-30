@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / Transcript
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / Transcript
 
 # Class: Transcript
 
@@ -88,7 +88,7 @@ Create a new Transcript instance
 
 #### Defined in
 
-[core/message/Transcript.ts:279](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L279)
+[core/message/Transcript.ts:279](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L279)
 
 ## Methods
 
@@ -128,7 +128,7 @@ transcript.add(
 
 #### Defined in
 
-[core/message/Transcript.ts:310](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L310)
+[core/message/Transcript.ts:310](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L310)
 
 ___
 
@@ -167,7 +167,7 @@ const recent = transcript.getEntries({
 
 #### Defined in
 
-[core/message/Transcript.ts:356](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L356)
+[core/message/Transcript.ts:356](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L356)
 
 ___
 
@@ -210,7 +210,7 @@ await db.saveTranscript(json);
 
 #### Defined in
 
-[core/message/Transcript.ts:411](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L411)
+[core/message/Transcript.ts:411](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L411)
 
 ___
 
@@ -228,7 +228,7 @@ Number of recorded messages
 
 #### Defined in
 
-[core/message/Transcript.ts:433](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L433)
+[core/message/Transcript.ts:433](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L433)
 
 ___
 
@@ -247,7 +247,7 @@ this action cannot be undone.
 
 #### Defined in
 
-[core/message/Transcript.ts:443](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L443)
+[core/message/Transcript.ts:443](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L443)
 
 ___
 
@@ -282,4 +282,4 @@ transcript.updateConfig({
 
 #### Defined in
 
-[core/message/Transcript.ts:496](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L496)
+[core/message/Transcript.ts:496](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L496)

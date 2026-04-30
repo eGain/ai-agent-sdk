@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / GracefulDisconnectParams
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / GracefulDisconnectParams
 
 # Interface: GracefulDisconnectParams
 
@@ -30,7 +30,7 @@ BaseMessageParams.messageId
 
 #### Defined in
 
-[core/message/MessageTypes.ts:7](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L7)
+[core/message/MessageTypes.ts:7](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L7)
 
 ___
 
@@ -44,7 +44,7 @@ BaseMessageParams.from
 
 #### Defined in
 
-[core/message/MessageTypes.ts:8](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
+[core/message/MessageTypes.ts:8](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
 
 ___
 
@@ -58,4 +58,4 @@ BaseMessageParams.to
 
 #### Defined in
 
-[core/message/MessageTypes.ts:9](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)
+[core/message/MessageTypes.ts:9](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)

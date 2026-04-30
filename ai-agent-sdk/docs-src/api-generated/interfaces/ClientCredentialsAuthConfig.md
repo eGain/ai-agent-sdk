@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / ClientCredentialsAuthConfig
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / ClientCredentialsAuthConfig
 
 # Interface: ClientCredentialsAuthConfig
 
@@ -23,7 +23,7 @@ Token endpoint URL
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:10](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L10)
+[core/auth/ClientCredentialsAuthStrategy.ts:10](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L10)
 
 ___
 
@@ -35,7 +35,7 @@ Client ID
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:15](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L15)
+[core/auth/ClientCredentialsAuthStrategy.ts:15](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L15)
 
 ___
 
@@ -47,7 +47,7 @@ Client secret
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:20](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L20)
+[core/auth/ClientCredentialsAuthStrategy.ts:20](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L20)
 
 ___
 
@@ -59,4 +59,4 @@ Optional scopes to request
 
 #### Defined in
 
-[core/auth/ClientCredentialsAuthStrategy.ts:25](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L25)
+[core/auth/ClientCredentialsAuthStrategy.ts:25](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/auth/ClientCredentialsAuthStrategy.ts#L25)

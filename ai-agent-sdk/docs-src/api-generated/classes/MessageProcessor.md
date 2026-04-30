@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / MessageProcessor
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / MessageProcessor
 
 # Class: MessageProcessor
 
@@ -40,7 +40,7 @@ Registers default handlers
 
 #### Defined in
 
-[core/message/MessageProcessor.ts:24](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L24)
+[core/message/MessageProcessor.ts:24](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L24)
 
 ## Methods
 
@@ -65,7 +65,7 @@ Processing result or null if no handler matched
 
 #### Defined in
 
-[core/message/MessageProcessor.ts:53](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L53)
+[core/message/MessageProcessor.ts:53](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L53)
 
 ___
 
@@ -88,7 +88,7 @@ Add a custom handler
 
 #### Defined in
 
-[core/message/MessageProcessor.ts:92](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L92)
+[core/message/MessageProcessor.ts:92](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L92)
 
 ___
 
@@ -110,7 +110,7 @@ Remove a handler
 
 #### Defined in
 
-[core/message/MessageProcessor.ts:113](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L113)
+[core/message/MessageProcessor.ts:113](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L113)
 
 ___
 
@@ -128,7 +128,7 @@ Array of registered handlers
 
 #### Defined in
 
-[core/message/MessageProcessor.ts:125](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L125)
+[core/message/MessageProcessor.ts:125](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L125)
 
 ___
 
@@ -144,4 +144,4 @@ Clear all handlers and re-register defaults
 
 #### Defined in
 
-[core/message/MessageProcessor.ts:132](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L132)
+[core/message/MessageProcessor.ts:132](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageProcessor.ts#L132)

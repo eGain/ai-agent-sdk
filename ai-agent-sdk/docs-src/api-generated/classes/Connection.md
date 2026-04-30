@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / Connection
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / Connection
 
 # Class: Connection
 
@@ -76,7 +76,7 @@ const conn = new Connection({ transport: customTransport });
 
 #### Defined in
 
-[core/connection/Connection.ts:94](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L94)
+[core/connection/Connection.ts:94](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L94)
 
 • **new Connection**(`endpoint`): [`Connection`](Connection.md)
 
@@ -100,7 +100,7 @@ EventEmitter\&lt;ConnectionEvents\&gt;.constructor
 
 #### Defined in
 
-[core/connection/Connection.ts:98](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L98)
+[core/connection/Connection.ts:98](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L98)
 
 ## Methods
 
@@ -116,7 +116,7 @@ Get the underlying transport instance
 
 #### Defined in
 
-[core/connection/Connection.ts:154](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L154)
+[core/connection/Connection.ts:154](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L154)
 
 ___
 
@@ -132,7 +132,7 @@ Get the transport type
 
 #### Defined in
 
-[core/connection/Connection.ts:161](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L161)
+[core/connection/Connection.ts:161](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L161)
 
 ___
 
@@ -148,7 +148,7 @@ Get current connection state
 
 #### Defined in
 
-[core/connection/Connection.ts:168](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L168)
+[core/connection/Connection.ts:168](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L168)
 
 ___
 
@@ -164,7 +164,7 @@ Check if connected
 
 #### Defined in
 
-[core/connection/Connection.ts:175](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L175)
+[core/connection/Connection.ts:175](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L175)
 
 ___
 
@@ -180,7 +180,7 @@ Connect using the underlying transport
 
 #### Defined in
 
-[core/connection/Connection.ts:182](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L182)
+[core/connection/Connection.ts:182](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L182)
 
 ___
 
@@ -196,7 +196,7 @@ Disconnect and stop reconnecting
 
 #### Defined in
 
-[core/connection/Connection.ts:196](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L196)
+[core/connection/Connection.ts:196](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L196)
 
 ___
 
@@ -218,7 +218,7 @@ Send a message through the transport
 
 #### Defined in
 
-[core/connection/Connection.ts:207](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L207)
+[core/connection/Connection.ts:207](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L207)
 
 ___
 
@@ -240,7 +240,7 @@ Set maximum reconnection attempts
 
 #### Defined in
 
-[core/connection/Connection.ts:221](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L221)
+[core/connection/Connection.ts:221](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L221)
 
 ___
 
@@ -263,7 +263,7 @@ Set reconnection delay parameters
 
 #### Defined in
 
-[core/connection/Connection.ts:228](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L228)
+[core/connection/Connection.ts:228](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L228)
 
 ___
 
@@ -308,7 +308,7 @@ agent.on("message", (event) => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:64](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
+[core/events/EventEmitter.ts:64](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
 
 ___
 
@@ -353,7 +353,7 @@ agent.once("connected", () => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:88](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
+[core/events/EventEmitter.ts:88](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
 
 ___
 
@@ -404,7 +404,7 @@ agent.off("message");
 
 #### Defined in
 
-[core/events/EventEmitter.ts:117](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
+[core/events/EventEmitter.ts:117](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
 
 ___
 
@@ -436,7 +436,7 @@ Remove all event handlers
 
 #### Defined in
 
-[core/events/EventEmitter.ts:180](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
+[core/events/EventEmitter.ts:180](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
 
 ___
 
@@ -468,4 +468,4 @@ Get the number of listeners for an event
 
 #### Defined in
 
-[core/events/EventEmitter.ts:194](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)
+[core/events/EventEmitter.ts:194](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)

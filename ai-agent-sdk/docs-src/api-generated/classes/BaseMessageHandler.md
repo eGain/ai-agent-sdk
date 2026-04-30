@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / BaseMessageHandler
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / BaseMessageHandler
 
 # Class: BaseMessageHandler
 
@@ -136,7 +136,7 @@ canHandle(message: Message): boolean {
 
 #### Defined in
 
-[core/message/BaseMessageHandler.ts:175](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/BaseMessageHandler.ts#L175)
+[core/message/BaseMessageHandler.ts:175](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/BaseMessageHandler.ts#L175)
 
 ___
 
@@ -188,4 +188,4 @@ async handle(message: Message): Promise<MessageHandlerResult> {
 
 #### Defined in
 
-[core/message/BaseMessageHandler.ts:209](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/BaseMessageHandler.ts#L209)
+[core/message/BaseMessageHandler.ts:209](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/BaseMessageHandler.ts#L209)

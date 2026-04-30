@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / MessageObject
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / MessageObject
 
 # Interface: MessageObject
 
@@ -25,7 +25,7 @@ Compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:76](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L76)
+[core/message/MessageTypes.ts:76](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L76)
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 #### Defined in
 
-[core/message/MessageTypes.ts:77](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L77)
+[core/message/MessageTypes.ts:77](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L77)
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 #### Defined in
 
-[core/message/MessageTypes.ts:78](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L78)
+[core/message/MessageTypes.ts:78](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L78)
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 #### Defined in
 
-[core/message/MessageTypes.ts:79](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L79)
+[core/message/MessageTypes.ts:79](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L79)
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 #### Defined in
 
-[core/message/MessageTypes.ts:80](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L80)
+[core/message/MessageTypes.ts:80](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L80)
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 #### Defined in
 
-[core/message/MessageTypes.ts:81](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L81)
+[core/message/MessageTypes.ts:81](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L81)
 
 ___
 
@@ -85,4 +85,4 @@ ___
 
 #### Defined in
 
-[core/message/MessageTypes.ts:82](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L82)
+[core/message/MessageTypes.ts:82](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/MessageTypes.ts#L82)

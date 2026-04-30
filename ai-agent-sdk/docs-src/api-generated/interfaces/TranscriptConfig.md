@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.13](../README.md) / TranscriptConfig
+[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / TranscriptConfig
 
 # Interface: TranscriptConfig
 
@@ -42,7 +42,7 @@ true
 
 #### Defined in
 
-[core/message/Transcript.ts:148](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L148)
+[core/message/Transcript.ts:148](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L148)
 
 ___
 
@@ -62,7 +62,7 @@ If not specified, all message types are included (subject to exclude filters).
 
 #### Defined in
 
-[core/message/Transcript.ts:157](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L157)
+[core/message/Transcript.ts:157](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L157)
 
 ___
 
@@ -81,7 +81,7 @@ Messages with these roles will not be recorded.
 
 #### Defined in
 
-[core/message/Transcript.ts:165](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L165)
+[core/message/Transcript.ts:165](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L165)
 
 ___
 
@@ -100,4 +100,4 @@ Messages from these personas will not be recorded.
 
 #### Defined in
 
-[core/message/Transcript.ts:173](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L173)
+[core/message/Transcript.ts:173](https://github.com/eGain/ai-agent-sdk/blob/main/ai-agent-sdk/src/core/message/Transcript.ts#L173)
