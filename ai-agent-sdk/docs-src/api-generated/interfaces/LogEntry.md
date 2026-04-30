@@ -27,7 +27,7 @@ Log level
 
 #### Defined in
 
-[core/logging/types.ts:10](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L10)
+[core/logging/types.ts:10](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L10)
 
 ___
 
@@ -39,7 +39,7 @@ Log message
 
 #### Defined in
 
-[core/logging/types.ts:15](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L15)
+[core/logging/types.ts:15](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L15)
 
 ___
 
@@ -51,7 +51,7 @@ Timestamp when the log was created (milliseconds since epoch)
 
 #### Defined in
 
-[core/logging/types.ts:20](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L20)
+[core/logging/types.ts:20](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L20)
 
 ___
 
@@ -63,7 +63,7 @@ Optional context/metadata
 
 #### Defined in
 
-[core/logging/types.ts:25](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L25)
+[core/logging/types.ts:25](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L25)
 
 ___
 
@@ -75,7 +75,7 @@ Optional error object (for ERROR and FATAL levels)
 
 #### Defined in
 
-[core/logging/types.ts:30](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L30)
+[core/logging/types.ts:30](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L30)
 
 ___
 
@@ -87,7 +87,7 @@ Optional agent identifier
 
 #### Defined in
 
-[core/logging/types.ts:35](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L35)
+[core/logging/types.ts:35](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L35)
 
 ___
 
@@ -99,7 +99,7 @@ Optional session identifier
 
 #### Defined in
 
-[core/logging/types.ts:40](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L40)
+[core/logging/types.ts:40](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L40)
 
 ___
 
@@ -111,4 +111,4 @@ Optional logger name for identification
 
 #### Defined in
 
-[core/logging/types.ts:45](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L45)
+[core/logging/types.ts:45](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L45)

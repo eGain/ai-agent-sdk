@@ -29,7 +29,7 @@ LogLevel.INFO
 
 #### Defined in
 
-[core/logging/Logger.ts:13](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L13)
+[core/logging/Logger.ts:13](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L13)
 
 ___
 
@@ -47,7 +47,7 @@ true
 
 #### Defined in
 
-[core/logging/Logger.ts:19](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L19)
+[core/logging/Logger.ts:19](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L19)
 
 ___
 
@@ -65,7 +65,7 @@ undefined
 
 #### Defined in
 
-[core/logging/Logger.ts:25](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L25)
+[core/logging/Logger.ts:25](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L25)
 
 ___
 
@@ -92,4 +92,4 @@ undefined
 
 #### Defined in
 
-[core/logging/Logger.ts:32](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L32)
+[core/logging/Logger.ts:32](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L32)

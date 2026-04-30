@@ -30,7 +30,7 @@ true
 
 #### Defined in
 
-[core/api/ApiHelper.ts:15](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L15)
+[core/api/ApiHelper.ts:15](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L15)
 
 ___
 
@@ -48,7 +48,7 @@ Storage type: 'local' (localStorage), 'session' (sessionStorage), or 'memory'
 
 #### Defined in
 
-[core/api/ApiHelper.ts:21](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L21)
+[core/api/ApiHelper.ts:21](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L21)
 
 ___
 
@@ -66,7 +66,7 @@ Prefix for cache keys
 
 #### Defined in
 
-[core/api/ApiHelper.ts:27](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L27)
+[core/api/ApiHelper.ts:27](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L27)
 
 ___
 
@@ -84,7 +84,7 @@ Time-to-live in milliseconds
 
 #### Defined in
 
-[core/api/ApiHelper.ts:33](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L33)
+[core/api/ApiHelper.ts:33](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L33)
 
 ___
 
@@ -99,4 +99,4 @@ only provides the underlying storage mechanism with synchronous get/set.
 
 #### Defined in
 
-[core/api/ApiHelper.ts:41](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/api/ApiHelper.ts#L41)
+[core/api/ApiHelper.ts:41](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L41)

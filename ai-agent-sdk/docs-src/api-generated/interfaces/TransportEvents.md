@@ -29,7 +29,7 @@ Emitted when transport connection is established
 
 #### Defined in
 
-[core/connection/Transport.ts:12](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L12)
+[core/connection/Transport.ts:12](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L12)
 
 ___
 
@@ -48,7 +48,7 @@ Emitted when a message is received
 
 #### Defined in
 
-[core/connection/Transport.ts:17](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L17)
+[core/connection/Transport.ts:17](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L17)
 
 ___
 
@@ -67,7 +67,7 @@ Emitted when an error occurs
 
 #### Defined in
 
-[core/connection/Transport.ts:22](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L22)
+[core/connection/Transport.ts:22](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L22)
 
 ___
 
@@ -87,4 +87,4 @@ Emitted when connection is closed
 
 #### Defined in
 
-[core/connection/Transport.ts:27](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L27)
+[core/connection/Transport.ts:27](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L27)

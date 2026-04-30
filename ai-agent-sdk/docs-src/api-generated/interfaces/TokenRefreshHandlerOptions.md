@@ -29,7 +29,7 @@ Function to get a new access token
 
 #### Defined in
 
-[core/message/handlers/TokenRefreshHandler.ts:14](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L14)
+[core/message/handlers/TokenRefreshHandler.ts:14](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L14)
 
 ___
 
@@ -55,4 +55,4 @@ Function to send a message to the connection
 
 #### Defined in
 
-[core/message/handlers/TokenRefreshHandler.ts:20](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L20)
+[core/message/handlers/TokenRefreshHandler.ts:20](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L20)

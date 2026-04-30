@@ -41,6 +41,7 @@ def replacements_from_env() -> list[tuple[str, str]]:
     public_scope = os.environ.get("PUBLIC_SDK_SCOPE", "@eGain")
     private_repo = os.environ.get("PRIVATE_SDK_REPO", "https://github.com/eGainDev/ai-agent")
     public_repo = os.environ.get("PUBLIC_SDK_REPO", "https://github.com/eGain/ai-agent-sdk")
+    public_git_revision = os.environ.get("PUBLIC_SDK_DOCS_GIT_REVISION", "master")
 
     # Longest keys first so repo URL matches before any shorter accidental overlap.
     return [
@@ -48,6 +49,10 @@ def replacements_from_env() -> list[tuple[str, str]]:
         (private_repo + ".git", public_repo + ".git"),
         (private_repo, public_repo),
         (private_scope, public_scope),
+        # TypeDoc source links: public repo default branch is master, not main.
+        ('"gitRevision": "main"', f'"gitRevision": "{public_git_revision}"'),
+        # Catch full GitHub URLs if anything still used main after repo rewrites.
+        (f"{public_repo}/blob/main/", f"{public_repo}/blob/{public_git_revision}/"),
     ]
 
 

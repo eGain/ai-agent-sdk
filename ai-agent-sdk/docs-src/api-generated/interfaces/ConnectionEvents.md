@@ -28,7 +28,7 @@ Connection event map
 
 #### Defined in
 
-[core/connection/Connection.ts:13](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L13)
+[core/connection/Connection.ts:13](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L13)
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 #### Defined in
 
-[core/connection/Connection.ts:14](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L14)
+[core/connection/Connection.ts:14](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L14)
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 #### Defined in
 
-[core/connection/Connection.ts:15](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L15)
+[core/connection/Connection.ts:15](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L15)
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-[core/connection/Connection.ts:16](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L16)
+[core/connection/Connection.ts:16](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L16)
 
 ___
 
@@ -97,4 +97,4 @@ ___
 
 #### Defined in
 
-[core/connection/Connection.ts:17](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L17)
+[core/connection/Connection.ts:17](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L17)

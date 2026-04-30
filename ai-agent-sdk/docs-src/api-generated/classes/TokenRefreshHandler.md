@@ -44,7 +44,7 @@ Processes metadata messages indicating token refresh is required
 
 #### Defined in
 
-[core/message/handlers/TokenRefreshHandler.ts:31](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L31)
+[core/message/handlers/TokenRefreshHandler.ts:31](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L31)
 
 ## Methods
 
@@ -84,7 +84,7 @@ canHandle(message: Message): boolean {
 
 #### Defined in
 
-[core/message/handlers/TokenRefreshHandler.ts:37](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L37)
+[core/message/handlers/TokenRefreshHandler.ts:37](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L37)
 
 ___
 
@@ -140,4 +140,4 @@ async handle(message: Message): Promise<MessageHandlerResult> {
 
 #### Defined in
 
-[core/message/handlers/TokenRefreshHandler.ts:54](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L54)
+[core/message/handlers/TokenRefreshHandler.ts:54](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/handlers/TokenRefreshHandler.ts#L54)

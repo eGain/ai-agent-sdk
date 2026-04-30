@@ -67,7 +67,7 @@ class MyCustomTransport extends Transport {
 
 #### Defined in
 
-[core/connection/Transport.ts:73](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L73)
+[core/connection/Transport.ts:73](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L73)
 
 ## Methods
 
@@ -83,7 +83,7 @@ Establish the transport connection
 
 #### Defined in
 
-[core/connection/Transport.ts:83](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L83)
+[core/connection/Transport.ts:83](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L83)
 
 ___
 
@@ -99,7 +99,7 @@ Close the transport connection
 
 #### Defined in
 
-[core/connection/Transport.ts:88](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L88)
+[core/connection/Transport.ts:88](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L88)
 
 ___
 
@@ -121,7 +121,7 @@ Send data through the transport
 
 #### Defined in
 
-[core/connection/Transport.ts:94](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L94)
+[core/connection/Transport.ts:94](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L94)
 
 ___
 
@@ -137,7 +137,7 @@ Check if the transport is currently connected
 
 #### Defined in
 
-[core/connection/Transport.ts:99](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L99)
+[core/connection/Transport.ts:99](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L99)
 
 ___
 
@@ -153,7 +153,7 @@ Get the transport type identifier
 
 #### Defined in
 
-[core/connection/Transport.ts:104](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Transport.ts#L104)
+[core/connection/Transport.ts:104](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Transport.ts#L104)
 
 ___
 
@@ -198,7 +198,7 @@ agent.on("message", (event) => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:64](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
+[core/events/EventEmitter.ts:64](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
 
 ___
 
@@ -243,7 +243,7 @@ agent.once("connected", () => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:88](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
+[core/events/EventEmitter.ts:88](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
 
 ___
 
@@ -294,7 +294,7 @@ agent.off("message");
 
 #### Defined in
 
-[core/events/EventEmitter.ts:117](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
+[core/events/EventEmitter.ts:117](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
 
 ___
 
@@ -326,7 +326,7 @@ Remove all event handlers
 
 #### Defined in
 
-[core/events/EventEmitter.ts:180](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
+[core/events/EventEmitter.ts:180](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
 
 ___
 
@@ -358,4 +358,4 @@ Get the number of listeners for an event
 
 #### Defined in
 
-[core/events/EventEmitter.ts:194](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)
+[core/events/EventEmitter.ts:194](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)

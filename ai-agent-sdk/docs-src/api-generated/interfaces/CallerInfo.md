@@ -24,7 +24,7 @@ Caller information pushed by the platform connector.
 
 #### Defined in
 
-[core/platform/HookContract.ts:33](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L33)
+[core/platform/HookContract.ts:33](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L33)
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 #### Defined in
 
-[core/platform/HookContract.ts:34](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L34)
+[core/platform/HookContract.ts:34](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L34)
 
 ___
 
@@ -44,4 +44,4 @@ ___
 
 #### Defined in
 
-[core/platform/HookContract.ts:35](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/HookContract.ts#L35)
+[core/platform/HookContract.ts:35](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L35)

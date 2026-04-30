@@ -18,4 +18,4 @@ Logger event map for EventEmitter
 
 #### Defined in
 
-[core/logging/types.ts:52](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/types.ts#L52)
+[core/logging/types.ts:52](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/types.ts#L52)

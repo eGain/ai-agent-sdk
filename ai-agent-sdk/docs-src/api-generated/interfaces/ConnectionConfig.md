@@ -26,7 +26,7 @@ If not provided, a WebSocketTransport will be created using the endpoint.
 
 #### Defined in
 
-[core/connection/Connection.ts:28](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L28)
+[core/connection/Connection.ts:28](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L28)
 
 ___
 
@@ -38,7 +38,7 @@ WebSocket endpoint URL (used when transport is not provided)
 
 #### Defined in
 
-[core/connection/Connection.ts:33](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L33)
+[core/connection/Connection.ts:33](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L33)
 
 ___
 
@@ -56,7 +56,7 @@ Infinity
 
 #### Defined in
 
-[core/connection/Connection.ts:39](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L39)
+[core/connection/Connection.ts:39](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L39)
 
 ___
 
@@ -74,7 +74,7 @@ Base reconnection delay in milliseconds
 
 #### Defined in
 
-[core/connection/Connection.ts:45](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L45)
+[core/connection/Connection.ts:45](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L45)
 
 ___
 
@@ -92,7 +92,7 @@ Maximum reconnection delay in milliseconds
 
 #### Defined in
 
-[core/connection/Connection.ts:51](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L51)
+[core/connection/Connection.ts:51](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L51)
 
 ___
 
@@ -105,4 +105,4 @@ If not provided, uses globalLogger
 
 #### Defined in
 
-[core/connection/Connection.ts:57](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/Connection.ts#L57)
+[core/connection/Connection.ts:57](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/Connection.ts#L57)

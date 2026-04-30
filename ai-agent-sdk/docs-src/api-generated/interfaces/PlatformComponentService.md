@@ -43,7 +43,7 @@ Main connector initialization (e.g., connecting to Genesys/NICE). Called after a
 
 #### Defined in
 
-[core/platform/PlatformComponentService.ts:23](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L23)
+[core/platform/PlatformComponentService.ts:23](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L23)
 
 ___
 
@@ -69,7 +69,7 @@ Filter or reorder the portal list after fetching.
 
 #### Defined in
 
-[core/platform/PlatformComponentService.ts:26](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L26)
+[core/platform/PlatformComponentService.ts:26](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L26)
 
 ___
 
@@ -95,7 +95,7 @@ Auto-select a default portal. Receives the output of `getPortalList`. Return `nu
 
 #### Defined in
 
-[core/platform/PlatformComponentService.ts:29](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L29)
+[core/platform/PlatformComponentService.ts:29](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L29)
 
 ___
 
@@ -121,7 +121,7 @@ Called after a portal is selected. Returns filter tags (`Record<string, string[]
 
 #### Defined in
 
-[core/platform/PlatformComponentService.ts:32](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L32)
+[core/platform/PlatformComponentService.ts:32](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L32)
 
 ___
 
@@ -147,7 +147,7 @@ Modify OAuth scopes before authentication. Returns the augmented scopes array.
 
 #### Defined in
 
-[core/platform/PlatformComponentService.ts:35](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L35)
+[core/platform/PlatformComponentService.ts:35](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L35)
 
 ___
 
@@ -173,7 +173,7 @@ Register custom hooks on the HookContract.
 
 #### Defined in
 
-[core/platform/PlatformComponentService.ts:38](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L38)
+[core/platform/PlatformComponentService.ts:38](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L38)
 
 ___
 
@@ -199,4 +199,4 @@ Receive the HookContract for bidirectional communication with the SDK.
 
 #### Defined in
 
-[core/platform/PlatformComponentService.ts:41](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L41)
+[core/platform/PlatformComponentService.ts:41](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/PlatformComponentService.ts#L41)

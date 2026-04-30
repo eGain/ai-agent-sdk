@@ -49,7 +49,7 @@ handle token refresh if needed
 
 #### Defined in
 
-[core/auth/AuthProvider.ts:11](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthProvider.ts#L11)
+[core/auth/AuthProvider.ts:11](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthProvider.ts#L11)
 
 ___
 
@@ -73,7 +73,7 @@ Called when the strategy is set on the agent
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:65](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L65)
+[core/auth/AuthStrategy.ts:65](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L65)
 
 ___
 
@@ -91,7 +91,7 @@ The postAuthentication callback registered during initialize() will be called af
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:72](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L72)
+[core/auth/AuthStrategy.ts:72](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L72)
 
 ___
 
@@ -107,7 +107,7 @@ Cleanup resources when the strategy is no longer needed
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:77](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L77)
+[core/auth/AuthStrategy.ts:77](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L77)
 
 ___
 
@@ -123,4 +123,4 @@ Get the domain for authentication
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:82](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L82)
+[core/auth/AuthStrategy.ts:82](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L82)

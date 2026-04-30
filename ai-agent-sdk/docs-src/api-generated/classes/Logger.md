@@ -58,7 +58,7 @@ Supports log level filtering and console output
 
 #### Defined in
 
-[core/logging/Logger.ts:45](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L45)
+[core/logging/Logger.ts:45](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L45)
 
 ## Methods
 
@@ -103,7 +103,7 @@ agent.on("message", (event) => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:64](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
+[core/events/EventEmitter.ts:64](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L64)
 
 ___
 
@@ -148,7 +148,7 @@ agent.once("connected", () => {
 
 #### Defined in
 
-[core/events/EventEmitter.ts:88](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
+[core/events/EventEmitter.ts:88](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L88)
 
 ___
 
@@ -199,7 +199,7 @@ agent.off("message");
 
 #### Defined in
 
-[core/events/EventEmitter.ts:117](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
+[core/events/EventEmitter.ts:117](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L117)
 
 ___
 
@@ -231,7 +231,7 @@ Remove all event handlers
 
 #### Defined in
 
-[core/events/EventEmitter.ts:180](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
+[core/events/EventEmitter.ts:180](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L180)
 
 ___
 
@@ -263,7 +263,7 @@ Get the number of listeners for an event
 
 #### Defined in
 
-[core/events/EventEmitter.ts:194](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)
+[core/events/EventEmitter.ts:194](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/events/EventEmitter.ts#L194)
 
 ___
 
@@ -285,7 +285,7 @@ Set the minimum log level threshold
 
 #### Defined in
 
-[core/logging/Logger.ts:57](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L57)
+[core/logging/Logger.ts:57](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L57)
 
 ___
 
@@ -303,7 +303,7 @@ The current log level
 
 #### Defined in
 
-[core/logging/Logger.ts:65](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L65)
+[core/logging/Logger.ts:65](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L65)
 
 ___
 
@@ -325,7 +325,7 @@ Enable or disable console output
 
 #### Defined in
 
-[core/logging/Logger.ts:73](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L73)
+[core/logging/Logger.ts:73](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L73)
 
 ___
 
@@ -343,7 +343,7 @@ True if console output is enabled
 
 #### Defined in
 
-[core/logging/Logger.ts:81](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L81)
+[core/logging/Logger.ts:81](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L81)
 
 ___
 
@@ -366,7 +366,7 @@ Log a TRACE level message
 
 #### Defined in
 
-[core/logging/Logger.ts:90](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L90)
+[core/logging/Logger.ts:90](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L90)
 
 ___
 
@@ -389,7 +389,7 @@ Log a DEBUG level message
 
 #### Defined in
 
-[core/logging/Logger.ts:99](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L99)
+[core/logging/Logger.ts:99](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L99)
 
 ___
 
@@ -412,7 +412,7 @@ Log an INFO level message
 
 #### Defined in
 
-[core/logging/Logger.ts:108](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L108)
+[core/logging/Logger.ts:108](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L108)
 
 ___
 
@@ -435,7 +435,7 @@ Log a WARN level message
 
 #### Defined in
 
-[core/logging/Logger.ts:117](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L117)
+[core/logging/Logger.ts:117](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L117)
 
 ___
 
@@ -459,7 +459,7 @@ Log an ERROR level message
 
 #### Defined in
 
-[core/logging/Logger.ts:127](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L127)
+[core/logging/Logger.ts:127](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L127)
 
 ___
 
@@ -483,7 +483,7 @@ Log a FATAL level message
 
 #### Defined in
 
-[core/logging/Logger.ts:137](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L137)
+[core/logging/Logger.ts:137](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L137)
 
 ___
 
@@ -508,4 +508,4 @@ A new logger instance with merged context
 
 #### Defined in
 
-[core/logging/Logger.ts:250](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/logging/Logger.ts#L250)
+[core/logging/Logger.ts:250](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/logging/Logger.ts#L250)

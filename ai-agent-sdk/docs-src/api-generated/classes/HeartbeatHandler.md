@@ -74,7 +74,7 @@ canHandle(message: Message): boolean {
 
 #### Defined in
 
-[core/message/handlers/HeartbeatHandler.ts:11](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/handlers/HeartbeatHandler.ts#L11)
+[core/message/handlers/HeartbeatHandler.ts:11](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/handlers/HeartbeatHandler.ts#L11)
 
 ___
 
@@ -130,4 +130,4 @@ async handle(message: Message): Promise<MessageHandlerResult> {
 
 #### Defined in
 
-[core/message/handlers/HeartbeatHandler.ts:18](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/message/handlers/HeartbeatHandler.ts#L18)
+[core/message/handlers/HeartbeatHandler.ts:18](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/handlers/HeartbeatHandler.ts#L18)

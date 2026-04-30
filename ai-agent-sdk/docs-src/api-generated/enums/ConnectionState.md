@@ -22,7 +22,7 @@ Connection state enumeration
 
 #### Defined in
 
-[core/connection/ConnectionState.ts:5](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/ConnectionState.ts#L5)
+[core/connection/ConnectionState.ts:5](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/ConnectionState.ts#L5)
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 #### Defined in
 
-[core/connection/ConnectionState.ts:6](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/ConnectionState.ts#L6)
+[core/connection/ConnectionState.ts:6](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/ConnectionState.ts#L6)
 
 ___
 
@@ -42,7 +42,7 @@ ___
 
 #### Defined in
 
-[core/connection/ConnectionState.ts:7](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/ConnectionState.ts#L7)
+[core/connection/ConnectionState.ts:7](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/ConnectionState.ts#L7)
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 #### Defined in
 
-[core/connection/ConnectionState.ts:8](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/ConnectionState.ts#L8)
+[core/connection/ConnectionState.ts:8](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/ConnectionState.ts#L8)
 
 ___
 
@@ -62,4 +62,4 @@ ___
 
 #### Defined in
 
-[core/connection/ConnectionState.ts:9](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/connection/ConnectionState.ts#L9)
+[core/connection/ConnectionState.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/connection/ConnectionState.ts#L9)

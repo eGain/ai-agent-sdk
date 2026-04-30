@@ -19,7 +19,7 @@ PKCE authentication configuration
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:37](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L37)
+[core/auth/AuthenticationService.ts:37](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L37)
 
 ___
 
@@ -31,4 +31,4 @@ PKCE configuration options
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:41](https://github.com/eGainDev/ai-agent/blob/main/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L41)
+[core/auth/AuthenticationService.ts:41](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L41)

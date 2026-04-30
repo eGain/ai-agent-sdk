@@ -30,7 +30,7 @@
     "includeCategories": true,
     "includeGroups": true
   },
-  "gitRevision": "main",
+  "gitRevision": "master",
   "name": "@eGain/ai-agent-sdk API Reference",
   "includeVersion": true
 }
