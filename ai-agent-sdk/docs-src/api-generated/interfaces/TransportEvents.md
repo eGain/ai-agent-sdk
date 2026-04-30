@@ -1,4 +1,4 @@
-[@eGainDev/ai-agent-sdk API Reference - v0.0.14](../README.md) / TransportEvents
+[@eGain/ai-agent-sdk API Reference - v0.0.14](../README.md) / TransportEvents
 
 # Interface: TransportEvents
 

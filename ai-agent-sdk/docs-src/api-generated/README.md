@@ -1,8 +1,8 @@
-@eGainDev/ai-agent-sdk API Reference
+@eGain/ai-agent-sdk API Reference
 
-# @eGainDev/ai-agent-sdk API Reference - v0.0.14
+# @eGain/ai-agent-sdk API Reference - v0.0.14
 
-# @eGainDev/ai-agent-sdk
+# @eGain/ai-agent-sdk
 
 TypeScript-first SDK for eGain's AI Agent platform.
 
@@ -17,7 +17,7 @@ TypeScript-first SDK for eGain's AI Agent platform.
 ## Quick Start
 
 ```typescript
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",

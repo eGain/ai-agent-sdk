@@ -1,5 +1,5 @@
 {
-  "name": "@eGainDev/ai-agent-sdk",
+  "name": "@eGain/ai-agent-sdk",
   "version": "0.0.14",
   "description": "TypeScript SDK for eGain's AI Agent platform",
   "type": "module",
@@ -47,7 +47,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eGainDev/ai-agent.git"
+    "url": "https://github.com/eGain/ai-agent-sdk.git"
   },
   "keywords": [
     "egain",

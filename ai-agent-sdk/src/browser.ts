@@ -1,5 +1,5 @@
 /**
- * Browser entry point for @eGainDev/ai-agent-sdk
+ * Browser entry point for @eGain/ai-agent-sdk
  * 
  * This file is used to create a UMD bundle that exposes the SDK
  * as a global variable (window.eGain) for use in plain JavaScript

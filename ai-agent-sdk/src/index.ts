@@ -1,5 +1,5 @@
 /**
- * # @eGainDev/ai-agent-sdk
+ * # @eGain/ai-agent-sdk
  * 
  * TypeScript-first SDK for eGain's AI Agent platform.
  * 
@@ -14,7 +14,7 @@
  * ## Quick Start
  * 
  * ```typescript
- * import { AiAgent } from "@eGainDev/ai-agent-sdk";
+ * import { AiAgent } from "@eGain/ai-agent-sdk";
  * 
  * const agent = new AiAgent({
  *   id: "your-agent-id",
@@ -33,7 +33,7 @@
  * ```
  * 
  * @packageDocumentation
- * @module @eGainDev/ai-agent-sdk
+ * @module @eGain/ai-agent-sdk
  */
 
 // Initialize polyfills for Node.js environment (WebSocket, fetch)

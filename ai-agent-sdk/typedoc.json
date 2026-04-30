@@ -31,6 +31,6 @@
     "includeGroups": true
   },
   "gitRevision": "main",
-  "name": "@eGainDev/ai-agent-sdk API Reference",
+  "name": "@eGain/ai-agent-sdk API Reference",
   "includeVersion": true
 }

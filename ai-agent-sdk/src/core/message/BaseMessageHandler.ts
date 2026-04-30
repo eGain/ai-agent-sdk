@@ -27,7 +27,7 @@
  * Extend `BaseMessageHandler` to create your own:
  * 
  * ```typescript
- * import { BaseMessageHandler, Message, MessageHandlerResult } from "@eGainDev/ai-agent-sdk";
+ * import { BaseMessageHandler, Message, MessageHandlerResult } from "@eGain/ai-agent-sdk";
  * 
  * class CustomHandler extends BaseMessageHandler {
  *   canHandle(message: Message): boolean {

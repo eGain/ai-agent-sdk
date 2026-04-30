@@ -160,7 +160,7 @@ agent.on("heartbeat", (event) => {
 Emitted on SDK errors (connection, auth, message processing).
 
 ```typescript
-import { ConnectionError, AuthError, MessageError } from "@eGainDev/ai-agent-sdk";
+import { ConnectionError, AuthError, MessageError } from "@eGain/ai-agent-sdk";
 
 agent.on("error", (event) => {
   const error = event.payload.error;
@@ -390,7 +390,7 @@ agent.on("message", (event) => {
 All events are fully typed:
 
 ```typescript
-import type { AgentEvent, AgentEvents } from "@eGainDev/ai-agent-sdk";
+import type { AgentEvent, AgentEvents } from "@eGain/ai-agent-sdk";
 
 // Type-safe event handling
 agent.on("agentMessage", (event: AgentEvent<"agentMessage">) => {

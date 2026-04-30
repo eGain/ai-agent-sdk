@@ -5,7 +5,7 @@ The SDK includes a comprehensive logging system for debugging and monitoring.
 ## Log Levels
 
 ```typescript
-import { LogLevel } from "@eGainDev/ai-agent-sdk";
+import { LogLevel } from "@eGain/ai-agent-sdk";
 
 LogLevel.TRACE  // 0 - Most verbose
 LogLevel.DEBUG  // 1 - Debug information
@@ -17,7 +17,7 @@ LogLevel.ERROR  // 4 - Errors only
 ## Configuring Logging
 
 ```typescript
-import { AiAgent, LogLevel } from "@eGainDev/ai-agent-sdk";
+import { AiAgent, LogLevel } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",
@@ -43,7 +43,7 @@ const agent = new AiAgent({
 Provide your own logger instance:
 
 ```typescript
-import { Logger, LogLevel, AiAgent } from "@eGainDev/ai-agent-sdk";
+import { Logger, LogLevel, AiAgent } from "@eGain/ai-agent-sdk";
 
 const logger = new Logger({
   level: LogLevel.DEBUG,
@@ -101,7 +101,7 @@ import {
   getLevelName, 
   getLevelValue, 
   isLevelEnabled 
-} from "@eGainDev/ai-agent-sdk";
+} from "@eGain/ai-agent-sdk";
 
 getLevelName(LogLevel.INFO);  // "INFO"
 getLevelValue("INFO");        // LogLevel.INFO

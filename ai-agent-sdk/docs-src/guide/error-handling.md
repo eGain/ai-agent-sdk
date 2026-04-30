@@ -10,7 +10,7 @@ import {
   AuthError,      // Authentication issues
   ConnectionError, // Connection issues
   MessageError    // Message issues
-} from "@eGainDev/ai-agent-sdk";
+} from "@eGain/ai-agent-sdk";
 ```
 
 ## Handling Errors

@@ -38,7 +38,7 @@ npm install ./egain-ai-agent-1.0.0.tgz
 ```json
 {
   "dependencies": {
-    "@eGainDev/ai-agent-sdk": "file:./egain-ai-agent-1.0.0.tgz"
+    "@eGain/ai-agent-sdk": "file:./egain-ai-agent-1.0.0.tgz"
   }
 }
 ```
@@ -75,7 +75,7 @@ tar -tzf egain-ai-agent-1.0.0.tgz | head -20
 ## Notes
 
 - The tarball name is based on `name` and `version` in `package.json`
-- Scoped packages (like `@eGainDev/ai-agent-sdk`) create tarballs with the format: `egain-ai-agent-1.0.0.tgz`
+- Scoped packages (like `@eGain/ai-agent-sdk`) create tarballs with the format: `egain-ai-agent-1.0.0.tgz`
 - Only files listed in `"files"` array are included (plus package.json)
 - The tarball can be shared and installed on any machine
 

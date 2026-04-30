@@ -39,7 +39,7 @@ Anonymous authentication should only be used for public-facing agents. The agent
 The most common authentication method. Use for API keys, static tokens, or server-provided JWTs:
 
 ```typescript
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",
@@ -207,7 +207,7 @@ Never expose client secrets in browser code. Use this strategy only in server-si
 Implement custom authentication by providing an `AuthProvider`:
 
 ```typescript
-import { AuthProvider, AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AuthProvider, AiAgent } from "@eGain/ai-agent-sdk";
 
 class CustomAuth implements AuthProvider {
   async getToken(): Promise<string> {
@@ -230,7 +230,7 @@ const agent = new AiAgent({
 For complete control over the authentication lifecycle:
 
 ```typescript
-import { AuthStrategy } from "@eGainDev/ai-agent-sdk";
+import { AuthStrategy } from "@eGain/ai-agent-sdk";
 
 class CustomAuthStrategy implements AuthStrategy {
   private token: string | null = null;

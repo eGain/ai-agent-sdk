@@ -17,7 +17,7 @@ This provides a seamless experience for users even with intermittent connectivit
 Message queuing works automatically:
 
 ```typescript
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",

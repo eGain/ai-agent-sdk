@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "@eGainDev/ai-agent-sdk"
+  name: "@eGain/ai-agent-sdk"
   text: "Enterprise AI Agent SDK"
   tagline: TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
   image:
@@ -17,7 +17,7 @@ hero:
       link: /api-generated/README
     - theme: alt
       text: View on GitHub
-      link: https://github.com/eGainDev/ai-agent
+      link: https://github.com/eGain/ai-agent-sdk
 
 features:
   - icon: 🔌
@@ -49,11 +49,11 @@ features:
 ## Quick Start
 
 ```bash
-npm install @eGainDev/ai-agent-sdk
+npm install @eGain/ai-agent-sdk
 ```
 
 ```typescript
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",

@@ -1,10 +1,10 @@
-# @eGainDev/ai-agent-sdk
+# @eGain/ai-agent-sdk
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
 **Current release:** v0.0.14
 
-[![npm version](https://img.shields.io/npm/v/@eGainDev/ai-agent-sdk.svg)](https://www.npmjs.com/package/@eGainDev/ai-agent-sdk)
+[![npm version](https://img.shields.io/npm/v/@eGain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@eGain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -24,19 +24,19 @@ TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication,
 ## Installation
 
 ```bash
-npm install @eGainDev/ai-agent-sdk
+npm install @eGain/ai-agent-sdk
 ```
 
 **GitHub Packages Configuration** (`.npmrc`):
 ```ini
-@eGainDev:registry=https://npm.pkg.github.com/
+@eGain:registry=https://npm.pkg.github.com/
 //npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
 ```
 
 ## Quick Start
 
 ```typescript
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",
@@ -62,7 +62,7 @@ await agent.send("Hello!");
 For agents that use the portal / profile pipeline, listen for selection events and call `connect()` after `initialized`:
 
 ```typescript
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",
@@ -154,7 +154,7 @@ import {
   createContextMessage,
   createFeedbackMessage,
   createEscalationMessage
-} from "@eGainDev/ai-agent-sdk";
+} from "@eGain/ai-agent-sdk";
 
 // Send context (auto-cached for reconnect)
 await agent.send(createContextMessage({
@@ -182,7 +182,7 @@ npm install ws
 The SDK automatically loads the `ws` package when running in Node.js. Just import and use:
 
 ```typescript
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",
@@ -198,14 +198,14 @@ If the automatic polyfill doesn't work in your environment, you can set it up ma
 import WebSocket from "ws";
 (global as any).WebSocket = WebSocket;
 
-import { AiAgent } from "@eGainDev/ai-agent-sdk";
+import { AiAgent } from "@eGain/ai-agent-sdk";
 // ... rest of code
 ```
 
 ## Browser (UMD)
 
 ```html
-<script src="https://unpkg.com/@eGainDev/ai-agent-sdk/dist/browser.js"></script>
+<script src="https://unpkg.com/@eGain/ai-agent-sdk/dist/browser.js"></script>
 <script>
   const agent = new eGain.AiAgent({ ... });
 </script>
@@ -230,7 +230,7 @@ npm run docs:build   # Build docs
 
 ## Examples
 
-See [usage-examples](https://github.com/eGainDev/ai-agent/tree/master/ai-agent-sdk/usage-examples) in this repository for complete examples:
+See [usage-examples](https://github.com/eGain/ai-agent-sdk/tree/master/ai-agent-sdk/usage-examples) in this repository for complete examples:
 - **Basic Usage** - Simple getting started
 - **Browser Test** - Browser integration with UI
 - **Server Test** - Node.js implementation
@@ -292,4 +292,4 @@ MIT
 
 ## Support
 
-For issues and questions, please open an issue on [GitHub](https://github.com/eGainDev/ai-agent/issues).
+For issues and questions, please open an issue on [GitHub](https://github.com/eGain/ai-agent-sdk/issues).
