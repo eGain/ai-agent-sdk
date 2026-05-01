@@ -27,12 +27,6 @@ TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication,
 npm install @egain/ai-agent-sdk
 ```
 
-**GitHub Packages Configuration** (`.npmrc`):
-```ini
-@egain:registry=https://npm.pkg.github.com/
-//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
-```
-
 ## Quick Start
 
 ```typescript

@@ -1,6 +1,6 @@
 {
   "name": "@egain/ai-agent-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript SDK for eGain's AI Agent platform",
   "type": "module",
   "main": "./dist/index.js",
@@ -41,9 +41,6 @@
     "docs:preview": "vitepress preview docs-src",
     "docs:api": "typedoc",
     "docs": "npm run docs:api && npm run docs:build"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   },
   "repository": {
     "type": "git",

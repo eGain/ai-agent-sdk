@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / Connection
+[@egain/ai-agent-sdk API Reference - v0.1.1](../README.md) / Connection
 
 # Class: Connection
 

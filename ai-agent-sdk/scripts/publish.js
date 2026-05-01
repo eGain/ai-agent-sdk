@@ -3,10 +3,10 @@
 /**
  * Publish script that uses GitHub PAT from environment variables or .env file
  * Usage: npm run publish-package
- * 
- * Publishes @eGainDev/ai-agent-sdk to GitHub Packages
- * Organization: https://github.com/orgs/eGainDev/packages
- * 
+ *
+ * Publishes this package to GitHub Packages only (`npm.pkg.github.com`).
+ * Public npmjs.org releases are handled by workflows on the eGain/ai-agent-sdk repo.
+ *
  * Required environment variable (set in .env file or environment):
  * - GITHUB_TOKEN or NPM_TOKEN: GitHub Personal Access Token with 'write:packages' permission
  */
@@ -74,10 +74,13 @@ try {
   // Use --no-workspaces to avoid workspace-related issues
   // Capture output to detect "already published" errors while still showing it
   try {
-    const publishOutput = execSync('npm publish --no-workspaces', { 
-      encoding: 'utf-8',
-      stdio: 'pipe'
-    });
+    const publishOutput = execSync(
+      `npm publish --no-workspaces --registry ${REGISTRY}`,
+      {
+        encoding: 'utf-8',
+        stdio: 'pipe',
+      }
+    );
     // Show the output
     process.stdout.write(publishOutput);
     console.log('');
