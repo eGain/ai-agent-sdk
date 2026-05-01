@@ -5,15 +5,15 @@
 ::: code-group
 
 ```bash [npm]
-npm install @eGain/ai-agent-sdk
+npm install @egain/ai-agent-sdk
 ```
 
 ```bash [yarn]
-yarn add @eGain/ai-agent-sdk
+yarn add @egain/ai-agent-sdk
 ```
 
 ```bash [pnpm]
-pnpm add @eGain/ai-agent-sdk
+pnpm add @egain/ai-agent-sdk
 ```
 
 :::
@@ -23,7 +23,7 @@ pnpm add @eGain/ai-agent-sdk
 This package is published to GitHub Packages. Configure your `.npmrc`:
 
 ```ini
-@eGain:registry=https://npm.pkg.github.com/
+@egain:registry=https://npm.pkg.github.com/
 //npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
 ```
 
@@ -38,7 +38,7 @@ This package is published to GitHub Packages. Configure your `.npmrc`:
 ### Browser (ES Modules)
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",
@@ -50,7 +50,7 @@ const agent = new AiAgent({
 ### Browser (UMD / Script Tag)
 
 ```html
-<script src="https://unpkg.com/@eGain/ai-agent-sdk/dist/browser.js"></script>
+<script src="https://unpkg.com/@egain/ai-agent-sdk/dist/browser.js"></script>
 <script>
   const agent = new eGain.AiAgent({
     id: "agent-id",
@@ -69,7 +69,7 @@ npm install ws
 ```
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",
@@ -99,7 +99,7 @@ The SDK includes TypeScript definitions. For optimal support, ensure your `tscon
 ## Verifying Installation
 
 ```typescript
-import { AiAgent, ConnectionState } from "@eGain/ai-agent-sdk";
+import { AiAgent, ConnectionState } from "@egain/ai-agent-sdk";
 
 // Check types are working
 const config: Parameters<typeof AiAgent>[0] = {
@@ -122,7 +122,7 @@ If you see module resolution errors, ensure your bundler supports ES modules:
 ```javascript [vite.config.js]
 export default {
   optimizeDeps: {
-    include: ['@eGain/ai-agent-sdk']
+    include: ['@egain/ai-agent-sdk']
   }
 }
 ```

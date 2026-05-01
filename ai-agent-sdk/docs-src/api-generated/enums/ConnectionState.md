@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / ConnectionState
+[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / ConnectionState
 
 # Enumeration: ConnectionState
 

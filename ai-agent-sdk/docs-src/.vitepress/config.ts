@@ -87,7 +87,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/eGain/ai-agent-sdk' }
+      { icon: 'github', link: 'https://github.com/egain/ai-agent-sdk' }
     ],
 
     search: {
@@ -100,7 +100,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/eGain/ai-agent-sdk/edit/main/ai-agent-sdk/docs-src/:path',
+      pattern: 'https://github.com/egain/ai-agent-sdk/edit/main/ai-agent-sdk/docs-src/:path',
       text: 'Edit this page on GitHub'
     }
   },

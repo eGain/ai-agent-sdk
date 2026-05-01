@@ -6,7 +6,7 @@ Thank you for your interest in contributing to the AI Agent SDK!
 
 ```bash
 # Clone the repository
-git clone https://github.com/eGain/ai-agent-sdk.git
+git clone https://github.com/egain/ai-agent-sdk.git
 cd ai-agent/ai-agent-sdk
 
 # Install dependencies
@@ -113,4 +113,4 @@ When reporting issues, please include:
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/eGain/ai-agent-sdk/discussions) for questions and ideas.
+Open a [GitHub Discussion](https://github.com/egain/ai-agent-sdk/discussions) for questions and ideas.

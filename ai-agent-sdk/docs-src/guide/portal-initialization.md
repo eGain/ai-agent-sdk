@@ -77,7 +77,7 @@ For **`userType === 'customer'`** (or `initParams.authType === 'customer'`), pro
 ## Example
 
 ```typescript
-import { AiAgent, LogLevel } from "@eGain/ai-agent-sdk";
+import { AiAgent, LogLevel } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",

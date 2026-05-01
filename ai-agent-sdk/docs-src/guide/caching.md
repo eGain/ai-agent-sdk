@@ -13,7 +13,7 @@ Caching is automatically enabled by default and uses the appropriate storage bac
 Caching works out of the box with sensible defaults:
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",
@@ -87,7 +87,7 @@ const agent = new AiAgent({
 Implement your own cache adapter for custom storage backends (Redis, IndexedDB, etc.):
 
 ```typescript
-import { CacheAdapter, CacheEntry, AiAgent } from "@eGain/ai-agent-sdk";
+import { CacheAdapter, CacheEntry, AiAgent } from "@egain/ai-agent-sdk";
 
 class RedisCacheAdapter implements CacheAdapter {
   private redis: RedisClient;
@@ -184,7 +184,7 @@ The SDK provides two built-in adapters:
 ### MemoryCacheAdapter
 
 ```typescript
-import { MemoryCacheAdapter } from "@eGain/ai-agent-sdk";
+import { MemoryCacheAdapter } from "@egain/ai-agent-sdk";
 
 const cache = new MemoryCacheAdapter();
 
@@ -205,7 +205,7 @@ cache.clear("user:");
 ### StorageCacheAdapter
 
 ```typescript
-import { StorageCacheAdapter } from "@eGain/ai-agent-sdk";
+import { StorageCacheAdapter } from "@egain/ai-agent-sdk";
 
 // Session storage (cleared on tab close)
 const sessionCache = new StorageCacheAdapter("session");
@@ -219,7 +219,7 @@ const localCache = new StorageCacheAdapter("local");
 Use the factory function for automatic environment detection:
 
 ```typescript
-import { createCacheAdapter } from "@eGain/ai-agent-sdk";
+import { createCacheAdapter } from "@egain/ai-agent-sdk";
 
 // Auto-detect best adapter
 const cache = createCacheAdapter();

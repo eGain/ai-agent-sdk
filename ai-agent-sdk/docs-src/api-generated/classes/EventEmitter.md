@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / EventEmitter
+[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / EventEmitter
 
 # Class: EventEmitter\<T\>
 
@@ -10,7 +10,7 @@ Provides a foundation for event-driven communication throughout the SDK.
 **`Example`**
 
 ```typescript
-import { EventEmitter } from "@eGain/ai-agent-sdk";
+import { EventEmitter } from "@egain/ai-agent-sdk";
 
 interface MyEvents {
   data: { value: number };

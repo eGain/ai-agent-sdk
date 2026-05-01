@@ -30,7 +30,7 @@ Implement this interface on the global object:
 | `setHookContract` | No | Receive the same contract reference (optional duplicate of `initPlatform` arg) |
 
 ```typescript
-import type { HookContract, PlatformComponentService } from "@eGain/ai-agent-sdk";
+import type { HookContract, PlatformComponentService } from "@egain/ai-agent-sdk";
 
 const service: PlatformComponentService = {
   async initPlatform(hook: HookContract) {

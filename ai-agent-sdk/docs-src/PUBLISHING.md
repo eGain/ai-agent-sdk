@@ -1,6 +1,6 @@
-# Publishing @eGain/ai-agent-sdk to eGain Enterprise Registry
+# Publishing @egain/ai-agent-sdk to eGain Enterprise Registry
 
-This guide explains how to manually publish the `@eGain/ai-agent-sdk` package to the eGainDev organization's GitHub Packages registry at [https://github.com/orgs/eGainDev/packages](https://github.com/orgs/eGainDev/packages).
+This guide explains how to manually publish the `@egain/ai-agent-sdk` package to the eGainDev organization's GitHub Packages registry at [https://github.com/orgs/eGainDev/packages](https://github.com/orgs/eGainDev/packages).
 
 ## Prerequisites
 
@@ -76,7 +76,7 @@ The publish script will automatically:
 
 The `.npmrc` file is already configured:
 ```
-@eGain:registry=https://npm.pkg.github.com/
+@egain:registry=https://npm.pkg.github.com/
 ```
 
 The publish script (`scripts/publish.js`) automatically:
@@ -144,7 +144,7 @@ The `prepublishOnly` script will automatically:
 
 If any step fails, publishing will be aborted.
 
-The package will be published to: `https://npm.pkg.github.com/@eGain/ai-agent-sdk`
+The package will be published to: `https://npm.pkg.github.com/@egain/ai-agent-sdk`
 
 You can view it at: [https://github.com/orgs/eGainDev/packages](https://github.com/orgs/eGainDev/packages)
 
@@ -153,25 +153,25 @@ You can view it at: [https://github.com/orgs/eGainDev/packages](https://github.c
 After publishing, verify the package is available:
 
 ```bash
-npm view @eGain/ai-agent-sdk versions --registry=https://npm.pkg.github.com/
+npm view @egain/ai-agent-sdk versions --registry=https://npm.pkg.github.com/
 ```
 
 Or check on GitHub:
 - Go to [https://github.com/orgs/eGainDev/packages](https://github.com/orgs/eGainDev/packages)
-- Look for `@eGain/ai-agent-sdk`
+- Look for `@egain/ai-agent-sdk`
 
 ## Installing the Published Package
 
 To install the published package in another project, configure `.npmrc` in that project:
 
 ```
-@eGain:registry=https://npm.pkg.github.com/
+@egain:registry=https://npm.pkg.github.com/
 //npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
 ```
 
 Then install:
 ```bash
-npm install @eGain/ai-agent-sdk
+npm install @egain/ai-agent-sdk
 ```
 
 ## Troubleshooting
@@ -217,7 +217,7 @@ npm version patch  # or minor, or major
 
 ### Error: "Package name must be lowercase"
 
-**Solution:** The package name `@eGain/ai-agent-sdk` uses the organization name `eGainDev` (with capital G and D). This is correct for GitHub Packages. If you see this error, verify the package name in `package.json` matches `@eGain/ai-agent-sdk` exactly.
+**Solution:** The package name `@egain/ai-agent-sdk` uses the organization name `eGainDev` (with capital G and D). This is correct for GitHub Packages. If you see this error, verify the package name in `package.json` matches `@egain/ai-agent-sdk` exactly.
 
 ## Next Steps: Automation
 

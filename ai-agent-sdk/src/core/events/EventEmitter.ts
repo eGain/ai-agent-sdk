@@ -20,7 +20,7 @@ type EventMap = Record<string, any>;
  * 
  * @example Creating a custom event emitter
  * ```typescript
- * import { EventEmitter } from "@eGain/ai-agent-sdk";
+ * import { EventEmitter } from "@egain/ai-agent-sdk";
  * 
  * interface MyEvents {
  *   data: { value: number };

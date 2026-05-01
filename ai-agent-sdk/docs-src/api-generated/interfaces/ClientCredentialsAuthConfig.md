@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / ClientCredentialsAuthConfig
+[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / ClientCredentialsAuthConfig
 
 # Interface: ClientCredentialsAuthConfig
 

@@ -33,17 +33,17 @@ npm run link
 
 **In your test project:**
 ```bash
-npm link @eGain/ai-agent-sdk
+npm link @egain/ai-agent-sdk
 ```
 
 Now you can import and use the SDK in your test project:
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 ```
 
 **When done testing, unlink:**
 ```bash
-npm unlink @eGain/ai-agent-sdk
+npm unlink @egain/ai-agent-sdk
 ```
 
 ### Option B: Local npm install
@@ -105,7 +105,7 @@ If any step fails, publishing will be aborted.
 
 ### npm link doesn't work
 - Make sure you ran `npm run link` in the SDK directory first
-- Check that the package name matches: `@eGain/ai-agent-sdk`
+- Check that the package name matches: `@egain/ai-agent-sdk`
 
 ### Example script fails
 - Make sure you've built the SDK: `npm run build`

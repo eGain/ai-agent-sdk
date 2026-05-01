@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / AgentEvents
+[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / AgentEvents
 
 # Interface: AgentEvents
 

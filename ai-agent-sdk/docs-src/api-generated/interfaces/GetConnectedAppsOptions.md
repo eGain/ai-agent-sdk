@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / GetConnectedAppsOptions
+[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / GetConnectedAppsOptions
 
 # Interface: GetConnectedAppsOptions
 

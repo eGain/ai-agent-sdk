@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Rewrite private SDK identifiers to public ones for docs synced to eGain/ai-agent-sdk.
+Rewrite private SDK identifiers to public ones for docs synced to egain/ai-agent-sdk.
 
 Env: PRIVATE_SDK_DOCS_BASE / PUBLIC_SDK_DOCS_BASE (optional) rewrite internal vs public
 GitHub Pages URLs (e.g. README links).
@@ -39,11 +39,11 @@ _BUILT_TEXT_SUFFIXES = frozenset(
 
 def replacements_from_env() -> list[tuple[str, str]]:
     private_package = os.environ.get("PRIVATE_SDK_PACKAGE", "@eGainDev/ai-agent-sdk")
-    public_package = os.environ.get("PUBLIC_SDK_PACKAGE", "@eGain/ai-agent-sdk")
+    public_package = os.environ.get("PUBLIC_SDK_PACKAGE", "@egain/ai-agent-sdk")
     private_scope = os.environ.get("PRIVATE_SDK_SCOPE", "@eGainDev")
-    public_scope = os.environ.get("PUBLIC_SDK_SCOPE", "@eGain")
+    public_scope = os.environ.get("PUBLIC_SDK_SCOPE", "@egain")
     private_repo = os.environ.get("PRIVATE_SDK_REPO", "https://github.com/eGainDev/ai-agent")
-    public_repo = os.environ.get("PUBLIC_SDK_REPO", "https://github.com/eGain/ai-agent-sdk")
+    public_repo = os.environ.get("PUBLIC_SDK_REPO", "https://github.com/egain/ai-agent-sdk")
     public_git_revision = os.environ.get("PUBLIC_SDK_DOCS_GIT_REVISION", "master")
     private_docs_base = os.environ.get(
         "PRIVATE_SDK_DOCS_BASE", "https://silver-adventure-o37mv53.pages.github.io"

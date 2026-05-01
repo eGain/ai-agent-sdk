@@ -31,6 +31,6 @@
     "includeGroups": true
   },
   "gitRevision": "master",
-  "name": "@eGain/ai-agent-sdk API Reference",
+  "name": "@egain/ai-agent-sdk API Reference",
   "includeVersion": true
 }

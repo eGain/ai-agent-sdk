@@ -15,7 +15,7 @@ Transcript is enabled by default and automatically captures:
 Access the transcript through the agent instance:
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",

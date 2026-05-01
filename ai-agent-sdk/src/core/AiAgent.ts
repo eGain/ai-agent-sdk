@@ -458,7 +458,7 @@ const PIPELINE_PROFILES_CACHE_KEY_PREFIX = 'eg_profiles_';
  *
  * @example Direct flow (typical non–Contact Center agent)
  * ```typescript
- * import { AiAgent } from "@eGain/ai-agent-sdk";
+ * import { AiAgent } from "@egain/ai-agent-sdk";
  *
  * const agent = new AiAgent({
  *   id: "agent-id",
@@ -495,7 +495,7 @@ const PIPELINE_PROFILES_CACHE_KEY_PREFIX = 'eg_profiles_';
  *
  * @example With context
  * ```typescript
- * import { AiAgent, createContextMessage } from "@eGain/ai-agent-sdk";
+ * import { AiAgent, createContextMessage } from "@egain/ai-agent-sdk";
  *
  * await agent.send(createContextMessage({
  *   context: { userId: "123", accountType: "premium" },

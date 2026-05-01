@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / QueuedMessage
+[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / QueuedMessage
 
 # Interface: QueuedMessage
 

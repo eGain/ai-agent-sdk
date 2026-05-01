@@ -14,7 +14,7 @@ This guide walks you through creating your first AI Agent integration in under 5
 mkdir my-ai-agent-app
 cd my-ai-agent-app
 npm init -y
-npm install @eGain/ai-agent-sdk
+npm install @egain/ai-agent-sdk
 ```
 
 ## Step 2: Basic Integration
@@ -22,7 +22,7 @@ npm install @eGain/ai-agent-sdk
 Create `index.ts`:
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 async function main() {
   // 1. Create the agent
@@ -96,7 +96,7 @@ You should see:
 Provide context to personalize the conversation:
 
 ```typescript
-import { AiAgent, createContextMessage } from "@eGain/ai-agent-sdk";
+import { AiAgent, createContextMessage } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",

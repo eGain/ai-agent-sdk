@@ -1,4 +1,4 @@
-[@eGain/ai-agent-sdk API Reference - v0.1.0](../README.md) / AiAgent
+[@egain/ai-agent-sdk API Reference - v0.1.0](../README.md) / AiAgent
 
 # Class: AiAgent
 
@@ -37,7 +37,7 @@ When the CC pipeline has multiple options at a step, it emits `portalsAvailable`
 **`Example`**
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",
@@ -76,7 +76,7 @@ await agent.initialize();
 **`Example`**
 
 ```typescript
-import { AiAgent, createContextMessage } from "@eGain/ai-agent-sdk";
+import { AiAgent, createContextMessage } from "@egain/ai-agent-sdk";
 
 await agent.send(createContextMessage({
   context: { userId: "123", accountType: "premium" },

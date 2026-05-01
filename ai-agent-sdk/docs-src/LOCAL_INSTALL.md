@@ -21,17 +21,17 @@ npm link
 ### Step 3: Use in your project
 ```bash
 cd /path/to/your/project
-npm link @eGain/ai-agent-sdk
+npm link @egain/ai-agent-sdk
 ```
 
 ### Step 4: Use in your code
 ```javascript
-import { AiAgent } from '@eGain/ai-agent-sdk';
+import { AiAgent } from '@egain/ai-agent-sdk';
 ```
 
 ### To unlink:
 ```bash
-npm unlink @eGain/ai-agent-sdk
+npm unlink @egain/ai-agent-sdk
 ```
 
 **Pros:**
@@ -67,7 +67,7 @@ npm install ../aiagent-sdk
 
 ### Step 3: Use in your code
 ```javascript
-import { AiAgent } from '@eGain/ai-agent-sdk';
+import { AiAgent } from '@egain/ai-agent-sdk';
 ```
 
 **Pros:**
@@ -125,7 +125,7 @@ Add the SDK as a dependency using the `file:` protocol.
 ```json
 {
   "dependencies": {
-    "@eGain/ai-agent-sdk": "file:../aiagent-sdk"
+    "@egain/ai-agent-sdk": "file:../aiagent-sdk"
   }
 }
 ```
@@ -156,7 +156,7 @@ npm run build
 npm run link
 
 # In your test project
-npm link @eGain/ai-agent-sdk
+npm link @egain/ai-agent-sdk
 ```
 
 ---
@@ -167,7 +167,7 @@ After installing, test it works:
 
 ```javascript
 // test.js
-import { AiAgent } from '@eGain/ai-agent-sdk';
+import { AiAgent } from '@egain/ai-agent-sdk';
 
 console.log('SDK imported successfully!');
 
@@ -190,14 +190,14 @@ node test.js
 
 ## Troubleshooting
 
-### "Cannot find module '@eGain/ai-agent-sdk'"
+### "Cannot find module '@egain/ai-agent-sdk'"
 - Make sure you ran `npm link` in the SDK directory first
-- Verify `npm link @eGain/ai-agent-sdk` ran successfully in your project
+- Verify `npm link @egain/ai-agent-sdk` ran successfully in your project
 - Check that `dist/` folder exists and has been built
 
 ### "Module not found" errors
 - Rebuild the SDK: `npm run build`
-- Reinstall: `npm unlink @eGain/ai-agent-sdk && npm link @eGain/ai-agent-sdk`
+- Reinstall: `npm unlink @egain/ai-agent-sdk && npm link @egain/ai-agent-sdk`
 
 ### TypeScript errors
 - Make sure `dist/index.d.ts` exists
@@ -222,7 +222,7 @@ For active development:
 
 2. **Test project:**
    ```bash
-   npm link @eGain/ai-agent-sdk
+   npm link @egain/ai-agent-sdk
    ```
 
 3. **During development:**
@@ -232,6 +232,6 @@ For active development:
 
 4. **When done:**
    ```bash
-   npm unlink @eGain/ai-agent-sdk
+   npm unlink @egain/ai-agent-sdk
    ```
 

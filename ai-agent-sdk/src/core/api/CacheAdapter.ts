@@ -52,7 +52,7 @@
  * Implement your own cache adapter for custom storage backends (Redis, IndexedDB, etc.):
  * 
  * ```typescript
- * import { CacheAdapter, CacheEntry } from "@eGain/ai-agent-sdk";
+ * import { CacheAdapter, CacheEntry } from "@egain/ai-agent-sdk";
  * 
  * class RedisCacheAdapter implements CacheAdapter {
  *   get<T>(key: string): CacheEntry<T> | null {

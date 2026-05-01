@@ -70,7 +70,7 @@ cd test-sdk-project
 npm init -y
 
 # Link the SDK
-npm link @eGain/ai-agent-sdk
+npm link @egain/ai-agent-sdk
 
 # Install WebSocket for Node.js (if needed)
 npm install ws
@@ -79,7 +79,7 @@ npm install ws
 ### Create a test file (`test.js`):
 ```javascript
 // WebSocket polyfill is automatically loaded by the SDK
-import { AiAgent } from '@eGain/ai-agent-sdk';
+import { AiAgent } from '@egain/ai-agent-sdk';
 
 const agent = new AiAgent({
   id: 'your-agent-id',
@@ -109,7 +109,7 @@ node test.js
 
 ### When done testing, unlink:
 ```bash
-npm unlink @eGain/ai-agent-sdk
+npm unlink @egain/ai-agent-sdk
 ```
 
 ## Step 6: Test in Browser

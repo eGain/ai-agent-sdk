@@ -38,7 +38,7 @@ The SDK provides helper functions for creating different message types:
 ### Customer Message
 
 ```typescript
-import { createAgentMessage } from "@eGain/ai-agent-sdk";
+import { createAgentMessage } from "@egain/ai-agent-sdk";
 
 await agent.send(createAgentMessage({
   content: "I need help",
@@ -52,7 +52,7 @@ await agent.send(createAgentMessage({
 Provide context to the agent (automatically cached):
 
 ```typescript
-import { createContextMessage } from "@eGain/ai-agent-sdk";
+import { createContextMessage } from "@egain/ai-agent-sdk";
 
 await agent.send(createContextMessage({
   context: {
@@ -73,7 +73,7 @@ await agent.restartConnection();
 Send user feedback on agent responses:
 
 ```typescript
-import { createFeedbackMessage } from "@eGain/ai-agent-sdk";
+import { createFeedbackMessage } from "@egain/ai-agent-sdk";
 
 await agent.send(createFeedbackMessage({
   rating: 5,
@@ -86,7 +86,7 @@ await agent.send(createFeedbackMessage({
 Trigger escalation to human agent:
 
 ```typescript
-import { createEscalationMessage } from "@eGain/ai-agent-sdk";
+import { createEscalationMessage } from "@egain/ai-agent-sdk";
 
 await agent.send(createEscalationMessage({
   escalationEvent: {
@@ -235,7 +235,7 @@ const agent = new AiAgent({
 Add custom processing logic:
 
 ```typescript
-import { BaseMessageHandler, Message } from "@eGain/ai-agent-sdk";
+import { BaseMessageHandler, Message } from "@egain/ai-agent-sdk";
 
 class CustomHandler extends BaseMessageHandler {
   async handle(message: Message) {

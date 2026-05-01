@@ -1,6 +1,6 @@
 # Testing Guide
 
-This guide explains how to test the `@eGain/ai-agent-sdk` SDK before publishing.
+This guide explains how to test the `@egain/ai-agent-sdk` SDK before publishing.
 
 ## Prerequisites
 
@@ -89,13 +89,13 @@ npm run link
 2. **In your test project**, link to the local SDK:
 
 ```bash
-npm link @eGain/ai-agent-sdk
+npm link @egain/ai-agent-sdk
 ```
 
 3. **Use the SDK** in your test project:
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",
@@ -108,7 +108,7 @@ const agent = new AiAgent({
 4. **Unlink when done**:
 
 ```bash
-npm unlink @eGain/ai-agent-sdk
+npm unlink @egain/ai-agent-sdk
 ```
 
 ### Testing with Local npm Install
@@ -159,7 +159,7 @@ Before publishing to npm, ensure:
 2. The SDK automatically loads the WebSocket polyfill:
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 // WebSocket is automatically polyfilled by the SDK
 ```

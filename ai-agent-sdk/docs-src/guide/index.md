@@ -1,6 +1,6 @@
 # Introduction
 
-Welcome to the **@eGain/ai-agent-sdk** documentation. This SDK provides a production-ready interface for interacting with eGain's AI Agent platform.
+Welcome to the **@egain/ai-agent-sdk** documentation. This SDK provides a production-ready interface for interacting with eGain's AI Agent platform.
 
 ## What is AI Agent SDK?
 
@@ -19,7 +19,7 @@ The AI Agent SDK is a TypeScript-first JavaScript library that enables seamless 
 The main interface for interacting with the AI platform. An agent represents a connection to a specific AI service with its own configuration, authentication, and session.
 
 ```typescript
-import { AiAgent } from "@eGain/ai-agent-sdk";
+import { AiAgent } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "your-agent-id",
@@ -58,7 +58,7 @@ await agent.send({
 });
 
 // Context message
-import { createContextMessage } from "@eGain/ai-agent-sdk";
+import { createContextMessage } from "@egain/ai-agent-sdk";
 await agent.send(createContextMessage({
   context: { userId: "123", language: "en" }
 }));

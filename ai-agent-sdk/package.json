@@ -42,9 +42,12 @@
     "docs:api": "typedoc",
     "docs": "npm run docs:api && npm run docs:build"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eGain/ai-agent-sdk.git"
+    "url": "https://github.com/egain/ai-agent-sdk.git"
   },
   "keywords": [
     "egain",

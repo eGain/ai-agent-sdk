@@ -5,7 +5,7 @@ Context allows you to provide additional information about the user or session t
 ## Sending Context
 
 ```typescript
-import { AiAgent, createContextMessage } from "@eGain/ai-agent-sdk";
+import { AiAgent, createContextMessage } from "@egain/ai-agent-sdk";
 
 const agent = new AiAgent({
   id: "agent-id",
