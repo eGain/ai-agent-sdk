@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-06-04
+
+### Documentation
+
+- Added instructions for generating an access token (PKCE flow) as a prerequisite for the pre-auth authentication option, including required OAuth scopes (`core.aiservices.read`, `knowledge.portalmgr.manage`, `core.customermgr.read`)
+- Updated README, Quick Start guide, and Authentication guide
+
 ## [0.1.0] - 2026-04-30 & [0.1.1] - 2026-05-01
 
 ### First beta release of the AI Agent SDK

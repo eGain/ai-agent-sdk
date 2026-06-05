@@ -36,7 +36,14 @@ Anonymous authentication should only be used for public-facing agents. The agent
 
 ## Pre-Auth Authentication
 
-The most common authentication method. Use for API keys, static tokens, or server-provided JWTs:
+The most common authentication method. Use for API keys, static tokens, or server-provided JWTs.
+
+To generate an access token, follow the instructions for [Generating An Access Token using PKCE Flow](https://apidev.egain.com/developer-portal/guides/authentication/pkce-flow).
+
+**Required scopes:**
+- `core.aiservices.read`
+- `knowledge.portalmgr.manage`
+- `core.customermgr.read` _(required for AI Agent for Customer Self Service only)_
 
 ```typescript
 import { AiAgent } from "@egain/ai-agent-sdk";

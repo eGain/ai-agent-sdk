@@ -19,6 +19,13 @@ npm install @egain/ai-agent-sdk
 
 ## Step 2: Basic Integration
 
+The example below uses the **pre-auth** option — your server obtains an access token and passes it to the SDK. To generate one, follow the instructions for [Generating An Access Token using PKCE Flow](https://apidev.egain.com/developer-portal/guides/authentication/pkce-flow). 
+
+**Required scopes:**
+- `core.aiservices.read`
+- `knowledge.portalmgr.manage`
+- `core.customermgr.read` _(required for AI Agent for Customer Self Service only)_
+
 Create `index.ts`:
 
 ```typescript

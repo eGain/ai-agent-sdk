@@ -2,7 +2,7 @@
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
-**Current release:** v0.0.14
+**Current release:** v0.1.2
 
 [![npm version](https://img.shields.io/npm/v/@egain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@egain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -28,6 +28,17 @@ npm install @egain/ai-agent-sdk
 ```
 
 ## Quick Start
+
+The sample below uses the **pre-auth** option, where your server obtains an access token and passes it directly to the SDK. Before running it, generate an access token using the PKCE flow:
+
+### [Generating An Access Token using PKCE Flow](https://apidev.egain.com/developer-portal/guides/authentication/pkce-flow)
+
+**Required scopes:**
+- `core.aiservices.read`
+- `knowledge.portalmgr.manage`
+- `core.customermgr.read` _(required for AI Agent for Customer Self Service only)_
+
+### Sample Code
 
 ```typescript
 import { AiAgent } from "@egain/ai-agent-sdk";

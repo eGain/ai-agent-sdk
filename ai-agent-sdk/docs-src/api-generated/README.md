@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.1.1
+# @egain/ai-agent-sdk API Reference - v0.1.2
 
 # @egain/ai-agent-sdk
 
@@ -15,6 +15,13 @@ TypeScript-first SDK for eGain's AI Agent platform.
 - 🛡️ Comprehensive error handling
 
 ## Quick Start
+
+The example below uses the **pre-auth** option — your server obtains an access token and passes it to the SDK. To generate one, follow the instructions for [Generating An Access Token using PKCE Flow](https://apidev.egain.com/developer-portal/guides/authentication/pkce-flow).
+
+**Required scopes:**
+- `core.aiservices.read`
+- `knowledge.portalmgr.manage`
+- `core.customermgr.read` *(required for AI Agent for Customer Self Service only)*
 
 ```typescript
 import { AiAgent } from "@egain/ai-agent-sdk";
