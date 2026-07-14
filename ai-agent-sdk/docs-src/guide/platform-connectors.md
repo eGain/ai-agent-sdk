@@ -47,7 +47,11 @@ The SDK provides a live implementation of **`HookContract`**. Connectors use it 
 
 ### Read-only getters
 
-Examples include: `getTranscript`, `getInitParams`, `getAgentDetails`, `getMsalAccessToken`, `getDeploymentInfo`, `getPlatformType`, `getEnvironment`, `getUserId`, `getUserContext`, `getConversationId`, `getAuthScopes`, `getTenantId`, `getSelectedPortal`, `getCallerInfo`.
+Examples include: `getTranscript`, `getInitParams`, `getQueryParams` (legacy alias for `getInitParams`, for older connectors such as Genesys), `getAgentDetails`, `getMsalAccessToken`, `getDeploymentInfo`, `getPlatformType`, `getEnvironment`, `getUserId`, `getUserContext`, `getConversationId`, `getAuthScopes`, `getTenantId`, `getSelectedPortal`, `getCallerInfo`.
+
+::: tip Legacy connectors
+Prefer **`getInitParams()`** in new connector code. **`getQueryParams()`** returns the same shallow copy of init params so existing connectors that still call the old name keep working.
+:::
 
 ### Mutators
 

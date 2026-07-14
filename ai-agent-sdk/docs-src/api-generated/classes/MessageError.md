@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.2](../README.md) / MessageError
+[@egain/ai-agent-sdk API Reference - v0.1.3](../README.md) / MessageError
 
 # Class: MessageError
 

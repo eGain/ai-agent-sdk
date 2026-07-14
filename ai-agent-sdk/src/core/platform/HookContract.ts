@@ -51,6 +51,12 @@ export interface HookContract {
   /** Returns a shallow copy of the initialization parameters. */
   getInitParams: () => Record<string, string>;
 
+  /**
+   * Legacy alias for {@link HookContract.getInitParams}.
+   * Existing platform connectors (e.g. Genesys) may still call this name.
+   */
+  getQueryParams: () => Record<string, string>;
+
   /** Returns the agent details object. */
   getAgentDetails: () => any;
 

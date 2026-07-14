@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.2](../README.md) / AiAgent
+[@egain/ai-agent-sdk API Reference - v0.1.3](../README.md) / AiAgent
 
 # Class: AiAgent
 
@@ -235,7 +235,7 @@ Promise resolving to the agent details
 
 #### Defined in
 
-[core/AiAgent.ts:1184](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1184)
+[core/AiAgent.ts:1185](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1185)
 
 ___
 
@@ -255,7 +255,7 @@ Promise resolving to the deployment information
 
 #### Defined in
 
-[core/AiAgent.ts:1233](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1233)
+[core/AiAgent.ts:1234](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1234)
 
 ___
 
@@ -284,7 +284,7 @@ if (agent.getIsInitialized()) {
 
 #### Defined in
 
-[core/AiAgent.ts:1339](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1339)
+[core/AiAgent.ts:1340](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1340)
 
 ___
 
@@ -319,7 +319,7 @@ if (state === ConnectionState.CONNECTED) {
 
 #### Defined in
 
-[core/AiAgent.ts:1359](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1359)
+[core/AiAgent.ts:1360](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1360)
 
 ___
 
@@ -347,7 +347,7 @@ if (agent.isConnected()) {
 
 #### Defined in
 
-[core/AiAgent.ts:1382](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1382)
+[core/AiAgent.ts:1383](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1383)
 
 ___
 
@@ -380,7 +380,7 @@ console.log("Connected!");
 
 #### Defined in
 
-[core/AiAgent.ts:1403](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1403)
+[core/AiAgent.ts:1404](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1404)
 
 ___
 
@@ -418,7 +418,7 @@ await agent.disconnect({ skipGracefulDisconnect: true });
 
 #### Defined in
 
-[core/AiAgent.ts:1461](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1461)
+[core/AiAgent.ts:1462](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1462)
 
 ___
 
@@ -453,7 +453,7 @@ agent.on('portalsAvailable', (e) => {
 
 #### Defined in
 
-[core/AiAgent.ts:1503](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1503)
+[core/AiAgent.ts:1504](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1504)
 
 ___
 
@@ -489,7 +489,7 @@ agent.on('agentsAvailable', (e) => {
 
 #### Defined in
 
-[core/AiAgent.ts:1525](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1525)
+[core/AiAgent.ts:1526](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1526)
 
 ___
 
@@ -524,7 +524,7 @@ agent.on('profilesAvailable', (e) => {
 
 #### Defined in
 
-[core/AiAgent.ts:1546](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1546)
+[core/AiAgent.ts:1547](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1547)
 
 ___
 
@@ -549,7 +549,7 @@ const userId = initParams.userid;
 
 #### Defined in
 
-[core/AiAgent.ts:1564](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1564)
+[core/AiAgent.ts:1565](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1565)
 
 ___
 
@@ -606,7 +606,7 @@ await agent.restartPortalInitializer();
 
 #### Defined in
 
-[core/AiAgent.ts:1609](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1609)
+[core/AiAgent.ts:1610](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1610)
 
 ___
 
@@ -624,7 +624,7 @@ Use [restartPortalInitializer](AiAgent.md#restartportalinitializer) instead.
 
 #### Defined in
 
-[core/AiAgent.ts:1654](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1654)
+[core/AiAgent.ts:1655](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1655)
 
 ___
 
@@ -685,7 +685,7 @@ await agent.updateUserProfile(profiles[2]);
 
 #### Defined in
 
-[core/AiAgent.ts:1692](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1692)
+[core/AiAgent.ts:1693](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1693)
 
 ___
 
@@ -734,7 +734,7 @@ await agent.send("Hello again!");
 
 #### Defined in
 
-[core/AiAgent.ts:1762](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1762)
+[core/AiAgent.ts:1763](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1763)
 
 ___
 
@@ -764,7 +764,7 @@ Message ID
 
 #### Defined in
 
-[core/AiAgent.ts:1910](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1910)
+[core/AiAgent.ts:1911](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1911)
 
 ___
 
@@ -780,7 +780,7 @@ Get the current queue size
 
 #### Defined in
 
-[core/AiAgent.ts:1987](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1987)
+[core/AiAgent.ts:1988](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1988)
 
 ___
 
@@ -796,7 +796,7 @@ Clear the message queue
 
 #### Defined in
 
-[core/AiAgent.ts:1994](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1994)
+[core/AiAgent.ts:1995](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L1995)
 
 ___
 
@@ -820,7 +820,7 @@ Array of transcript entries with Message objects
 
 #### Defined in
 
-[core/AiAgent.ts:2003](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2003)
+[core/AiAgent.ts:2004](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2004)
 
 ___
 
@@ -844,7 +844,7 @@ Array of plain objects representing transcript entries
 
 #### Defined in
 
-[core/AiAgent.ts:2012](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2012)
+[core/AiAgent.ts:2013](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2013)
 
 ___
 
@@ -862,7 +862,7 @@ Number of transcript entries
 
 #### Defined in
 
-[core/AiAgent.ts:2020](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2020)
+[core/AiAgent.ts:2021](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2021)
 
 ___
 
@@ -878,7 +878,7 @@ Clear all transcript entries
 
 #### Defined in
 
-[core/AiAgent.ts:2027](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2027)
+[core/AiAgent.ts:2028](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2028)
 
 ___
 
@@ -901,7 +901,7 @@ A shallow copy of the call transcript entries
 
 #### Defined in
 
-[core/AiAgent.ts:2041](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2041)
+[core/AiAgent.ts:2042](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2042)
 
 ___
 
@@ -921,7 +921,7 @@ The caller info object, or null if not yet set
 
 #### Defined in
 
-[core/AiAgent.ts:2052](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2052)
+[core/AiAgent.ts:2053](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2053)
 
 ___
 
@@ -938,7 +938,7 @@ Available after the `initialized` event fires. Returns null if details could not
 
 #### Defined in
 
-[core/AiAgent.ts:2060](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2060)
+[core/AiAgent.ts:2061](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2061)
 
 ___
 
@@ -952,7 +952,7 @@ ___
 
 #### Defined in
 
-[core/AiAgent.ts:2064](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2064)
+[core/AiAgent.ts:2065](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2065)
 
 ___
 
@@ -968,7 +968,7 @@ Clear all call transcript entries.
 
 #### Defined in
 
-[core/AiAgent.ts:2071](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2071)
+[core/AiAgent.ts:2072](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2072)
 
 ___
 
@@ -987,7 +987,7 @@ The stored context object or null if no context is stored
 
 #### Defined in
 
-[core/AiAgent.ts:2142](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2142)
+[core/AiAgent.ts:2143](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2143)
 
 ___
 
@@ -1004,7 +1004,7 @@ Clears any previously stored context from the cache
 
 #### Defined in
 
-[core/AiAgent.ts:2155](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2155)
+[core/AiAgent.ts:2156](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2156)
 
 ___
 
@@ -1043,7 +1043,7 @@ await agent.setContext({ userId: "123", plan: "premium" }, { sendImmediately: tr
 
 #### Defined in
 
-[core/AiAgent.ts:2179](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2179)
+[core/AiAgent.ts:2180](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2180)
 
 ___
 
@@ -1067,7 +1067,7 @@ agent.resetContext();
 
 #### Defined in
 
-[core/AiAgent.ts:2200](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2200)
+[core/AiAgent.ts:2201](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2201)
 
 ___
 
@@ -1084,7 +1084,7 @@ Allows adding custom handlers
 
 #### Defined in
 
-[core/AiAgent.ts:2565](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2565)
+[core/AiAgent.ts:2566](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2566)
 
 ___
 
@@ -1115,7 +1115,7 @@ if (token) {
 
 #### Defined in
 
-[core/AiAgent.ts:2585](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2585)
+[core/AiAgent.ts:2586](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2586)
 
 ___
 
@@ -1151,7 +1151,7 @@ agent.on('tokenExpiring', async (event) => {
 
 #### Defined in
 
-[core/AiAgent.ts:2616](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2616)
+[core/AiAgent.ts:2617](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2617)
 
 ___
 
@@ -1191,7 +1191,7 @@ if (agent.isConnected()) {
 
 #### Defined in
 
-[core/AiAgent.ts:2644](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2644)
+[core/AiAgent.ts:2645](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L2645)
 
 ___
 

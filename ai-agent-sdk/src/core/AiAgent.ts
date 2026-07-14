@@ -878,6 +878,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     return {
       getTranscript: () => [...this.callTranscript],
       getInitParams: () => ({ ...this.initParams }),
+      getQueryParams: () => ({ ...this.initParams }),
       getAgentDetails: () => this.agentDetails,
       getMsalAccessToken: () => this.authService.getToken(),
       getDeploymentInfo: () => this.deploymentInfo,

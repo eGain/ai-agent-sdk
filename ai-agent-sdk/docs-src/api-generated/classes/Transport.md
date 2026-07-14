@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.2](../README.md) / Transport
+[@egain/ai-agent-sdk API Reference - v0.1.3](../README.md) / Transport
 
 # Class: Transport
 

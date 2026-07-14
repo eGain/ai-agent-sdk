@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.2](../README.md) / HookContract
+[@egain/ai-agent-sdk API Reference - v0.1.3](../README.md) / HookContract
 
 # Interface: HookContract
 
@@ -13,6 +13,7 @@ implementation closes over the `AiAgent` instance.
 
 - [getTranscript](HookContract.md#gettranscript)
 - [getInitParams](HookContract.md#getinitparams)
+- [getQueryParams](HookContract.md#getqueryparams)
 - [getAgentDetails](HookContract.md#getagentdetails)
 - [getMsalAccessToken](HookContract.md#getmsalaccesstoken)
 - [getDeploymentInfo](HookContract.md#getdeploymentinfo)
@@ -79,6 +80,27 @@ Returns a shallow copy of the initialization parameters.
 
 ___
 
+### getQueryParams
+
+• **getQueryParams**: () => `Record`\<`string`, `string`\>
+
+Legacy alias for [HookContract.getInitParams](HookContract.md#getinitparams).
+Existing platform connectors (e.g. Genesys) may still call this name.
+
+#### Type declaration
+
+▸ (): `Record`\<`string`, `string`\>
+
+##### Returns
+
+`Record`\<`string`, `string`\>
+
+#### Defined in
+
+[core/platform/HookContract.ts:58](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L58)
+
+___
+
 ### getAgentDetails
 
 • **getAgentDetails**: () => `any`
@@ -95,7 +117,7 @@ Returns the agent details object.
 
 #### Defined in
 
-[core/platform/HookContract.ts:55](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L55)
+[core/platform/HookContract.ts:61](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L61)
 
 ___
 
@@ -115,7 +137,7 @@ Returns the current MSAL/auth access token.
 
 #### Defined in
 
-[core/platform/HookContract.ts:58](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L58)
+[core/platform/HookContract.ts:64](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L64)
 
 ___
 
@@ -135,7 +157,7 @@ Returns the deployment info object.
 
 #### Defined in
 
-[core/platform/HookContract.ts:61](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L61)
+[core/platform/HookContract.ts:67](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L67)
 
 ___
 
@@ -155,7 +177,7 @@ Returns the platform type string (e.g. "genesys").
 
 #### Defined in
 
-[core/platform/HookContract.ts:64](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L64)
+[core/platform/HookContract.ts:70](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L70)
 
 ___
 
@@ -175,7 +197,7 @@ Returns the deployment environment ("dev" | "qa" | "prod").
 
 #### Defined in
 
-[core/platform/HookContract.ts:67](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L67)
+[core/platform/HookContract.ts:73](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L73)
 
 ___
 
@@ -195,7 +217,7 @@ Returns the user ID from init params.
 
 #### Defined in
 
-[core/platform/HookContract.ts:70](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L70)
+[core/platform/HookContract.ts:76](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L76)
 
 ___
 
@@ -215,7 +237,7 @@ Returns the user context object.
 
 #### Defined in
 
-[core/platform/HookContract.ts:73](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L73)
+[core/platform/HookContract.ts:79](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L79)
 
 ___
 
@@ -235,7 +257,7 @@ Returns the conversation ID set by the connector.
 
 #### Defined in
 
-[core/platform/HookContract.ts:76](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L76)
+[core/platform/HookContract.ts:82](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L82)
 
 ___
 
@@ -258,7 +280,7 @@ neither query nor config supplies scopes).
 
 #### Defined in
 
-[core/platform/HookContract.ts:84](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L84)
+[core/platform/HookContract.ts:90](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L90)
 
 ___
 
@@ -278,7 +300,7 @@ Returns the tenant ID from deployment info.
 
 #### Defined in
 
-[core/platform/HookContract.ts:87](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L87)
+[core/platform/HookContract.ts:93](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L93)
 
 ___
 
@@ -298,7 +320,7 @@ Returns the currently selected portal, or null before selection.
 
 #### Defined in
 
-[core/platform/HookContract.ts:90](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L90)
+[core/platform/HookContract.ts:96](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L96)
 
 ___
 
@@ -318,7 +340,7 @@ Returns the caller info set by the connector.
 
 #### Defined in
 
-[core/platform/HookContract.ts:93](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L93)
+[core/platform/HookContract.ts:99](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L99)
 
 ___
 
@@ -347,7 +369,7 @@ Add an entry to the call transcript (telephony conversation, not AI chat).
 
 #### Defined in
 
-[core/platform/HookContract.ts:98](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L98)
+[core/platform/HookContract.ts:104](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L104)
 
 ___
 
@@ -373,7 +395,7 @@ Set caller information (e.g. from CTI integration).
 
 #### Defined in
 
-[core/platform/HookContract.ts:101](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L101)
+[core/platform/HookContract.ts:107](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L107)
 
 ___
 
@@ -399,7 +421,7 @@ Mark the platform as authenticated.
 
 #### Defined in
 
-[core/platform/HookContract.ts:104](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L104)
+[core/platform/HookContract.ts:110](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L110)
 
 ___
 
@@ -425,7 +447,7 @@ Store a secondary platform-specific token.
 
 #### Defined in
 
-[core/platform/HookContract.ts:107](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L107)
+[core/platform/HookContract.ts:113](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L113)
 
 ___
 
@@ -451,7 +473,7 @@ Set the conversation/interaction ID.
 
 #### Defined in
 
-[core/platform/HookContract.ts:110](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L110)
+[core/platform/HookContract.ts:116](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L116)
 
 ___
 
@@ -477,7 +499,7 @@ Append to the user context (merge, not overwrite).
 
 #### Defined in
 
-[core/platform/HookContract.ts:113](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L113)
+[core/platform/HookContract.ts:119](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L119)
 
 ___
 
@@ -503,7 +525,7 @@ Set filter tags for portal content filtering.
 
 #### Defined in
 
-[core/platform/HookContract.ts:116](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L116)
+[core/platform/HookContract.ts:122](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L122)
 
 ___
 
@@ -535,7 +557,7 @@ Subscribe to agent widget actions. Returns an unsubscribe function.
 
 #### Defined in
 
-[core/platform/HookContract.ts:121](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L121)
+[core/platform/HookContract.ts:127](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L127)
 
 ___
 
@@ -561,7 +583,7 @@ Forward a user message through the SDK's send pipeline.
 
 #### Defined in
 
-[core/platform/HookContract.ts:126](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L126)
+[core/platform/HookContract.ts:132](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L132)
 
 ___
 
@@ -590,7 +612,7 @@ Handle a source click from the connector.
 
 #### Defined in
 
-[core/platform/HookContract.ts:129](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L129)
+[core/platform/HookContract.ts:135](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L135)
 
 ___
 
@@ -619,4 +641,4 @@ Handle an intent confirmation from the connector.
 
 #### Defined in
 
-[core/platform/HookContract.ts:132](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L132)
+[core/platform/HookContract.ts:138](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/platform/HookContract.ts#L138)
