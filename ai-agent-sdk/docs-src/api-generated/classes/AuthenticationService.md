@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.3](../README.md) / AuthenticationService
+[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / AuthenticationService
 
 # Class: AuthenticationService
 
@@ -21,6 +21,7 @@ All authentication strategies must implement this interface
 - [getDomain](AuthenticationService.md#getdomain)
 - [authenticate](AuthenticationService.md#authenticate)
 - [getToken](AuthenticationService.md#gettoken)
+- [getCachedToken](AuthenticationService.md#getcachedtoken)
 - [cleanup](AuthenticationService.md#cleanup)
 - [getAuthenticationType](AuthenticationService.md#getauthenticationtype)
 - [getIsInitialized](AuthenticationService.md#getisinitialized)
@@ -51,7 +52,7 @@ All authentication strategies must implement this interface
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:159](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L159)
+[core/auth/AuthenticationService.ts:160](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L160)
 
 ## Methods
 
@@ -78,7 +79,7 @@ Delegates to the selected strategy
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:309](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L309)
+[core/auth/AuthenticationService.ts:310](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L310)
 
 ___
 
@@ -98,7 +99,7 @@ Get the domain for authentication
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:365](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L365)
+[core/auth/AuthenticationService.ts:366](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L366)
 
 ___
 
@@ -118,7 +119,7 @@ Authenticate using the selected strategy
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:372](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L372)
+[core/auth/AuthenticationService.ts:373](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L373)
 
 ___
 
@@ -138,7 +139,24 @@ Get the authentication token from the selected strategy
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:387](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L387)
+[core/auth/AuthenticationService.ts:388](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L388)
+
+___
+
+### getCachedToken
+
+▸ **getCachedToken**(): ``null`` \| `string`
+
+Return the last token from [getToken](AuthenticationService.md#gettoken) without refreshing.
+Used by platform connectors that expect a sync token (cc-widget parity).
+
+#### Returns
+
+``null`` \| `string`
+
+#### Defined in
+
+[core/auth/AuthenticationService.ts:404](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L404)
 
 ___
 
@@ -158,7 +176,7 @@ Cleanup resources from the selected strategy
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:401](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L401)
+[core/auth/AuthenticationService.ts:411](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L411)
 
 ___
 
@@ -174,7 +192,7 @@ Get the current authentication type
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:413](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L413)
+[core/auth/AuthenticationService.ts:424](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L424)
 
 ___
 
@@ -190,7 +208,7 @@ Check if the service is initialized
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:420](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L420)
+[core/auth/AuthenticationService.ts:431](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L431)
 
 ___
 
@@ -208,7 +226,7 @@ The underlying AuthStrategy instance
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:428](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L428)
+[core/auth/AuthenticationService.ts:439](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L439)
 
 ___
 
@@ -226,7 +244,7 @@ True if the current strategy is anonymous, false otherwise
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:436](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L436)
+[core/auth/AuthenticationService.ts:447](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L447)
 
 ___
 
@@ -244,7 +262,7 @@ True if the current strategy is PKCE, false otherwise
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:444](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L444)
+[core/auth/AuthenticationService.ts:455](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L455)
 
 ___
 
@@ -271,7 +289,7 @@ AuthError if the underlying strategy doesn't support token updates
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:454](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L454)
+[core/auth/AuthenticationService.ts:465](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L465)
 
 ___
 
@@ -294,7 +312,7 @@ Only supported for PreAuthStrategy
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:475](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L475)
+[core/auth/AuthenticationService.ts:486](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L486)
 
 ___
 
@@ -320,4 +338,4 @@ True if strategy was switched, false if it was already PKCE or not anonymous
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:496](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L496)
+[core/auth/AuthenticationService.ts:507](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L507)

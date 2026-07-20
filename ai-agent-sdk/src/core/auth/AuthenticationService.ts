@@ -155,6 +155,7 @@ export class AuthenticationService implements AuthStrategy {
   private domain?: string;
   private logger: Logger;
   private cacheConfig?: AuthServiceCacheConfig;
+  private cachedAccessToken: string | null = null;
 
   constructor(private readonly input?: AuthenticationInput, logger?: Logger, cacheConfig?: AuthServiceCacheConfig) {
     this.logger = logger ?? globalLogger;
@@ -387,12 +388,21 @@ export class AuthenticationService implements AuthStrategy {
   async getToken(): Promise<string | null> {
     this.logger.debug('Getting authentication token', { authenticationType: this.authenticationType });
     const token = await this.strategy.getToken();
+    this.cachedAccessToken = token;
     if (token) {
       this.logger.debug('Token retrieved successfully', { authenticationType: this.authenticationType, tokenLength: token.length });
     } else {
       this.logger.warn('Token is null', { authenticationType: this.authenticationType });
     }
     return token;
+  }
+
+  /**
+   * Return the last token from {@link getToken} without refreshing.
+   * Used by platform connectors that expect a sync token (cc-widget parity).
+   */
+  getCachedToken(): string | null {
+    return this.cachedAccessToken;
   }
 
   /**
@@ -403,6 +413,7 @@ export class AuthenticationService implements AuthStrategy {
     if (this.strategy.cleanup) {
       await this.strategy.cleanup();
     }
+    this.cachedAccessToken = null;
     this.isInitialized = false;
     this.logger.debug('AuthenticationService cleaned up', { authenticationType: this.authenticationType });
   }
@@ -518,6 +529,7 @@ export class AuthenticationService implements AuthStrategy {
     
     // Reset initialization flag since we're switching strategies
     this.isInitialized = false;
+    this.cachedAccessToken = null;
     
     // Store postAuthentication callback if provided
     if (postAuthentication) {

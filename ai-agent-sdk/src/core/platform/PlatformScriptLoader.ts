@@ -52,10 +52,12 @@ export function deriveEnvironment(domain?: string, explicitEnv?: string): string
 
 /**
  * Construct the connector script URL for a given platform and environment.
+ * Platform `test` maps to the standalone connector.
  */
 export function buildPlatformScriptUrl(platform: string, environment: string): string {
+  const connectorPlatform = platform === 'test' ? 'standalone' : platform;
   const baseUrl = ENV_BASE_URLS[environment] ?? ENV_BASE_URLS.prod;
-  return `${baseUrl}ai-agent-connector-${platform}/web/static/connector-ai-agent.js`;
+  return `${baseUrl}ai-agent-connector-${connectorPlatform}/web/static/connector-ai-agent.js`;
 }
 
 /**

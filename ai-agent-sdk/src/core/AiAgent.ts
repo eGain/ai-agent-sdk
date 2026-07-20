@@ -19,7 +19,7 @@ import { PortalInitializer } from './portal-initializer/PortalInitializer.js';
 import type { Portal, UserProfile, AgentListItem } from './types/PortalTypes.js';
 import type { HookContract, CallerInfo, CallTranscriptEntry } from './platform/HookContract.js';
 import type { PlatformComponentService } from './platform/PlatformComponentService.js';
-import { loadPlatformScript, deriveEnvironment, buildPlatformScriptUrl } from './platform/PlatformScriptLoader.js';
+import { loadPlatformScript, deriveEnvironment } from './platform/PlatformScriptLoader.js';
 
 export type { UserDetails } from './api/ApiHelper.js';
 
@@ -777,16 +777,9 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         this.agentDetails = await this.fetchAgentDetails(accessToken);
       }
 
-      // Load platform connector script if applicable (before auth so scopes can be augmented)
-      const platform = this.initParams.platform?.toLowerCase();
-      const shouldLoadPlatformScript =
-        platform != null &&
-        platform !== 'standalone' &&
-        platform !== 'test' &&
-        /^[a-zA-Z]+$/.test(platform) &&
-        this.agentDetails?.agentType === 'contact-center';
-
-      if (shouldLoadPlatformScript) {
+      // Load platform connector script if platform is set (before auth so scopes can be augmented).
+      // Parity with cc-widget: includes standalone/test (test → standalone URL).
+      if (this.initParams.platform && this.agentDetails?.agentType === 'contact-center') {
         await this.loadAndInitializePlatform();
       }
 
@@ -880,11 +873,12 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       getInitParams: () => ({ ...this.initParams }),
       getQueryParams: () => ({ ...this.initParams }),
       getAgentDetails: () => this.agentDetails,
-      getMsalAccessToken: () => this.authService.getToken(),
+      getMsalAccessToken: () => { this.authService.getToken().catch(() => {}); return this.authService.getCachedToken(); },
+      getAccessToken: () => this.authService.getToken(),
       getDeploymentInfo: () => this.deploymentInfo,
       getPlatformType: () => this.initParams.platform ?? null,
       getEnvironment: () => deriveEnvironment(this.initParams.env),
-      getUserId: () => this.initParams.userid ?? this.initParams.userId ?? null,
+      getUserId: () => (this.userDetails?.id != null ? String(this.userDetails.id) : null),
       getUserContext: () => this.userContext,
       getConversationId: () => this.conversationId,
       getAuthScopes: () => this.getAuthScopesForFlow(),
@@ -944,7 +938,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
   /**
    * Load the platform connector script and wire up the HookContract.
-   * Called from initialize() when a non-standalone platform is detected.
+   * Called from initialize() when an alphabetic platform is set (incl. standalone/test).
    */
   private async loadAndInitializePlatform(): Promise<void> {
     const platform = this.initParams.platform!.toLowerCase();
@@ -1114,12 +1108,12 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   };
 
   /**
-   * Fetch user or customer details after authentication.
+   * Fetch user or customer details after authentication. This API will only be called if the agent is authenticated.
    * Determination: if userType is 'customer', fetches customer details; otherwise fetches user details.
    * Best-effort — logs a warning on failure but does not throw.
    */
   private async fetchUserOrCustomerDetails(accessToken: string): Promise<void> {
-    if (!this.apiHelper) return;
+    if (!this.apiHelper || !this.agentDetails?.isAuthenticated) return;
     try {
       const userType = this.agentDetails?.userType || 'user';
       this.userDetails = userType === 'customer'
@@ -2056,7 +2050,9 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
   /**
    * Returns the authenticated user's or customer's details fetched after authentication.
-   * Available after the `initialized` event fires. Returns null if details could not be fetched.
+   * Only fetched when `agentDetails.isAuthenticated` is true (otherwise remains null).
+   * Available after the `initialized` event fires. Returns null if details were not fetched
+   * or could not be fetched.
    */
   getUserDetails(): UserDetails | null {
     return this.userDetails;

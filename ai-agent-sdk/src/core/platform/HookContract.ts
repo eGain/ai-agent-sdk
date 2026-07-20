@@ -60,8 +60,14 @@ export interface HookContract {
   /** Returns the agent details object. */
   getAgentDetails: () => any;
 
-  /** Returns the current MSAL/auth access token. */
-  getMsalAccessToken: () => Promise<string | null>;
+  /** Returns the current MSAL/auth access token (cached; sync, cc-widget parity). */
+  getMsalAccessToken: () => string | null;
+
+  /**
+   * Returns a fresh access token, refreshing if the current one is expired.
+   * Prefer this over {@link getMsalAccessToken} when making API calls that require a guaranteed valid token.
+   */
+  getAccessToken: () => Promise<string | null>;
 
   /** Returns the deployment info object. */
   getDeploymentInfo: () => any;
@@ -72,7 +78,7 @@ export interface HookContract {
   /** Returns the deployment environment ("dev" | "qa" | "prod"). */
   getEnvironment: () => string;
 
-  /** Returns the user ID from init params. */
+  /** Returns the authenticated user/customer details id, or null if not yet fetched. */
   getUserId: () => string | null;
 
   /** Returns the user context object. */

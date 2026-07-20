@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-07-20
+
+### Added
+
+- `HookContract.getAccessToken()` — async method that returns a fresh token, refreshing if expired. Connectors that need a guaranteed valid token for API calls should prefer this over the sync `getMsalAccessToken()`
+
+### Changed
+
+- Platform connector script loads for any set `initParams.platform` when `agentType` is `contact-center`, including **`standalone`** and **`test`** (cc-widget parity). `test` resolves to the standalone connector URL
+- `HookContract.getMsalAccessToken()` is **synchronous** and returns the cached auth token (`AuthenticationService.getCachedToken()`), matching cc-widget connectors that do not `await`
+- `HookContract.getUserId()` returns the authenticated **user/customer details** `id` (from `getUserDetails` / `getCustomerDetails`), not `initParams.userid`
+
+### Fixed
+
+- Skip fetching user/customer details when the agent is not authenticated (`agentDetails.isAuthenticated` is false), avoiding unnecessary `getUserDetails` / `getCustomerDetails` API calls
+
 ## [0.1.3] - 2026-07-14
 
 ### Added

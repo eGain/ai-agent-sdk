@@ -59,6 +59,16 @@ describe('PlatformScriptLoader', () => {
       const url = buildPlatformScriptUrl('genesys', 'staging');
       expect(url).toBe('https://apps.egain.services/ai-agent-connector-genesys/web/static/connector-ai-agent.js');
     });
+
+    it('maps test platform to standalone connector (cc-widget parity)', () => {
+      const url = buildPlatformScriptUrl('test', 'prod');
+      expect(url).toBe('https://apps.egain.services/ai-agent-connector-standalone/web/static/connector-ai-agent.js');
+    });
+
+    it('uses standalone connector path for standalone platform', () => {
+      const url = buildPlatformScriptUrl('standalone', 'dev');
+      expect(url).toBe('https://dev-apps.egeng.info/ai-agent-connector-standalone/web/static/connector-ai-agent.js');
+    });
   });
 
   describe('loadPlatformScript (browser path)', () => {

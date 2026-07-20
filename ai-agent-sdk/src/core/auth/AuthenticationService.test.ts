@@ -191,6 +191,19 @@ describe('AuthenticationService', () => {
     });
   });
 
+  describe('getCachedToken', () => {
+    it('should return null before getToken is called', () => {
+      const service = new AuthenticationService();
+      expect(service.getCachedToken()).toBeNull();
+    });
+
+    it('should return the last token from getToken synchronously', async () => {
+      const service = new AuthenticationService();
+      await service.getToken();
+      expect(service.getCachedToken()).toBe('anonymous-token');
+    });
+  });
+
   describe('authenticate', () => {
     it('should call strategy authenticate', async () => {
       const mockStrategy = {

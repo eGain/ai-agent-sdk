@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.3](../README.md) / ChatHistoryHandler
+[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / ChatHistoryHandler
 
 # Class: ChatHistoryHandler
 

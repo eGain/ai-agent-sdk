@@ -8,10 +8,10 @@ Contact center integrations (e.g. Genesys, Amazon Connect) use a **platform conn
 
 ## Lifecycle
 
-1. After authentication, the SDK resolves a connector script URL (from `initParams.platform` + environment, or `AiAgentConfig.platformScriptUrl`).
+1. During `initialize()`, when `initParams.platform` is set and the agent is `contact-center`, the SDK resolves a connector script URL (from `initParams.platform` + environment, or `AiAgentConfig.platformScriptUrl`). This includes **`standalone`** and **`test`** (the latter maps to the standalone connector path).
 2. The script is injected in the browser (`<script>`) or dynamically imported in Node.
 3. The SDK expects `globalThis.PlatformComponentService` (or `window.PlatformComponentService`) to exist after load.
-4. The SDK calls **`initPlatform(hookContract)`** on that service, then runs the portal initialization pipeline as needed.
+4. The SDK wires **`HookContract`** (via `setHookContract` / `loadCustomHook` as available) so the connector can augment auth scopes before login, then continues authentication and the portal initialization pipeline as needed.
 
 Internal helpers (`PlatformScriptLoader`, `PortalInitializer`) are **not** exported from the package barrel; use the public types below when authoring connectors.
 
@@ -47,11 +47,19 @@ The SDK provides a live implementation of **`HookContract`**. Connectors use it 
 
 ### Read-only getters
 
-Examples include: `getTranscript`, `getInitParams`, `getQueryParams` (legacy alias for `getInitParams`, for older connectors such as Genesys), `getAgentDetails`, `getMsalAccessToken`, `getDeploymentInfo`, `getPlatformType`, `getEnvironment`, `getUserId`, `getUserContext`, `getConversationId`, `getAuthScopes`, `getTenantId`, `getSelectedPortal`, `getCallerInfo`.
+Examples include: `getTranscript`, `getInitParams`, `getQueryParams` (legacy alias for `getInitParams`, for older connectors such as Genesys), `getAgentDetails`, `getMsalAccessToken`, `getAccessToken`, `getDeploymentInfo`, `getPlatformType`, `getEnvironment`, `getUserId`, `getUserContext`, `getConversationId`, `getAuthScopes`, `getTenantId`, `getSelectedPortal`, `getCallerInfo`.
 
 ::: tip Legacy connectors
 Prefer **`getInitParams()`** in new connector code. **`getQueryParams()`** returns the same shallow copy of init params so existing connectors that still call the old name keep working.
 :::
+
+Notable getter semantics (cc-widget parity):
+
+| Getter | Behavior |
+|--------|----------|
+| `getMsalAccessToken()` | Returns `string \| null` **synchronously** — the last token cached after auth/`getToken()`. Do not treat it as a `Promise`. |
+| `getAccessToken()` | Returns `Promise<string \| null>` — refreshes the token if expired before returning. Prefer this when making API calls that require a guaranteed valid token. |
+| `getUserId()` | Returns the authenticated user/customer details `id` after that fetch completes, or `null` if unavailable. Not the query/init `userid` param. |
 
 ### Mutators
 
@@ -73,7 +81,7 @@ The SDK surfaces connector-driven updates as events on `AiAgent` (e.g. `callTran
 ## Configuration from the host app
 
 - **`platformScriptUrl`** — Load a specific script URL (local dev or custom hosting).
-- **`initParams.platform`** — Select connector family; combined with environment to build the default script URL inside the SDK.
+- **`initParams.platform`** — Select connector family; combined with environment to build the default script URL inside the SDK. Loaded for contact-center agents whenever set (including `standalone` / `test`).
 
 ## See also
 

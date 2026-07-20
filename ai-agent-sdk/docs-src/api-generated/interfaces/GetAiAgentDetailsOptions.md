@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.3](../README.md) / GetAiAgentDetailsOptions
+[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / GetAiAgentDetailsOptions
 
 # Interface: GetAiAgentDetailsOptions
 
