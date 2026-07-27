@@ -1,6 +1,6 @@
 {
   "name": "@egain/ai-agent-sdk",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "TypeScript SDK for eGain's AI Agent platform",
   "homepage": "https://egain.github.io/ai-agent-sdk",
   "type": "module",

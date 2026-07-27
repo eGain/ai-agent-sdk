@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryCacheAdapter } from '../api/CacheAdapter.js';
 import { PortalInitializer } from './PortalInitializer.js';
+import { InitializationPipelineError } from '../errors/SDKError.js';
 import type { Portal, UserProfile, AgentListItem } from '../types/PortalTypes.js';
 
 describe('PortalInitializer', () => {
@@ -68,6 +69,16 @@ describe('PortalInitializer', () => {
   function getEmittedEvent(type: string) {
     const call = mockEmit.mock.calls.find(([t]) => t === type);
     return call ? call[1] : undefined;
+  }
+
+  async function expectPipelineRejection(
+    run: () => void | Promise<void>,
+    pipelineCode: string
+  ) {
+    await expect(Promise.resolve().then(run)).rejects.toMatchObject({
+      pipelineCode,
+      name: 'InitializationPipelineError',
+    });
   }
 
   // ── Flow A: portal → profile → initialized ────────────────────────────
@@ -239,10 +250,10 @@ describe('PortalInitializer', () => {
       }));
     });
 
-    it('should throw when departmentId is missing in Flow B', async () => {
+    it('rejects with InitializationPipelineError when departmentId is missing in Flow B', async () => {
       const deps = { ...defaultDeps, isAgentSelectionMode: true, initParams: {}, agentDetails: undefined };
       const initializer = new PortalInitializer(deps);
-      await expect(initializer.start()).rejects.toThrow(/departmentId is required for Flow B/i);
+      await expectPipelineRejection(() => initializer.start(), 'DEPARTMENT_ID_REQUIRED');
     });
 
     it('should accept initParams.departmentId when agentDetails.departmentId is absent (fallback)', async () => {
@@ -258,6 +269,24 @@ describe('PortalInitializer', () => {
       await vi.waitFor(() => {
         expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
       });
+    });
+
+    it('rejects with InitializationPipelineError when no agents are available for the portal', async () => {
+      mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
+      mockApiHelper.getAgentsByPortal.mockResolvedValue([]);
+      const deps = { ...defaultDeps, ...flowBDepsBase };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+
+      await vi.waitFor(() => {
+        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+      });
+
+      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject({
+        pipelineCode: 'NO_AGENTS_FOR_PORTAL',
+      });
+      expect(mockEmit).not.toHaveBeenCalledWith('agentsAvailable', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
     });
   });
 
@@ -468,13 +497,13 @@ describe('PortalInitializer', () => {
   // ── Error: zero items ──────────────────────────────────────────────────
 
   describe('error on zero items', () => {
-    it('should throw when zero portals are returned', async () => {
+    it('rejects with InitializationPipelineError when zero portals are returned', async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([]);
 
       const initializer = new PortalInitializer(defaultDeps);
 
-      await expect(initializer.start()).rejects.toThrow(/no portals/i);
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      await expectPipelineRejection(() => initializer.start(), 'NO_PORTALS');
+      expect(mockEmit).not.toHaveBeenCalledWith("initialized", expect.anything());
     });
 
     it('should fetch user portals when agent has empty portals list (cc-widget parity)', async () => {
@@ -493,26 +522,26 @@ describe('PortalInitializer', () => {
       });
     });
 
-    it('should throw when zero agents are returned (Flow B)', async () => {
+    it('rejects when zero agents are returned on auto-select (Flow B)', async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getAgentsByPortal.mockResolvedValue([]);
 
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
 
-      await expect(initializer.start()).rejects.toThrow(/no.*agents/i);
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      await expectPipelineRejection(() => initializer.start(), 'NO_AGENTS_FOR_PORTAL');
+      expect(mockEmit).not.toHaveBeenCalledWith("initialized", expect.anything());
     });
 
-    it('should throw when portal details lack departmentId (Flow B)', async () => {
+    it('rejects when portal details lack departmentId (Flow B)', async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
-      mockApiHelper.getPortalDetails.mockResolvedValue({ id: 1, name: 'Portal A' });
+      mockApiHelper.getPortalDetails.mockResolvedValue({ id: 1, name: "Portal A" });
 
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
 
-      await expect(initializer.start()).rejects.toThrow(/department.*required for agent selection/i);
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      await expectPipelineRejection(() => initializer.start(), 'DEPARTMENT_ID_REQUIRED');
+      expect(mockEmit).not.toHaveBeenCalledWith("initialized", expect.anything());
       expect(mockApiHelper.getAgentsByPortal).not.toHaveBeenCalled();
     });
 
@@ -546,6 +575,68 @@ describe('PortalInitializer', () => {
         })
       );
       expect(event.payload.profile).toBeUndefined();
+    });
+
+    it("rejects when getMyPortals fails", async () => {
+      mockApiHelper.getMyPortals.mockRejectedValue(new Error("network"));
+      const initializer = new PortalInitializer(defaultDeps);
+      await expectPipelineRejection(() => initializer.start(), "PORTAL_FETCH_FAILED");
+    });
+
+    it("rejects when getPortalDetails fails after portal selection", async () => {
+      mockApiHelper.getPortalDetails.mockRejectedValue(new Error("404"));
+      const initializer = new PortalInitializer(defaultDeps);
+      await initializer.start();
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+      );
+      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject({
+        pipelineCode: "PORTAL_DETAILS_FAILED",
+      });
+    });
+
+    it("rejects when getUserProfiles fails", async () => {
+      mockApiHelper.getUserProfiles.mockRejectedValue(new Error("500"));
+      const initializer = new PortalInitializer(defaultDeps);
+      await initializer.start();
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+      );
+      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject({
+        pipelineCode: "PROFILE_FETCH_FAILED",
+      });
+    });
+
+    it("rejects when selectUserProfile fails", async () => {
+      mockApiHelper.selectUserProfile.mockRejectedValue(new Error("403"));
+      const initializer = new PortalInitializer(defaultDeps);
+      await initializer.start();
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+      );
+      await initializer.onPortalSelected(portalA);
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("profilesAvailable", expect.anything())
+      );
+      await expect(initializer.onProfileSelected(profileP)).rejects.toMatchObject({
+        pipelineCode: "PROFILE_PERSIST_FAILED",
+      });
+    });
+  });
+
+  describe("invalid selection", () => {
+    it("rejects with INVALID_SELECTION when portal is not in the available list", async () => {
+      const initializer = new PortalInitializer(defaultDeps);
+      await initializer.start();
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+      );
+      await expect(
+        initializer.onPortalSelected({ id: 999, name: "Unknown" })
+      ).rejects.toMatchObject({
+        pipelineCode: "INVALID_SELECTION",
+        stage: "portal",
+      });
     });
   });
 
@@ -637,10 +728,10 @@ describe('PortalInitializer', () => {
         expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
       });
       const callsBefore = mockApiHelper.getUserProfiles.mock.calls.length;
-      initializer.onPortalSelected({ id: 999, name: 'Unknown' });
-      await new Promise((r) => setTimeout(r, 40));
+      await expect(
+        initializer.onPortalSelected({ id: 999, name: 'Unknown' })
+      ).rejects.toBeInstanceOf(InitializationPipelineError);
       expect(mockApiHelper.getUserProfiles.mock.calls.length).toBe(callsBefore);
-      expect(mockLogger.error).toHaveBeenCalled();
     });
 
     it('should not advance when onAgentSelected uses unknown agent (Flow B)', async () => {
@@ -651,15 +742,15 @@ describe('PortalInitializer', () => {
       await vi.waitFor(() => {
         expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
       });
-      initializer.onPortalSelected(portalA);
+      await initializer.onPortalSelected(portalA);
       await vi.waitFor(() => {
         expect(mockEmit).toHaveBeenCalledWith('agentsAvailable', expect.anything());
       });
       const callsBefore = mockApiHelper.getUserProfiles.mock.calls.length;
-      initializer.onAgentSelected({ agentId: 'unknown', name: 'X' });
-      await new Promise((r) => setTimeout(r, 40));
+      await expect(
+        initializer.onAgentSelected({ agentId: 'unknown', name: 'X' })
+      ).rejects.toBeInstanceOf(InitializationPipelineError);
       expect(mockApiHelper.getUserProfiles.mock.calls.length).toBe(callsBefore);
-      expect(mockLogger.error).toHaveBeenCalled();
     });
 
     it('should not complete when onProfileSelected uses unknown profile', async () => {
@@ -668,14 +759,14 @@ describe('PortalInitializer', () => {
       await vi.waitFor(() => {
         expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
       });
-      initializer.onPortalSelected(portalA);
+      await initializer.onPortalSelected(portalA);
       await vi.waitFor(() => {
         expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
       });
-      initializer.onProfileSelected({ id: 999, name: 'Bad' });
-      await new Promise((r) => setTimeout(r, 40));
+      await expect(
+        initializer.onProfileSelected({ id: 999, name: 'Bad' })
+      ).rejects.toBeInstanceOf(InitializationPipelineError);
       expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
-      expect(mockLogger.error).toHaveBeenCalled();
     });
   });
 
@@ -1038,11 +1129,11 @@ describe('PortalInitializer', () => {
       expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith({ topic: ['auto'] });
     });
 
-    it('getPortalList error clears portal list (cc-widget callPortalWebhook parity)', async () => {
-      mockPcs.getPortalList = vi.fn().mockRejectedValue(new Error('hook error'));
+    it('getPortalList error clears portal list then emits NO_PORTALS (cc-widget callPortalWebhook parity)', async () => {
+      mockPcs.getPortalList = vi.fn().mockRejectedValue(new Error("hook error"));
       const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
       const initializer = new PortalInitializer(deps);
-      await expect(initializer.start()).rejects.toThrow(/no portals/i);
+      await expectPipelineRejection(() => initializer.start(), "NO_PORTALS");
     });
 
     it('pipeline works normally when platformComponentService is undefined', async () => {

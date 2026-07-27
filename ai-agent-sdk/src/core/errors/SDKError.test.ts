@@ -4,6 +4,8 @@ import {
   AuthError,
   ConnectionError,
   MessageError,
+  InitializationPipelineError,
+  InitializationPipelineErrorCode,
 } from './SDKError.js';
 
 describe('SDKError', () => {
@@ -57,6 +59,19 @@ describe('MessageError', () => {
     expect(error.message).toBe('Message failed');
     expect(error.name).toBe('MessageError');
     expect(error.code).toBe('MESSAGE_ERROR');
+  });
+});
+
+describe('InitializationPipelineError', () => {
+  it('should create InitializationPipelineError with pipeline code', () => {
+    const error = new InitializationPipelineError(
+      'No agents',
+      InitializationPipelineErrorCode.NO_AGENTS_FOR_PORTAL
+    );
+    expect(error.message).toBe('No agents');
+    expect(error.name).toBe('InitializationPipelineError');
+    expect(error.code).toBe('NO_AGENTS_FOR_PORTAL');
+    expect(error.pipelineCode).toBe('NO_AGENTS_FOR_PORTAL');
   });
 });
 

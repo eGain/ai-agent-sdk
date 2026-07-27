@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / MemoryCacheAdapter
+[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / MemoryCacheAdapter
 
 # Class: MemoryCacheAdapter
 

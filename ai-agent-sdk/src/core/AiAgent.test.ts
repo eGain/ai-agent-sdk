@@ -1576,7 +1576,7 @@ describe('AiAgent', () => {
         endpoint: mockEndpoint,
       });
 
-      const mockHandlePortalSelected = vi.fn();
+      const mockHandlePortalSelected = vi.fn().mockResolvedValue(undefined);
       (agent as any).portalInitializer = {
         onPortalSelected: mockHandlePortalSelected,
       };
@@ -1593,7 +1593,7 @@ describe('AiAgent', () => {
         endpoint: mockEndpoint,
       });
 
-      const mockHandleAgentSelected = vi.fn();
+      const mockHandleAgentSelected = vi.fn().mockResolvedValue(undefined);
       (agent as any).portalInitializer = {
         onAgentSelected: mockHandleAgentSelected,
       };
@@ -1610,7 +1610,7 @@ describe('AiAgent', () => {
         endpoint: mockEndpoint,
       });
 
-      const mockHandleProfileSelected = vi.fn();
+      const mockHandleProfileSelected = vi.fn().mockResolvedValue(undefined);
       (agent as any).portalInitializer = {
         onProfileSelected: mockHandleProfileSelected,
       };

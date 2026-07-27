@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-07-27
+
+### Added
+
+- `InitializationPipelineError` and `InitializationPipelineErrorCode` (`AUTH_TOKEN_REQUIRED`, `NO_PORTALS`, `PORTAL_FETCH_FAILED`, `PORTAL_DETAILS_FAILED`, `PROFILE_FETCH_FAILED`, `PROFILE_PERSIST_FAILED`, `NO_AGENTS_FOR_PORTAL`, `DEPARTMENT_ID_REQUIRED`, `INVALID_SELECTION`) — thrown when the CC portal pipeline fails; catch via `instanceof InitializationPipelineError` and branch on `pipelineCode` / `error.code`
+- `InitializationPipelineStage` on thrown errors (`stage` property) plus optional `portal` / `agent` context
+
+### Fixed
+
+- CC pipeline failures after `start()` or after `selectPortal()` / `selectAgent()` / `selectUserProfile()` were logged internally but not surfaced to consumers; hosts can `await` those calls and catch `InitializationPipelineError` instead of staying in a loading state
+
+### Changed
+
+- `selectPortal()`, `selectAgent()`, and `selectUserProfile()` return `Promise<void>` and reject with `InitializationPipelineError` on pipeline failure
+- `AiAgent` awaits `portalInitializer.start()` during CC init so auto-select failures reject `initialize()` when the pipeline fails before the first user gate
+- `getPortalDetails` API failures throw `PORTAL_DETAILS_FAILED` instead of being swallowed
+
 ## [0.1.4] - 2026-07-20
 
 ### Added
@@ -41,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.13] & [0.0.14] - 2026-04-XX
 
 ### Changed
+
 - README documentation links
 
 ## [0.0.12] - 2026-04-XX
@@ -68,6 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.11] - 2025-01-XX
 
 ### Added
+
 - Browser UMD build support with `./browser` export
 - Browser build script (`build:browser`) for standalone browser bundle
 - MSAL copy script for browser compatibility
@@ -76,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Publishing scripts for GitHub Packages
 
 ### Changed
+
 - Updated build process to include browser bundle generation
 - Enhanced package exports to support both Node.js and browser environments
 - Improved build scripts organization
@@ -83,39 +103,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.10] - 2025-01-XX
 
 ### Added
+
 - Browser build configuration
 - Rollup bundler integration for browser builds
 - Browser-specific exports in package.json
 
 ### Changed
+
 - Build process now generates both Node.js and browser bundles
 
 ## [0.0.9] - 2025-01-09
 
 ### Added
+
 - `transcriptUpdate` event - emitted whenever the transcript is updated (message sent or received)
   - Provides `TranscriptEntry` with message, direction, timestamp, sessionId, and agentId
   - Useful for tracking all message activity in real-time
 - GitHub Actions workflow for automated SDK documentation deployment
 
 ### Changed
+
 - Improved VitePress documentation site structure
 - Moved docs folder for better organization
 
 ## [0.0.8] - 2025-01-08
 
 ### Changed
+
 - Removed empty content attribute from message payload
 - Added 5ms delay in queue flushing for improved reliability
 - Cached anonymous token for better performance
 - Added partial initialization when agent details are fetched before init
 
 ### Fixed
+
 - Fixed test browser UMD build
 
 ## [0.0.7] - 2025-01-08
 
 ### Added
+
 - VitePress documentation site
 - Enhanced JSDoc comments throughout the codebase
 - TypeDoc configuration for API reference generation
@@ -125,37 +152,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `updateAccessToken()` method for runtime token updates
 
 ### Changed
+
 - Improved error messages for better debugging
 - Enhanced TypeScript type definitions
 - Updated documentation to use `pre-auth` instead of deprecated `token` auth type
 
 ### Fixed
+
 - Various bug fixes and stability improvements
 
 ## [0.0.6] - 2025-01-06
 
 ### Added
+
 - `restartConnection()` method for fresh sessions
 - Automatic context caching and restoration
 - `getContext()` and `removeContext()` methods
 - Transcript filtering options
 
 ### Changed
+
 - Improved reconnection logic with exponential backoff
 
 ## [0.0.5] - 2025-01-03
 
 ### Added
+
 - `ApiHelper` class for REST API interactions
 - Caching for API responses
 - `getAgentDetails()` and `getDeploymentInfo()` methods
 
 ### Changed
+
 - Refactored authentication to use `AuthenticationService`
 
 ## [0.0.4] - 2024-12-20
 
 ### Added
+
 - Multiple authentication strategies (Anonymous, PKCE, Pre-Auth, Client Credentials)
 - Message type helpers (`createContextMessage`, `createFeedbackMessage`, etc.)
 - Transcript management with filtering
@@ -163,6 +197,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.3] - 2024-12-15
 
 ### Added
+
 - Message queuing when offline
 - Automatic queue flushing on reconnect
 - `queueFlushed` event
@@ -170,6 +205,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.2] - 2024-12-10
 
 ### Added
+
 - WebSocket connection management
 - Automatic reconnection with exponential backoff
 - Event-driven architecture
@@ -178,6 +214,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.1] - 2024-12-01
 
 ### Added
+
 - Initial release
 - Basic WebSocket communication
 - Pre-auth token authentication

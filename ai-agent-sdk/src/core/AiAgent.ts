@@ -1074,7 +1074,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       },
     });
 
-    void this.portalInitializer.start();
+    await this.portalInitializer.start();
   }
 
   /**
@@ -1487,19 +1487,21 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @param portal - The selected portal
    * @throws Error if portal initializer is not active
    *
+   * @throws {@link InitializationPipelineError} when the portal step fails
+   *
    * @example
    * ```typescript
-   * agent.on('portalsAvailable', (e) => {
+   * agent.on('portalsAvailable', async (e) => {
    *   const portal = showPortalPicker(e.payload.portals);
-   *   agent.selectPortal(portal);
+   *   await agent.selectPortal(portal);
    * });
    * ```
    */
-  selectPortal(portal: Portal): void {
+  selectPortal(portal: Portal): Promise<void> {
     if (!this.portalInitializer) {
       throw new Error('selectPortal can only be called during portal initialization flow');
     }
-    this.portalInitializer.onPortalSelected(portal);
+    return this.portalInitializer.onPortalSelected(portal);
   }
 
   /**
@@ -1509,19 +1511,21 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @param agent - The selected agent
    * @throws Error if portal initializer is not active
    *
+   * @throws {@link InitializationPipelineError} when the agent step fails
+   *
    * @example
    * ```typescript
-   * agent.on('agentsAvailable', (e) => {
+   * agent.on('agentsAvailable', async (e) => {
    *   const selected = showAgentPicker(e.payload.agents);
-   *   agent.selectAgent(selected);
+   *   await agent.selectAgent(selected);
    * });
    * ```
    */
-  selectAgent(agent: AgentListItem): void {
+  selectAgent(agent: AgentListItem): Promise<void> {
     if (!this.portalInitializer) {
       throw new Error('selectAgent can only be called during portal initialization flow');
     }
-    this.portalInitializer.onAgentSelected(agent);
+    return this.portalInitializer.onAgentSelected(agent);
   }
 
   /**
@@ -1530,19 +1534,21 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @param profile - The selected profile
    * @throws Error if portal initializer is not active
    *
+   * @throws {@link InitializationPipelineError} when the profile step fails
+   *
    * @example
    * ```typescript
-   * agent.on('profilesAvailable', (e) => {
+   * agent.on('profilesAvailable', async (e) => {
    *   const profile = showProfilePicker(e.payload.profiles);
-   *   agent.selectUserProfile(profile);
+   *   await agent.selectUserProfile(profile);
    * });
    * ```
    */
-  selectUserProfile(profile: UserProfile): void {
+  selectUserProfile(profile: UserProfile): Promise<void> {
     if (!this.portalInitializer) {
       throw new Error('selectUserProfile can only be called during portal initialization flow');
     }
-    this.portalInitializer.onProfileSelected(profile);
+    return this.portalInitializer.onProfileSelected(profile);
   }
 
   /**

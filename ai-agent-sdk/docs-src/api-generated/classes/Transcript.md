@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / Transcript
+[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / Transcript
 
 # Class: Transcript
 

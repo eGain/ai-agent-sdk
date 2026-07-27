@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / SDKError
+[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / SDKError
 
 # Class: SDKError
 
@@ -15,6 +15,8 @@ Base error class for all SDK errors
   ↳↳ [`ConnectionError`](ConnectionError.md)
 
   ↳↳ [`MessageError`](MessageError.md)
+
+  ↳↳ [`InitializationPipelineError`](InitializationPipelineError.md)
 
 ## Table of contents
 
@@ -51,7 +53,7 @@ Error.constructor
 
 #### Defined in
 
-[core/errors/SDKError.ts:5](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L5)
+[core/errors/SDKError.ts:7](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L7)
 
 ## Properties
 
@@ -61,7 +63,7 @@ Error.constructor
 
 #### Defined in
 
-[core/errors/SDKError.ts:7](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L7)
+[core/errors/SDKError.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L9)
 
 ___
 
@@ -71,4 +73,4 @@ ___
 
 #### Defined in
 
-[core/errors/SDKError.ts:8](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L8)
+[core/errors/SDKError.ts:10](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L10)

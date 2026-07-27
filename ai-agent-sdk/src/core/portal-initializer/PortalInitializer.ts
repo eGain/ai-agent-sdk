@@ -30,6 +30,10 @@ import type {
 } from "../types/PortalTypes.js";
 import type { PlatformComponentService } from "../platform/PlatformComponentService.js";
 import type { HookContract } from "../platform/HookContract.js";
+import {
+  InitializationPipelineError,
+  InitializationPipelineErrorCode,
+} from "../errors/SDKError.js";
 
 /**
  * Configuration for PortalInitializer (injected dependencies).
@@ -229,8 +233,10 @@ export class PortalInitializer {
 
     const preflight = await authService.getToken();
     if (preflight == null || String(preflight).trim() === "") {
-      throw new Error(
-        "Authentication token required for portal initialization"
+      throw new InitializationPipelineError(
+        "Authentication token required for portal initialization",
+        InitializationPipelineErrorCode.AUTH_TOKEN_REQUIRED,
+        { stage: "start" }
       );
     }
     logger.debug("Token obtained for portal pipeline");
@@ -279,8 +285,13 @@ export class PortalInitializer {
           const fromMy = await apiHelper.getMyPortals({ language, userId, shortUrlTemplate });
           portals = Array.isArray(fromMy) ? fromMy : [];
         } catch (err) {
-          logger.error('Failed to fetch portals', err instanceof Error ? err : new Error(String(err)));
-          throw err;
+          const error = err instanceof Error ? err : new Error(String(err));
+          logger.error("Failed to fetch portals", error);
+          throw new InitializationPipelineError(
+            "Failed to fetch portals",
+            InitializationPipelineErrorCode.PORTAL_FETCH_FAILED,
+            error
+          );
         }
       }
 
@@ -345,8 +356,9 @@ export class PortalInitializer {
 
     const flowBDepartmentId = resolveDepartmentIdForAgentSelection(agentDetails, initParams);
     if (flowBDepartmentId == null) {
-      throw new Error(
-        'departmentId is required for Flow B (agent selection mode): set agentDetails.departmentId from the default agent API response, or pass initParams.departmentId'
+      throw new InitializationPipelineError(
+        "departmentId is required for Flow B (agent selection mode): set agentDetails.departmentId from the default agent API response, or pass initParams.departmentId",
+        InitializationPipelineErrorCode.DEPARTMENT_ID_REQUIRED
       );
     }
     const beforeDept = portals.length;
@@ -409,7 +421,10 @@ export class PortalInitializer {
     const { logger, emit, createAgentEventResponse } = this.deps;
 
     if (!portals || portals.length === 0) {
-      throw new Error("No portals available for this user");
+      throw new InitializationPipelineError(
+        "No portals available for this user",
+        InitializationPipelineErrorCode.NO_PORTALS
+      );
     }
 
     this.portals = portals;
@@ -475,16 +490,22 @@ export class PortalInitializer {
     }
   }
 
-  /** Fetch portal details from API. Swallows errors and returns undefined on failure. */
+  /** Fetch portal details from API. Throws {@link InitializationPipelineError} on API failure. */
   private async fetchPortalDetails(
     portalId: string | number
   ): Promise<any | undefined> {
     const { apiHelper } = this.deps;
-    return (
-      (await apiHelper
-        .getPortalDetails?.({ portalId: String(portalId) })
-        .catch(() => null)) ?? undefined
-    );
+    if (!apiHelper.getPortalDetails) return undefined;
+    try {
+      return await apiHelper.getPortalDetails({ portalId: String(portalId) });
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      throw new InitializationPipelineError(
+        "Failed to fetch portal details",
+        InitializationPipelineErrorCode.PORTAL_DETAILS_FAILED,
+        error
+      );
+    }
   }
 
   /** Cache-hit strategy: return cached profiles with fresh portal details, or null if cache miss. */
@@ -515,16 +536,30 @@ export class PortalInitializer {
     return { portalDetails, profiles };
   }
 
-  /** Normal strategy: fetch portal details and user profiles in parallel. */
   private async resolveProfilesFromApi(
     portalId: string | number
   ): Promise<{ portalDetails: any; profiles: UserProfile[] }> {
     const { apiHelper } = this.deps;
-    const [portalDetails, profiles] = await Promise.all([
+    const [portalResult, profilesResult] = await Promise.allSettled([
       this.fetchPortalDetails(portalId),
-      apiHelper.getUserProfiles({ portalId })
+      apiHelper.getUserProfiles({ portalId }),
     ]);
-    return { portalDetails, profiles: profiles ?? [] };
+
+    if (portalResult.status === "rejected") {
+      throw portalResult.reason;
+    }
+    if (profilesResult.status === "rejected") {
+      const err = profilesResult.reason;
+      const error = err instanceof Error ? err : new Error(String(err));
+      throw new InitializationPipelineError(
+        "Failed to fetch user profiles",
+        InitializationPipelineErrorCode.PROFILE_FETCH_FAILED,
+        error
+      );
+    }
+
+    const profiles = profilesResult.value ?? [];
+    return { portalDetails: portalResult.value, profiles };
   }
 
   /**
@@ -584,8 +619,9 @@ export class PortalInitializer {
     const { apiHelper, logger, emit, createAgentEventResponse } = this.deps;
     const departmentId = this.portalDetails?.departmentId;
     if (!departmentId) {
-      throw new Error(
-        "Department ID required for agent selection but not found in portal"
+      throw new InitializationPipelineError(
+        "Department ID required for agent selection but not found in portal",
+        InitializationPipelineErrorCode.DEPARTMENT_ID_REQUIRED
       );
     }
 
@@ -597,7 +633,10 @@ export class PortalInitializer {
     logger.info("Agents fetched", { agents: this.agents });
 
     if (!this.agents || this.agents.length === 0) {
-      throw new Error("No agents available for the selected portal");
+      throw new InitializationPipelineError(
+        "No agents available for the selected portal",
+        InitializationPipelineErrorCode.NO_AGENTS_FOR_PORTAL
+      );
     }
 
     if (this.agents.length === 1) {
@@ -713,10 +752,19 @@ export class PortalInitializer {
           authTypeLower === "user" ||
           legacyUnsetTyping);
       if (callSelect) {
-        await apiHelper.selectUserProfile({
-          portalId: selectedPortal.id,
-          profileId: selectedProfile.id
-        });
+        try {
+          await apiHelper.selectUserProfile({
+            portalId: selectedPortal.id,
+            profileId: selectedProfile.id
+          });
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          throw new InitializationPipelineError(
+            "Failed to persist user profile selection",
+            InitializationPipelineErrorCode.PROFILE_PERSIST_FAILED,
+            error
+          );
+        }
       }
     }
 
@@ -775,7 +823,7 @@ export class PortalInitializer {
    * Called by AiAgent.selectPortal(). Stores the selected portal and triggers
    * the next pipeline step (handleSelectedPortal).
    */
-  onPortalSelected(portal: Portal): void {
+  async onPortalSelected(portal: Portal): Promise<void> {
     if (this.destroyed) return;
     this.deps.logger.debug("onPortalSelected called", {
       portalId: portal?.id,
@@ -785,78 +833,55 @@ export class PortalInitializer {
       this.portals.length > 0 &&
       !this.portals.some((p) => sameId(p.id, portal?.id))
     ) {
-      this.deps.logger.error(
+      throw new InitializationPipelineError(
         "Selected portal is not in the available portals list",
-        undefined,
-        { portalId: portal?.id }
+        InitializationPipelineErrorCode.INVALID_SELECTION,
+        { stage: "portal", portal }
       );
-      return;
     }
     this.selectedPortal = portal;
-    this.callOnPortalSelected(portal)
-      .then(() => {
-        return this.handleSelectedPortal();
-      })
-      .catch((err) => {
-        this.deps.logger.error(
-          "Pipeline error after portal selection",
-          err instanceof Error ? err : new Error(String(err))
-        );
-      });
+    await this.callOnPortalSelected(portal);
+    await this.handleSelectedPortal();
   }
 
   /**
    * Called by AiAgent.selectAgent(). Stores the selected agent and triggers
    * the next pipeline step (handleSelectedAgent). Flow B only.
    */
-  onAgentSelected(agent: AgentListItem): void {
+  async onAgentSelected(agent: AgentListItem): Promise<void> {
     if (this.destroyed) return;
     if (
       this.agents.length > 0 &&
       !this.agents.some((a) => sameId(a.agentId, agent?.agentId))
     ) {
-      this.deps.logger.error(
+      throw new InitializationPipelineError(
         "Selected agent is not in the available agents list",
-        undefined,
-        { agentId: agent?.agentId }
+        InitializationPipelineErrorCode.INVALID_SELECTION,
+        { stage: "agent", agent }
       );
-      return;
     }
     this.selectedAgent = agent;
-    // Trigger the next pipeline step (handleSelectedAgent)
-    this.handleSelectedAgent().catch((err) => {
-      this.deps.logger.error(
-        "Pipeline error after agent selection",
-        err instanceof Error ? err : new Error(String(err))
-      );
-    });
+    await this.handleSelectedAgent();
   }
 
   /**
    * Called by AiAgent.selectUserProfile(). Stores the selected profile and triggers
    * the final pipeline step (completeInitialization).
    */
-  onProfileSelected(profile: UserProfile): void {
+  async onProfileSelected(profile: UserProfile): Promise<void> {
     if (this.destroyed) return;
     if (
       this.profiles.length > 0 &&
       !this.profiles.some((p) => sameId(p.id, profile?.id))
     ) {
-      this.deps.logger.error(
+      throw new InitializationPipelineError(
         "Selected profile is not in the available profiles list",
-        undefined,
-        { profileId: profile?.id }
+        InitializationPipelineErrorCode.INVALID_SELECTION,
+        { stage: "profile" }
       );
-      return;
     }
     this.selectedProfile = profile;
-    // Trigger the final pipeline step (completeInitialization)
-    this.completeInitialization().catch((err) => {
-      this.deps.logger.error(
-        "Pipeline error after profile selection",
-        err instanceof Error ? err : new Error(String(err))
-      );
-    });
+    await this.completeInitialization();
   }
 
   /**

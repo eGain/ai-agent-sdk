@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / ConnectionError
+[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / ConnectionError
 
 # Class: ConnectionError
 
@@ -44,7 +44,7 @@ Connection-related errors
 
 #### Defined in
 
-[core/errors/SDKError.ts:31](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L31)
+[core/errors/SDKError.ts:33](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L33)
 
 ## Properties
 
@@ -58,7 +58,7 @@ Connection-related errors
 
 #### Defined in
 
-[core/errors/SDKError.ts:7](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L7)
+[core/errors/SDKError.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L9)
 
 ___
 
@@ -72,4 +72,4 @@ ___
 
 #### Defined in
 
-[core/errors/SDKError.ts:8](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L8)
+[core/errors/SDKError.ts:10](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L10)

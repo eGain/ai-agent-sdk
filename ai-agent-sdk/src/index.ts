@@ -118,6 +118,12 @@ export {
   AuthError,
   ConnectionError,
   MessageError,
+  InitializationPipelineError,
+  InitializationPipelineErrorCode,
+} from './core/errors/SDKError.js';
+export type {
+  InitializationPipelineStage,
+  InitializationPipelineErrorOptions,
 } from './core/errors/SDKError.js';
 
 // API Helper

@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.1.4
+# @egain/ai-agent-sdk API Reference - v0.1.5
 
 # @egain/ai-agent-sdk
 
@@ -72,6 +72,7 @@ await agent.send("Hello!");
 - [AuthError](classes/AuthError.md)
 - [ConnectionError](classes/ConnectionError.md)
 - [MessageError](classes/MessageError.md)
+- [InitializationPipelineError](classes/InitializationPipelineError.md)
 - [Logger](classes/Logger.md)
 - [Message](classes/Message.md)
 - [MessageProcessor](classes/MessageProcessor.md)
@@ -151,11 +152,15 @@ await agent.send("Hello!");
 - [AuthenticationServiceConfig](README.md#authenticationserviceconfig)
 - [AuthenticationInput](README.md#authenticationinput)
 - [TokenExpiringCallback](README.md#tokenexpiringcallback)
+- [InitializationPipelineStage](README.md#initializationpipelinestage)
+- [InitializationPipelineErrorCode](README.md#initializationpipelineerrorcode-1)
+- [InitializationPipelineErrorOptions](README.md#initializationpipelineerroroptions)
 - [Persona](README.md#persona-1)
 - [Role](README.md#role-1)
 
 ### Variables
 
+- [InitializationPipelineErrorCode](README.md#initializationpipelineerrorcode)
 - [globalLogger](README.md#globallogger)
 - [PERSONA](README.md#persona)
 - [ROLE](README.md#role)
@@ -305,6 +310,49 @@ Callback type for token expiring notification
 
 ___
 
+### InitializationPipelineStage
+
+Ƭ **InitializationPipelineStage**: ``"start"`` \| ``"portal"`` \| ``"agent"`` \| ``"profile"``
+
+Stage of the CC initialization pipeline when an [InitializationPipelineError](classes/InitializationPipelineError.md) is thrown.
+
+#### Defined in
+
+[core/errors/SDKError.ts:52](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L52)
+
+___
+
+### InitializationPipelineErrorCode
+
+Ƭ **InitializationPipelineErrorCode**: typeof [`InitializationPipelineErrorCode`](README.md#initializationpipelineerrorcode)[keyof typeof [`InitializationPipelineErrorCode`](README.md#initializationpipelineerrorcode)]
+
+#### Defined in
+
+[core/errors/SDKError.ts:55](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L55)
+
+[core/errors/SDKError.ts:67](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L67)
+
+___
+
+### InitializationPipelineErrorOptions
+
+Ƭ **InitializationPipelineErrorOptions**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `cause?` | `Error` |
+| `stage?` | [`InitializationPipelineStage`](README.md#initializationpipelinestage) |
+| `portal?` | [`Portal`](interfaces/Portal.md) |
+| `agent?` | [`AgentListItem`](interfaces/AgentListItem.md) |
+
+#### Defined in
+
+[core/errors/SDKError.ts:70](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L70)
+
+___
+
 ### Persona
 
 Ƭ **Persona**: typeof [`PERSONA`](README.md#persona)[keyof typeof [`PERSONA`](README.md#persona)]
@@ -328,6 +376,34 @@ Type definitions for role values
 [core/message/types.ts:41](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L41)
 
 ## Variables
+
+### InitializationPipelineErrorCode
+
+• `Const` **InitializationPipelineErrorCode**: `Object`
+
+Stable codes for CC initialization pipeline failures.
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `AUTH_TOKEN_REQUIRED` | ``"AUTH_TOKEN_REQUIRED"`` |
+| `NO_PORTALS` | ``"NO_PORTALS"`` |
+| `PORTAL_FETCH_FAILED` | ``"PORTAL_FETCH_FAILED"`` |
+| `PORTAL_DETAILS_FAILED` | ``"PORTAL_DETAILS_FAILED"`` |
+| `PROFILE_FETCH_FAILED` | ``"PROFILE_FETCH_FAILED"`` |
+| `PROFILE_PERSIST_FAILED` | ``"PROFILE_PERSIST_FAILED"`` |
+| `NO_AGENTS_FOR_PORTAL` | ``"NO_AGENTS_FOR_PORTAL"`` |
+| `DEPARTMENT_ID_REQUIRED` | ``"DEPARTMENT_ID_REQUIRED"`` |
+| `INVALID_SELECTION` | ``"INVALID_SELECTION"`` |
+
+#### Defined in
+
+[core/errors/SDKError.ts:55](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L55)
+
+[core/errors/SDKError.ts:67](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/errors/SDKError.ts#L67)
+
+___
 
 ### globalLogger
 

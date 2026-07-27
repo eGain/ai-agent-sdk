@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / GetUserProfilesOptions
+[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / GetUserProfilesOptions
 
 # Interface: GetUserProfilesOptions
 

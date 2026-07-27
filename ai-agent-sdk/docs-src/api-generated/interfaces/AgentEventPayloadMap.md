@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.4](../README.md) / AgentEventPayloadMap
+[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / AgentEventPayloadMap
 
 # Interface: AgentEventPayloadMap
 
@@ -285,7 +285,7 @@ Always includes at least agent (agentId, name). When CC pipeline completes: port
 | :------ | :------ |
 | `portal?` | [`Portal`](Portal.md) |
 | `portalDetails?` | `any` |
-| `agent?` | `Record`\<`string`, `unknown`\> \| [`AgentListItem`](AgentListItem.md) |
+| `agent?` | [`AgentListItem`](AgentListItem.md) \| `Record`\<`string`, `unknown`\> |
 | `profile?` | [`UserProfile`](UserProfile.md) |
 | `availableProfiles?` | [`UserProfile`](UserProfile.md)[] |
 | `availablePortals?` | [`Portal`](Portal.md)[] |
