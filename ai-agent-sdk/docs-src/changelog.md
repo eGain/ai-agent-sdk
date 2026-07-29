@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-07-29
+
+### Added
+
+- `AiAgent.initialize(options?)` — optional `{ context }` merged with `AiAgentConfig.context`; stored via `setContext` for reconnect
+- **Portal/profile auto-select** during `PortalInitializer` when initialization context includes `egain_portal_id` and/or `egain_personalization_profile_id` (eGain attribute `{ value }` or plain string values)
+- Exported type `AiAgentInitializeOptions`
+- `ApiHelper.getPortals()` — customer self-service portal list (`GET .../portalmgr/v3/portals`) with Flow A intersection against `agentDetails.portals` (replaces synthetic-only customer portal lists)
+- **Data masking** — when `agentDetails.enableDataMasking` is true and the deployment version supports it, loads chat masking patterns during init and masks outbound `customer` / `human` messages in `send()`; `AiAgent.maskContent()` for UI/escalation
+- `semver` dependency for platform version gating (cc-widget parity)
+
+### Changed
+
+- Customer agents with configured KB portals use tenant portal catalog + bot intersection (same rules as CC Flow A) instead of placeholder portal names only
+
+### Documentation
+
+- Portal initialization and context management guides: initialization context and auto-select behavior
+- Message flow guide: data masking (`maskContent`, outbound `send()` behavior)
+
 ## [0.1.5] - 2026-07-27
 
 ### Added

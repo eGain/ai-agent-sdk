@@ -51,6 +51,7 @@ import './core/polyfills.js';
 export { AiAgent } from './core/AiAgent.js';
 export type {
   AiAgentConfig,
+  AiAgentInitializeOptions,
   AgentEvents,
   AgentEvent,
   AgentEventType,
@@ -138,6 +139,7 @@ export type {
   GetPreviousTranscriptOptions,
   GetMaskingPatternsOptions,
   GetMyPortalsOptions,
+  GetPortalsOptions,
   GetAgentsByPortalOptions,
   GetUserProfilesOptions,
   SelectUserProfileOptions,

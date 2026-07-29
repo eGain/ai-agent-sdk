@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / MessageHandlerResult
+[@egain/ai-agent-sdk API Reference - v0.2.0](../README.md) / MessageHandlerResult
 
 # Interface: MessageHandlerResult
 

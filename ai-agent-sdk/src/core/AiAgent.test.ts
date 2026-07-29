@@ -10,6 +10,7 @@ import { createAgentMessage, createContextMessage } from './message/MessageTypes
 import { ApiHelper } from './api/ApiHelper.js';
 import { PortalInitializer } from './portal-initializer/PortalInitializer.js';
 import type { Portal, UserProfile } from './types/PortalTypes.js';
+import { DataMasker } from './data-masking/DataMasker.js';
 
 // Mock dependencies
 vi.mock('./connection/Connection.js');
@@ -282,6 +283,36 @@ describe('AiAgent', () => {
       await agent.initialize();
       // Second call should not throw - it returns early if already initialized
       await expect(agent.initialize()).resolves.toBeUndefined();
+    });
+
+    it('should merge config and initialize options into stored context', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        context: { fromConfig: true },
+      });
+
+      vi.spyOn(ApiHelper, 'getDeploymentInfo').mockResolvedValue({
+        aiAgentDomain: 'test.example.com',
+        apiDomain: 'api.test.example.com',
+      });
+      vi.spyOn(agent as any, 'fetchAgentDetails').mockResolvedValue({
+        name: 'Test Agent',
+        isAuthenticated: false,
+      });
+      vi.spyOn(agent as any, 'getSessionId').mockResolvedValue('session-123');
+      vi.spyOn(agent as any, 'createConnection').mockResolvedValue(undefined);
+
+      await agent.initialize({
+        context: { egain_portal_id: { value: '1' } },
+      });
+
+      expect(agent.getContext()).toEqual(
+        expect.objectContaining({
+          fromConfig: true,
+          egain_portal_id: { value: '1' },
+        })
+      );
     });
 
     it.skip('should set isInitialized to true when using PreAuthStrategy with authenticated agent', async () => {
@@ -1221,6 +1252,63 @@ describe('AiAgent', () => {
 
       const messageId = await agent.send('Hello');
       expect(messageId).toBeDefined();
+    });
+
+    it('should mask customer human message content when data masking is active', async () => {
+      (agent as any).connection = mockConnection;
+      mockConnection.isConnected.mockReturnValue(true);
+
+      const masker = new DataMasker();
+      masker.setPlatformSupported(true);
+      masker.setPatternsFromApiResponse({
+        patterns: [
+          {
+            name: 'SSN',
+            order: 1,
+            javascriptRegularExpression: '\\b\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{4}\\b',
+            numOfCharsToUnmaskFromLeft: 0,
+            numOfCharsToUnmaskFromRight: 4,
+            applyLuhnAlgorithm: false,
+            maskingCharacter: '*',
+          },
+        ],
+      });
+      (agent as any).dataMasker = masker;
+
+      const ssn = '123-45-6789';
+      await agent.send(`My SSN is ${ssn}`);
+
+      const payload = JSON.parse(mockConnection.send.mock.calls[0][0]);
+      expect(payload.content).toContain('*******6789');
+      expect(payload.content).not.toContain('123-45');
+    });
+
+    it('should not mask context messages', async () => {
+      (agent as any).connection = mockConnection;
+      mockConnection.isConnected.mockReturnValue(true);
+
+      const masker = new DataMasker();
+      masker.setPlatformSupported(true);
+      masker.setPatternsFromApiResponse({
+        patterns: [
+          {
+            name: 'SSN',
+            order: 1,
+            javascriptRegularExpression: '\\b\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{4}\\b',
+            numOfCharsToUnmaskFromLeft: 0,
+            numOfCharsToUnmaskFromRight: 4,
+            applyLuhnAlgorithm: false,
+            maskingCharacter: '*',
+          },
+        ],
+      });
+      (agent as any).dataMasker = masker;
+
+      await agent.send(createContextMessage({ context: { userId: '123-45-6789' } }));
+
+      const payload = JSON.parse(mockConnection.send.mock.calls[0][0]);
+      expect(payload.role).toBe('context');
+      expect(JSON.stringify(payload)).toContain('123-45-6789');
     });
 
     it('should accept Message instance', async () => {

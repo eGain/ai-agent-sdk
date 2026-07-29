@@ -322,6 +322,32 @@ describe('ApiHelper', () => {
       expect(result).toEqual(mockResponse);
     });
 
+    it('should use Accept-Language from ApiHelper config', async () => {
+      const daHelper = new ApiHelper({
+        apiDomain: 'api.example.com',
+        language: 'da-dk',
+      });
+
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ patterns: [] }),
+      });
+
+      await daHelper.getMaskingPatterns({
+        departmentId: '999',
+        authToken: 'test-token',
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Accept-Language': 'da-dk',
+          }),
+        })
+      );
+    });
+
     it('should use default channel if not provided', async () => {
       const mockResponse = { patterns: [] };
 
@@ -465,6 +491,119 @@ describe('ApiHelper', () => {
 
       expect(global.fetch).toHaveBeenCalledTimes(1);
       expect(result1).toEqual(result2);
+    });
+  });
+
+  describe('getPortals', () => {
+    it('should fetch portals list from v3/portals only', async () => {
+      const mockResponse = {
+        portal: [
+          { id: 1, name: 'Portal A' },
+          { id: 2, name: 'Portal B' },
+        ],
+      };
+
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const result = await apiHelper.getPortals({
+        authToken: 'test-token',
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/knowledge\/portalmgr\/v3\/portals(\?|$)/),
+        expect.objectContaining({
+          method: 'GET',
+          headers: expect.objectContaining({
+            Authorization: 'Bearer test-token',
+            Accept: 'application/json',
+            'Accept-Language': 'en-us',
+          }),
+        })
+      );
+      expect(result).toEqual(mockResponse.portal);
+    });
+
+    it('should resolve auth token from getToken when authToken is omitted', async () => {
+      const mockResponse = { portal: [{ id: 1, name: 'Portal A' }] };
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const helper = new ApiHelper({
+        apiDomain: mockApiDomain,
+        language: 'en-us',
+        getToken: async () => 'from-provider',
+      });
+
+      const result = await helper.getPortals({});
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/knowledge\/portalmgr\/v3\/portals(\?|$)/),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: 'Bearer from-provider',
+          }),
+        })
+      );
+      expect(result).toEqual(mockResponse.portal);
+    });
+
+    it('should throw when auth token is missing and no getToken is configured', async () => {
+      await expect(apiHelper.getPortals({})).rejects.toThrow(/Authentication token is required/);
+    });
+
+    it('should return empty array when portals endpoint returns no portals', async () => {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({}),
+      });
+
+      const result = await apiHelper.getPortals({
+        authToken: 'test-token',
+      });
+
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect((global.fetch as any).mock.calls[0][0]).toContain('/v3/portals');
+      expect(result).toEqual([]);
+    });
+
+    it('should throw error when fetch fails', async () => {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        statusText: 'Unauthorized',
+      });
+
+      await expect(
+        apiHelper.getPortals({ authToken: 'bad-token' })
+      ).rejects.toThrow('Failed to fetch portals: 401 Unauthorized');
+    });
+
+    it('should not cache responses (always fetches from API)', async () => {
+      const mockResponse = { portal: [{ id: 1, name: 'Portal A' }] };
+
+      (global.fetch as any)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse,
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse,
+        });
+
+      const helperWithCache = new ApiHelper({
+        apiDomain: mockApiDomain,
+        cache: { enabled: true, storageType: 'memory' },
+      });
+
+      await helperWithCache.getPortals({ authToken: 'test-token' });
+      await helperWithCache.getPortals({ authToken: 'test-token' });
+
+      expect(global.fetch).toHaveBeenCalledTimes(2);
     });
   });
 

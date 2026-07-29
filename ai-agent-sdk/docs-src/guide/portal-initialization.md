@@ -50,6 +50,17 @@ Pass host-driven parameters explicitly (the SDK stays URL-agnostic):
 
 Other keys are stored and returned from `agent.getInitParams()`.
 
+### Initialization context (`initialize({ context })`)
+
+Pass host KB context when calling `initialize()` (or set `AiAgentConfig.context`). The SDK stores it for chat reconnect via `setContext` and uses it during the portal pipeline:
+
+| Context key | Effect |
+|-------------|--------|
+| `egain_portal_id` | When multiple portals remain after list fetch/filter, auto-select the matching portal (no `portalsAvailable` if matched) |
+| `egain_personalization_profile_id` | Auto-select matching profile when multiple profiles are available; customer mode may use a synthetic profile when the id is not the portal default |
+
+Values may be plain strings or eGain attribute objects `{ value: "..." }`. Non-matching ids fall back to the normal picker events.
+
 ### Top-level `AiAgentConfig`
 
 - **`scopes`** — Custom OAuth resource scopes (defaults differ for agent vs customer).
@@ -72,7 +83,7 @@ When there is only one portal, agent, or profile, the SDK may auto-select and co
 
 ## Customer vs agent behavior
 
-For **`userType === 'customer'`** (or `initParams.authType === 'customer'`), profile handling aligns with cc-widget: user profile APIs may be skipped or defaulted from portal settings. **`PUT .../userprofiles/.../select`** runs for agent/user flows (or legacy unset typing). See JSDoc on `PortalInitializer` in the source for the full parity matrix.
+For **`userType === 'customer'`** (or `initParams.authType === 'customer'`) with KB portals configured, the pipeline uses `getPortals()` and intersects with `agentDetails.portals` (0.2.0). Profile handling aligns with cc-widget: user profile APIs may be skipped or defaulted from portal settings. **`PUT .../userprofiles/.../select`** runs for agent/user flows (or legacy unset typing). See JSDoc on `PortalInitializer` in the source for the full parity matrix.
 
 User/customer details (`getUserDetails()` / `getCustomerDetails()`) are fetched only when the agent requires authentication (`agentDetails.isAuthenticated`). Unauthenticated agents skip that call; `agent.getUserDetails()` stays `null`. Platform connectors reading **`HookContract.getUserId()`** get that details `id` (once fetched), not `initParams.userid`.
 
@@ -116,7 +127,10 @@ agent.on("agentMessage", (e) => {
   console.log(e.payload.message?.content);
 });
 
-await agent.initialize();
+await agent.initialize({
+  // Optional: auto-select portal/profile when ids match the fetched lists
+  // context: { egain_portal_id: { value: "123" }, egain_personalization_profile_id: { value: "456" } },
+});
 ```
 
 ## Restarting the pipeline
@@ -128,4 +142,5 @@ await agent.initialize();
 
 - [Platform connectors](./platform-connectors.md) — connector script contract
 - [Events](./events.md) — portal and platform event payloads
+- [Context management](./context-management.md) — `initialize({ context })` and chat context
 - [Authentication](./authentication.md) — PKCE options for CC (`authScheme`, scopes, `localLogin`)

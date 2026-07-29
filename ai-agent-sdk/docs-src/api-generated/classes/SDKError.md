@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / SDKError
+[@egain/ai-agent-sdk API Reference - v0.2.0](../README.md) / SDKError
 
 # Class: SDKError
 

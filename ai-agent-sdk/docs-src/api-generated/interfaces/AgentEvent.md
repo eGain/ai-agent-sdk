@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / AgentEvent
+[@egain/ai-agent-sdk API Reference - v0.2.0](../README.md) / AgentEvent
 
 # Interface: AgentEvent\<T\>
 
@@ -30,7 +30,7 @@ Event type identifier
 
 #### Defined in
 
-[core/AiAgent.ts:275](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L275)
+[core/AiAgent.ts:291](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L291)
 
 ___
 
@@ -42,7 +42,7 @@ Timestamp when the event occurred (milliseconds since epoch)
 
 #### Defined in
 
-[core/AiAgent.ts:280](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L280)
+[core/AiAgent.ts:296](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L296)
 
 ___
 
@@ -54,7 +54,7 @@ Session ID associated with the event
 
 #### Defined in
 
-[core/AiAgent.ts:285](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L285)
+[core/AiAgent.ts:301](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L301)
 
 ___
 
@@ -66,7 +66,7 @@ Agent ID associated with the event
 
 #### Defined in
 
-[core/AiAgent.ts:290](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L290)
+[core/AiAgent.ts:306](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L306)
 
 ___
 
@@ -79,4 +79,4 @@ Type varies based on the event type
 
 #### Defined in
 
-[core/AiAgent.ts:296](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L296)
+[core/AiAgent.ts:312](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L312)

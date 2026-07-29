@@ -20,6 +20,8 @@ import type { Portal, UserProfile, AgentListItem } from './types/PortalTypes.js'
 import type { HookContract, CallerInfo, CallTranscriptEntry } from './platform/HookContract.js';
 import type { PlatformComponentService } from './platform/PlatformComponentService.js';
 import { loadPlatformScript, deriveEnvironment } from './platform/PlatformScriptLoader.js';
+import { DataMasker } from './data-masking/DataMasker.js';
+import { loadDataMasking } from './data-masking/util.js';
 
 export type { UserDetails } from './api/ApiHelper.js';
 
@@ -187,6 +189,12 @@ export interface AiAgentConfig {
   initParams?: Record<string, string>;
 
   /**
+   * Optional initialization context (merged with `initialize({ context })`).
+   * Used for portal/profile auto-select during the portal pipeline and stored for chat reconnect.
+   */
+  context?: Record<string, unknown>;
+
+  /**
    * Override URL for the platform connector script.
    * When provided, the SDK loads this URL instead of constructing one
    * from the platform name and deployment environment.
@@ -204,6 +212,14 @@ export interface AiAgentConfig {
    * @default 'popup'
    */
   authScheme?: 'popup' | 'redirect';
+}
+
+/**
+ * Options for {@link AiAgent.initialize}.
+ */
+export interface AiAgentInitializeOptions {
+  /** Merged on top of {@link AiAgentConfig.context} for this init run. */
+  context?: Record<string, unknown>;
 }
 
 /**
@@ -525,10 +541,13 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   private portalInitializer?: PortalInitializer;
   private isAgentSelectionMode: boolean;
   private initParams: Record<string, string>;
+  /** Merged from config + initialize({ context }); passed to PortalInitializer. */
+  private initialContext: Record<string, unknown> = {};
   /** Cached profiles for restart (user-associated; portal details and agents are not cached). */
   private cachedProfiles?: UserProfile[];
   /** True when the agent completed the portal initialization pipeline (needed for restart guard). */
   private completedPortalPipeline = false;
+  private readonly dataMasker = new DataMasker();
   /** Last selected portal from pipeline (needed for updateUserProfile). */
   private lastSelectedPortal?: Portal;
 
@@ -719,12 +738,12 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @example
    * ```typescript
    * const agent = new AiAgent({ id: 'agent-id', endpoint: 'https://...' });
-   * await agent.initialize();
+   * await agent.initialize({ context: { egain_portal_id: { value: '123' } } });
    * // Direct flow: often already connected if autoConnect. CC flow: connect after `initialized`.
    * await agent.connect();
    * ```
    */
-  async initialize(): Promise<void> {
+  async initialize(options?: AiAgentInitializeOptions): Promise<void> {
     if (this.isInitialized) {
       this.logger.debug('Agent already initialized', { agentId: this.config.id });
       return;
@@ -732,6 +751,14 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     this.logger.debug('Initializing agent', { agentId: this.config.id });
 
     try {
+      this.initialContext = {
+        ...(this.config.context ?? {}),
+        ...(options?.context ?? {}),
+      };
+      if (Object.keys(this.initialContext).length > 0) {
+        await this.setContext(this.initialContext);
+      }
+
       this.authScopesAugmentedByPlatform = false;
 
       // Get deployment info (use cached if getAgentDetails was called first)
@@ -1067,6 +1094,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       createAgentEventResponse: (type, payload) => this.createAgentEventResponse(type as any, payload),
       isAgentSelectionMode: this.isAgentSelectionMode,
       agentDetails: this.agentDetails,
+      initialContext: this.initialContext,
       pipelineCache: {
         adapter: this.contextCacheAdapter,
         profilesKey: (portalId) => this.getPipelineProfilesCacheKey(portalId),
@@ -1092,6 +1120,14 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     });
 
     await this.fetchUserOrCustomerDetails(accessToken);
+    await loadDataMasking({
+      deploymentVersion: this.deploymentInfo?.version,
+      agentDetails: this.agentDetails,
+      apiHelper: this.apiHelper!,
+      authToken: accessToken,
+      masker: this.dataMasker,
+      logger: this.logger,
+    });
 
     if (runPortalPipeline) {
       this.logger.info('Running portal initializer pipeline', { agentId: this.config.id });
@@ -1106,6 +1142,33 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       isInitialized: this.isInitialized,
     });
   };
+
+  /**
+   * Mask sensitive text using loaded department patterns (cc-widget `maskData` parity).
+   * No-op when masking is inactive (see `agentDetails.enableDataMasking` and platform gates).
+   */
+  maskContent(text: string): string {
+    if (!text) {
+      return text;
+    }
+    return this.dataMasker.maskContent(text);
+  }
+
+  private applyOutboundDataMasking(message: Message): Message {
+    if (
+      message.persona !== PERSONA.CUSTOMER ||
+      message.role !== ROLE.HUMAN ||
+      typeof message.content !== 'string' ||
+      message.content.length === 0
+    ) {
+      return message;
+    }
+    const masked = this.dataMasker.maskContent(message.content);
+    if (masked === message.content) {
+      return message;
+    }
+    return message.clone({ content: masked });
+  }
 
   /**
    * Fetch user or customer details after authentication. This API will only be called if the agent is authenticated.
@@ -1929,6 +1992,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
     // Validate message
     message.validate();
+
+    message = this.applyOutboundDataMasking(message);
 
     // Serialize message for transmission
     const payload = message.toPayloadString();

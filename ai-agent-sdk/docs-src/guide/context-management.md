@@ -30,7 +30,18 @@ await agent.send(createContextMessage({
 
 ## Automatic Caching
 
-Context messages are automatically cached by the SDK:
+Context messages are automatically cached by the SDK. You can also pass context at **`initialize()`** so it is stored before connect and used to auto-select portal/profile when the portal pipeline runs (see [Portal initialization](./portal-initialization.md#initialization-context-initialize-context)).
+
+```typescript
+await agent.initialize({
+  context: {
+    egain_portal_id: { value: "123", type: "string", notInLLM: true },
+    egain_personalization_profile_id: { value: "456", type: "string", notInLLM: true },
+  },
+});
+```
+
+Context messages sent over the WebSocket are also cached:
 
 ```typescript
 // Send context - automatically cached

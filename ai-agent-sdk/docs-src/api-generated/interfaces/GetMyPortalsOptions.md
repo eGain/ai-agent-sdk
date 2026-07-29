@@ -1,8 +1,14 @@
-[@egain/ai-agent-sdk API Reference - v0.1.5](../README.md) / GetMyPortalsOptions
+[@egain/ai-agent-sdk API Reference - v0.2.0](../README.md) / GetMyPortalsOptions
 
 # Interface: GetMyPortalsOptions
 
 Options for `ApiHelper.getMyPortals`.
+
+## Hierarchy
+
+- **`GetMyPortalsOptions`**
+
+  ↳ [`GetPortalsOptions`](GetPortalsOptions.md)
 
 ## Table of contents
 

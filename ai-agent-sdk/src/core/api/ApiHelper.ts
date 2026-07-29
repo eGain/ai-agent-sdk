@@ -213,6 +213,13 @@ export interface GetMyPortalsOptions {
     shortUrlTemplate?: string;
 }
 
+export interface GetPortalsOptions extends GetMyPortalsOptions {
+    /**
+     * Department ID (from portal.department.id)
+     */
+    departmentId?: string | number;
+}
+
 /**
  * Options for getAgentsByPortal API call.
  * Fetches AI agents available in a portal.
@@ -692,6 +699,7 @@ export class ApiHelper {
         const cacheKey = this.getCacheKey('getMaskingPatterns', {
             departmentId,
             channel,
+            language: this.getAcceptLanguageHeader(),
         });
         const cached = this.getFromCache<any>(cacheKey);
         if (cached) {
@@ -765,15 +773,47 @@ export class ApiHelper {
     }
 
     /**
+     * Gets all portals in the partition/department via `GET .../knowledge/portalmgr/v3/portals` (paginated).
+     * Used for customer and anonymous customer portal lists (Get All Portals API).
+     * Responses are not cached (portal lists are always fetched fresh).
+     *
+     * @param options - Options for the API call
+     * @returns Promise resolving to array of Portal objects
+     * @throws Error if the API request fails
+     *
+     * @example
+     * ```typescript
+     * const portals = await apiHelper.getPortals({
+     *   authToken: token,
+     *   language: 'en-us',
+     *   shortUrlTemplate: 'ombre',
+     * });
+     * ```
+     */
+    async getPortals(options: GetPortalsOptions): Promise<any[]> {
+        const { authToken, language, departmentId } = options;
+        const token = await this.resolveAuthToken(authToken);
+        const lang = language || this.getLanguage();
+
+        return this.fetchPortalmgrV3PortalPages({
+            authToken: token,
+            lang,
+            departmentId,
+            pathSegment: 'portals',
+        });
+    }
+
+    /**
      * Paginated GET .../knowledge/portalmgr/v3/{myportals|portals}
      */
     private async fetchPortalmgrV3PortalPages(params: {
         authToken: string;
         lang: string;
         shortUrlTemplate?: string;
+        departmentId?: string | number;
         pathSegment: 'myportals' | 'portals';
     }): Promise<any[]> {
-        const { authToken, lang, shortUrlTemplate, pathSegment } = params;
+        const { authToken, lang, shortUrlTemplate, departmentId, pathSegment } = params;
         const baseUrl = `${this.apiDomain}/knowledge/portalmgr/v3/${pathSegment}`;
 
         const buildPageUrl = (pageNum: number, pagesize: string) => {
@@ -781,6 +821,9 @@ export class ApiHelper {
             pageUrl.searchParams.append('$lang', lang);
             pageUrl.searchParams.append('$pagesize', pagesize);
             pageUrl.searchParams.append('$pagenum', String(pageNum));
+            if (departmentId) {
+                pageUrl.searchParams.append('departmentId', String(departmentId));
+            }
             if (shortUrlTemplate?.trim()) {
                 pageUrl.searchParams.append('shortUrlTemplate', shortUrlTemplate.trim());
             }

@@ -14,7 +14,7 @@
  * calls connect() after receiving the initialized event.
  *
  * **cc-widget customer parity** (`agentDetails.userType === 'customer'` with non-empty `agentDetails.portals`):
- * portal list is built only from those IDs (no myportals / portalIds / intersection / PCS / Flow B list filter).
+ * portal list from `GET .../portalmgr/v3/portals`, intersected with `agentDetails.portals` (Flow A; no PCS / Flow B dept filter on list).
  * When `userType === 'customer'` or `initParams.authType === 'customer'`, skips GET userprofiles and may set
  * profiles from `portalDetails.portal[0].portalSettings.defaultUserProfile` only. PUT `.../userprofiles/.../select`
  * runs only for `userType === 'agent'`, `authType === 'user'`, or legacy unset typing (defaults to persist).
@@ -43,6 +43,7 @@ export interface PortalInitializerConfig {
   agentId: string;
   apiHelper: {
     getMyPortals: (options: any) => Promise<Portal[]>;
+    getPortals: (options: any) => Promise<Portal[]>;
     getPortalDetails?: (options: any) => Promise<any>;
     getAgentsByPortal: (options: any) => Promise<AgentListItem[]>;
     getUserProfiles: (options: any) => Promise<UserProfile[]>;
@@ -80,10 +81,10 @@ export interface PortalInitializerConfig {
   isAgentSelectionMode: boolean;
   /**
    * Agent details stored on the agent (e.g. AiAgent's agentDetails).
-   * - `languageCode` — forwarded to portalmgr portal list API (`getMyPortals`) as `$lang`.
+   * - `languageCode` — forwarded to portalmgr portal list APIs (`getMyPortals` / `getPortals`) as `$lang`.
    * - `departmentId` — Flow B: filters portals by `portal.department.id` (cc-widget: from default agent API details). `initParams.departmentId` is fallback only.
-   * - `portals` — used for user/agent portal intersection when `initParams.agentid` is set and not in Flow B; for `userType === 'customer'` with a non-empty list, used as the sole portal list (cc-widget parity).
-   * - `userType` — `'customer'` enables cc-widget customer portal list, profile, and select-API behavior.
+   * - `portals` — bot-configured portal IDs; intersected with list API results in Flow A (agent and customer).
+   * - `userType` — `'customer'` uses `getPortals` + intersection for portal list; enables customer profile and select-API behavior.
    */
   agentDetails?: {
     languageCode?: string;
@@ -103,6 +104,8 @@ export interface PortalInitializerConfig {
    * can store filter tags via setUserFilterTags.
    */
   hookContract?: HookContract;
+  /** Host context at initialize(); used to auto-select portal/profile when ids match. */
+  initialContext?: Record<string, unknown>;
 }
 
 /** Comma-separated portal IDs (cc-widget `portalIds` shortcut). */
@@ -120,6 +123,30 @@ function sameId(a: unknown, b: unknown): boolean {
   if (a == null || b == null) return false;
   if (a === "" || b === "") return false;
   return String(a) === String(b);
+}
+
+/** Read a string id from host init context (`{ value }` or plain string/number). */
+function extractContextAttribute(
+  context: Record<string, unknown> | null | undefined,
+  keys: string[]
+): string | undefined {
+  if (!context) return undefined;
+  for (const key of keys) {
+    const raw = context[key];
+    if (raw == null) continue;
+    if (typeof raw === "object" && "value" in (raw as object)) {
+      const value = (raw as { value?: unknown }).value;
+      if (value == null || value === "") continue;
+      const s = String(value).trim();
+      if (s) return s;
+      continue;
+    }
+    if (typeof raw === "string" || typeof raw === "number") {
+      const s = String(raw).trim();
+      if (s) return s;
+    }
+  }
+  return undefined;
 }
 
 function getPortalIdRaw(p: Portal): string | number | null {
@@ -247,52 +274,67 @@ export class PortalInitializer {
   /**
    * Fetch portals (once), apply mode-specific filtering, then auto-select or emit.
    *
-   * Mirrors cc-widget's `getFilteredPortals`: resolve the portal list first
-   * (customer synthetic / portalIds / API), then branch on mode for filtering.
-   * Customer synthetic path skips filtering entirely.
+   * Order: `portalIds` initParam → customer `getPortals` + intersection → agent `getMyPortals` + PCS / Flow B filters.
    */
   private async fetchPortals(): Promise<void> {
     const { apiHelper, logger, initParams, agentDetails, isAgentSelectionMode } = this.deps;
 
     let portals: Portal[];
 
-    if (agentDetails?.userType === 'customer' && (agentDetails.portals?.length ?? 0) > 0) {
-      const rawList = agentDetails.portals || [];
-      portals = rawList.map((entry) => {
-        const id =
-          typeof entry === 'object' && entry != null
-            ? (entry as { id?: string | number }).id
-            : entry;
-        return { id, name: ' ' } as Portal;
-      });
-      logger.info('Customer portal list from agentDetails.portals (cc-widget parity)', { count: portals.length });
-    } else {
-      const idList = parsePortalIdsFromParams(initParams);
-      if (idList.length > 0) {
-        logger.info('Using portalIds from params', { count: idList.length });
-        portals = idList.map((id) => ({ id } as Portal));
-      } else {
-        const userId = initParams.userid ?? initParams.userId ?? 'default';
-        const themeTemplate = (initParams.templateName || initParams.shortUrlTemplate || '').trim();
-        const shortUrlTemplate = themeTemplate || undefined;
-        const language =
-          typeof agentDetails?.languageCode === 'string' && agentDetails.languageCode.trim()
-            ? agentDetails.languageCode.trim()
-            : 'en-us';
+    const idList = parsePortalIdsFromParams(initParams);
+    if (idList.length > 0) {
+      logger.info('Using portalIds from params', { count: idList.length });
+      portals = idList.map((id) => ({ id } as Portal));
+    } else if (
+      agentDetails?.userType === 'customer' &&
+      (agentDetails.portals?.length ?? 0) > 0
+    ) {
+      const language =
+        typeof agentDetails.languageCode === 'string' && agentDetails.languageCode.trim()
+          ? agentDetails.languageCode.trim()
+          : 'en-us';
+      const departmentId = agentDetails?.departmentId;
 
-        logger.info('Fetching portals...');
-        try {
-          const fromMy = await apiHelper.getMyPortals({ language, userId, shortUrlTemplate });
-          portals = Array.isArray(fromMy) ? fromMy : [];
-        } catch (err) {
-          const error = err instanceof Error ? err : new Error(String(err));
+      logger.info('Fetching customer portals (getPortals)...');
+      try {
+        const fromApi = await apiHelper.getPortals({ language, departmentId });
+        portals = Array.isArray(fromApi) ? fromApi : [];
+      } catch (err) {
+        logger.error(
+          'Failed to fetch customer portals',
+          err instanceof Error ? err : new Error(String(err))
+        );
+        throw err;
+      }
+
+      if (!isAgentSelectionMode) {
+        portals = this.intersectWithBotPortals(portals);
+      }
+
+      logger.info('Customer portal list after fetch (and Flow A intersection when applicable)', {
+        count: portals.length,
+      });
+    } else {
+      const userId = initParams.userid ?? initParams.userId ?? '';
+      const themeTemplate = (initParams.templateName || initParams.shortUrlTemplate || '').trim();
+      const shortUrlTemplate = themeTemplate || undefined;
+      const language =
+        typeof agentDetails?.languageCode === 'string' && agentDetails.languageCode.trim()
+          ? agentDetails.languageCode.trim()
+          : 'en-us';
+
+      logger.info('Fetching portals...');
+      try {
+        const fromMy = await apiHelper.getMyPortals({ language, userId, shortUrlTemplate });
+        portals = Array.isArray(fromMy) ? fromMy : [];
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error(String(err));
           logger.error("Failed to fetch portals", error);
-          throw new InitializationPipelineError(
+        throw new InitializationPipelineError(
             "Failed to fetch portals",
             InitializationPipelineErrorCode.PORTAL_FETCH_FAILED,
             error
           );
-        }
       }
 
       let filterResult: { portals: Portal[]; pcsAutoSelected?: Portal };
@@ -317,26 +359,36 @@ export class PortalInitializer {
   }
 
   /**
+   * Flow A: intersect list API portals with `agentDetails.portals` when an agent id is in scope.
+   */
+  private intersectWithBotPortals(portals: Portal[]): Portal[] {
+    const { logger, initParams, agentDetails } = this.deps;
+
+    const agentIdForFilter =
+      initParams.agentid || initParams.agentId || this.deps.agentId;
+    if (!agentIdForFilter) {
+      return portals;
+    }
+
+    const botList = Array.isArray(agentDetails?.portals) ? agentDetails.portals : [];
+    const beforeCount = portals.length;
+    const filtered = filterPortalsUserAndAgent(portals, botList as unknown[]);
+    logger.info('Filtered portals (agent intersection)', {
+      before: beforeCount,
+      after: filtered.length,
+      agentid: agentIdForFilter,
+    });
+    return filtered;
+  }
+
+  /**
    * Flow A filter: intersect user portals with the specific agent's portal list
    * (when `initParams.agentid` is set), then run PCS hooks.
    */
   private async filterAgentSpecificPortals(
     portals: Portal[]
   ): Promise<{ portals: Portal[]; pcsAutoSelected?: Portal }> {
-    const { logger, initParams, agentDetails } = this.deps;
-
-    const agentIdForFilter = initParams.agentid || initParams.agentId || this.deps.agentId;
-    if (agentIdForFilter) {
-      const botList = Array.isArray(agentDetails?.portals) ? agentDetails.portals : [];
-      const beforeCount = portals.length;
-      portals = filterPortalsUserAndAgent(portals, botList as unknown[]);
-      logger.info('Filtered portals (agent intersection)', {
-        before: beforeCount,
-        after: portals.length,
-        agentid: agentIdForFilter,
-      });
-    }
-
+    portals = this.intersectWithBotPortals(portals);
     return this.applyPcsHooks(portals);
   }
 
@@ -431,23 +483,46 @@ export class PortalInitializer {
     logger.info("Portals fetched", { count: portals.length });
 
     if (portals.length === 1) {
-      this.selectedPortal = portals[0];
-      logger.info("Auto-selected single portal", {
-        portalId: this.selectedPortal.id,
-        name: this.selectedPortal.name
-      });
-      await this.callOnPortalSelected(this.selectedPortal);
-      await this.handleSelectedPortal();
-    } else {
-      logger.info(
-        "Emitting portalsAvailable; awaiting consumer selectPortal()",
-        { count: portals.length }
-      );
-      emit(
-        "portalsAvailable",
-        createAgentEventResponse("portalsAvailable", { portals })
-      );
+      await this.autoSelectPortalAndContinue(portals[0], "Auto-selected single portal");
+      return;
     }
+
+    const preferredPortalId = extractContextAttribute(this.deps.initialContext, [
+      "egain_portal_id",
+    ]);
+    if (preferredPortalId) {
+      const match = portals.find((p) => sameId(p.id, preferredPortalId));
+      if (match) {
+        await this.autoSelectPortalAndContinue(
+          match,
+          "Auto-selected portal from initialization context"
+        );
+        return;
+      }
+    }
+
+    logger.info(
+      "Emitting portalsAvailable; awaiting consumer selectPortal()",
+      { count: portals.length }
+    );
+    emit(
+      "portalsAvailable",
+      createAgentEventResponse("portalsAvailable", { portals })
+    );
+  }
+
+  private async autoSelectPortalAndContinue(
+    portal: Portal,
+    logMessage: string
+  ): Promise<void> {
+    const { logger } = this.deps;
+    this.selectedPortal = portal;
+    logger.info(logMessage, {
+      portalId: this.selectedPortal.id,
+      name: this.selectedPortal.name,
+    });
+    await this.callOnPortalSelected(this.selectedPortal);
+    await this.handleSelectedPortal();
   }
 
   /**
@@ -532,7 +607,15 @@ export class PortalInitializer {
       "Customer profile mode: skipping getUserProfiles (cc-widget parity)"
     );
     const portalDetails = await this.fetchPortalDetails(portalId);
-    const profiles = this.extractCustomerProfileFromDetails(portalDetails);
+    let profiles = this.extractCustomerProfileFromDetails(portalDetails);
+    const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
+      "egain_personalization_profile_id",
+    ]);
+    if (preferredProfileId && !profiles.some((p) => sameId(p.id, preferredProfileId))) {
+      profiles = [
+        { id: preferredProfileId, name: String(preferredProfileId) } as UserProfile,
+      ];
+    }
     return { portalDetails, profiles };
   }
 
@@ -696,6 +779,17 @@ export class PortalInitializer {
     const profiles = this.profiles;
 
     if (!profiles || profiles.length === 0) {
+      const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
+        "egain_personalization_profile_id",
+      ]);
+      if (preferredProfileId) {
+        return {
+          profile: {
+            id: preferredProfileId,
+            name: String(preferredProfileId),
+          } as UserProfile,
+        };
+      }
       return { profile: undefined };
     }
     if (profiles.length === 1) {
@@ -709,6 +803,14 @@ export class PortalInitializer {
     if (defaultId != null) {
       const defaultProfile = profiles.find((p) => String(p.id) === defaultId);
       if (defaultProfile) return { profile: defaultProfile };
+    }
+
+    const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
+      "egain_personalization_profile_id",
+    ]);
+    if (preferredProfileId) {
+      const fromContext = profiles.find((p) => sameId(p.id, preferredProfileId));
+      if (fromContext) return { profile: fromContext };
     }
 
     return null;

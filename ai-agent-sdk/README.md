@@ -2,7 +2,7 @@
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
-**Current release:** v0.1.5
+**Current release:** v0.2.0
 
 [![npm version](https://img.shields.io/npm/v/@egain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@egain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -20,6 +20,7 @@ TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication,
 - 🌐 **Universal** - Works in Browser and Node.js
 - 🏢 **Portal initialization** - Contact center REST pipeline (portals, agents, profiles) before WebSocket `connect()`
 - 🔌 **Platform connectors** - Load CC connector scripts; typed `HookContract` / `PlatformComponentService` for integrators
+- 🎭 **Data masking** - Department chat patterns when enabled in agent config; masks outbound customer messages and `maskContent()` for UI/escalation
 
 ## Installation
 
@@ -246,11 +247,12 @@ See [usage-examples](https://github.com/egain/ai-agent-sdk/tree/master/ai-agent-
 
 | Method | Description |
 |--------|-------------|
-| `initialize()` | Initialize the agent (required) |
+| `initialize(options?)` | Initialize the agent (optional `{ context }` for portal/profile auto-select) |
 | `connect()` | Connect to the server |
 | `disconnect(options?)` | Disconnect from server |
 | `restartConnection()` | Restart with new session |
 | `send(data, options?)` | Send a message |
+| `maskContent(text)` | Mask plain text with loaded patterns (UI/escalation; `send()` masks eligible messages automatically) |
 | `getState()` | Get connection state |
 | `isConnected()` | Check if connected |
 | `getTranscript(options?)` | Get conversation transcript |
@@ -286,6 +288,7 @@ new AiAgent({
   sessionId?: string | number,  // Skip session fetch if already known
   scopes?: string[],              // OAuth resource scopes
   initParams?: Record<string, string>, // CC: portalIds, authType, platform, etc.
+  context?: Record<string, unknown>,  // Optional; merged with initialize({ context })
   platformScriptUrl?: string,     // Override connector script URL
   authScheme?: "popup" | "redirect" // Auto-built PKCE only
 });
@@ -297,4 +300,4 @@ MIT
 
 ## Support
 
-For issues and questions, please open an issue on [GitHub](https://github.com/egain/ai-agent-sdk/issues).
+For issues and questions, please open an issue on [GitHub](https://github.com/egain/ai-agent-sdk/issues). Release notes: [changelog](https://egain.github.io/ai-agent-sdk/changelog.html).

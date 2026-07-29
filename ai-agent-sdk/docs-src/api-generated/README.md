@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.1.5
+# @egain/ai-agent-sdk API Reference - v0.2.0
 
 # @egain/ai-agent-sdk
 
@@ -88,6 +88,7 @@ await agent.send("Hello!");
 
 ### Other Interfaces
 
+- [AiAgentInitializeOptions](interfaces/AiAgentInitializeOptions.md)
 - [AgentEventPayloadMap](interfaces/AgentEventPayloadMap.md)
 - [AgentEvent](interfaces/AgentEvent.md)
 - [AgentEvents](interfaces/AgentEvents.md)
@@ -103,6 +104,7 @@ await agent.send("Hello!");
 - [GetPreviousTranscriptOptions](interfaces/GetPreviousTranscriptOptions.md)
 - [GetMaskingPatternsOptions](interfaces/GetMaskingPatternsOptions.md)
 - [GetMyPortalsOptions](interfaces/GetMyPortalsOptions.md)
+- [GetPortalsOptions](interfaces/GetPortalsOptions.md)
 - [GetAgentsByPortalOptions](interfaces/GetAgentsByPortalOptions.md)
 - [GetUserProfilesOptions](interfaces/GetUserProfilesOptions.md)
 - [SelectUserProfileOptions](interfaces/SelectUserProfileOptions.md)
@@ -213,7 +215,7 @@ Agent event type identifiers
 
 #### Defined in
 
-[core/AiAgent.ts:212](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L212)
+[core/AiAgent.ts:228](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L228)
 
 ___
 

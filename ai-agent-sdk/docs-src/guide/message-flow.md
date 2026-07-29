@@ -97,6 +97,49 @@ await agent.send(createEscalationMessage({
 }));
 ```
 
+## Data masking
+
+When the bot has **data masking** enabled in admin configuration, the SDK loads department chat masking patterns during `initialize()` (after authentication) and applies them to sensitive outbound text. There is no separate masking option on `AiAgent` — behavior follows **`agentDetails.enableDataMasking`** from the agent details API, plus platform support (deployment version **≥ 21.22.2**).
+
+### What gets masked
+
+Masking runs automatically in **`send()`** for outbound messages that are:
+
+- `persona: "customer"`
+- `role: "human"`
+- Non-empty string `content`
+
+Strings and `createAgentMessage()` calls match this path. **Context**, **feedback**, **escalation**, and other non–customer-human messages are **not** masked.
+
+The transcript records the same masked `content` that is sent on the WebSocket.
+
+```typescript
+// Masking is applied inside send() when enableDataMasking is true
+await agent.send("My card is 4532015112830366");
+// Wire + SDK transcript contain masked digits, not the full PAN
+```
+
+### UI and escalation (`maskContent`)
+
+For text that never goes through `send()` (for example pasted transcript rows or messages forwarded to live chat), use **`maskContent()`** so the same rules apply as cc-widget `eGainAiAgent.maskData`:
+
+```typescript
+const displayText = agent.maskContent(userPastedText);
+// Use displayText in the UI or when handing off to escalation
+```
+
+Do **not** call `maskContent()` and then `send()` with the same string — `send()` already masks eligible customer messages. Double masking is unnecessary.
+
+### When masking is inactive
+
+Masking is a no-op when:
+
+- `enableDataMasking` is false or missing on agent details
+- The deployment version is below the supported threshold
+- Pattern load fails (the SDK logs a warning and continues without masking)
+
+You do not need to catch errors for masking during `initialize()`; initialization still completes.
+
 ## Message Processing Pipeline
 
 ```
@@ -306,3 +349,7 @@ agent.on("agentMessage", (event) => {
   updateUI();
 });
 ```
+
+### 4. Data masking and `send()`
+
+If data masking is enabled for the bot, pass **plain** user text to `send()` — do not pre-mask. Use `maskContent()` only for UI or non-WebSocket paths (see [Data masking](#data-masking)).
