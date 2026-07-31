@@ -559,6 +559,28 @@ describe('PortalInitializer', () => {
         expect.objectContaining({ portal: portalA, profile: profileQ })
       );
     });
+
+    it('prefers initialization context profile over isLastUsedInPortal', async () => {
+      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
+      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, profileQ]);
+      const deps = {
+        ...defaultDeps,
+        initialContext: {
+          egain_portal_id: { value: String(portalA.id) },
+          egain_personalization_profile_id: { value: String(profileQ.id) },
+        },
+      };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+
+      await vi.waitFor(() => {
+        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+      });
+      const event = getEmittedEvent('initialized');
+      expect(event.payload).toEqual(
+        expect.objectContaining({ portal: portalA, profile: profileQ })
+      );
+    });
   });
 
   // ── Error: zero items ──────────────────────────────────────────────────

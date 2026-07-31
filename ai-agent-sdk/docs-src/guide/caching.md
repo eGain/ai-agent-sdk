@@ -67,8 +67,18 @@ The SDK automatically caches:
 |------|-------------|-------------|
 | Deployment Info | API domain configuration | 5 minutes |
 | Agent Details | Agent profile and settings | 5 minutes |
+| User profiles (`getUserProfiles`) | Per-portal profile list in `ApiHelper` | 5 minutes |
+| Portal pipeline profile list | Session-scoped `eg_profiles_*` reuse on portal pipeline restart | Agent cache TTL (default 1 hour) |
 | Context Data | User context for reconnection | Session |
 | Anonymous Auth Tokens | For session continuity | Token expiry |
+
+### Profile list cache invalidation
+
+Profile selection is a mutation: cached lists can carry stale `isLastUsedInPortal` flags.
+
+- **`ApiHelper.selectUserProfile`** — after a successful PUT, invalidates cached `getUserProfiles` entries for that helper instance.
+- **`AiAgent.updateUserProfile`** — clears the portal pipeline profile cache key and invalidates `getUserProfiles` before restarting the session.
+- **`restartPortalInitializer`** — clears the pipeline profile cache so the next run refetches profiles from the API.
 
 ## Disabling Cache
 

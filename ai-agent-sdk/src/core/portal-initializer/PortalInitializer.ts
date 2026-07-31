@@ -773,7 +773,7 @@ export class PortalInitializer {
    * Returns `{ profile }` when one can be auto-selected (including `undefined`
    * for the zero-profiles case), or `null` when the consumer must choose.
    *
-   * Priority: no profiles → single → lastUsed → portalDefault → null (emit)
+   * Priority: no profiles → single → context (in list) → lastUsed → portalDefault → null (emit)
    */
   private resolveAutoProfile(): { profile: UserProfile | undefined } | null {
     const profiles = this.profiles;
@@ -796,6 +796,14 @@ export class PortalInitializer {
       return { profile: profiles[0] };
     }
 
+    const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
+      "egain_personalization_profile_id",
+    ]);
+    if (preferredProfileId) {
+      const fromContext = profiles.find((p) => sameId(p.id, preferredProfileId));
+      if (fromContext) return { profile: fromContext };
+    }
+
     const lastUsed = profiles.find((p) => p.isLastUsedInPortal);
     if (lastUsed) return { profile: lastUsed };
 
@@ -803,14 +811,6 @@ export class PortalInitializer {
     if (defaultId != null) {
       const defaultProfile = profiles.find((p) => String(p.id) === defaultId);
       if (defaultProfile) return { profile: defaultProfile };
-    }
-
-    const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
-      "egain_personalization_profile_id",
-    ]);
-    if (preferredProfileId) {
-      const fromContext = profiles.find((p) => sameId(p.id, preferredProfileId));
-      if (fromContext) return { profile: fromContext };
     }
 
     return null;

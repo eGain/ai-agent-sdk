@@ -1784,6 +1784,13 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       }
     }
 
+    if (this.lastSelectedPortal?.id != null) {
+      this.contextCacheAdapter.delete(
+        this.getPipelineProfilesCacheKey(this.lastSelectedPortal.id),
+      );
+    }
+    this.apiHelper?.invalidateCache('getUserProfiles');
+
     await this.restartConnection();
 
     const payload: AgentEventPayloadMap['initialized'] = {

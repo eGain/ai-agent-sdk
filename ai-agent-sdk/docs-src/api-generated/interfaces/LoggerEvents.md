@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.0](../README.md) / LoggerEvents
+[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / LoggerEvents
 
 # Interface: LoggerEvents
 

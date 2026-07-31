@@ -838,6 +838,40 @@ describe('ApiHelper', () => {
 
       expect(global.fetch).toHaveBeenCalledTimes(2);
     });
+
+    it('should invalidate getUserProfiles cache after successful select', async () => {
+      const profilesResponse = {
+        profile: [{ id: 1, name: 'Profile A', isLastUsedInPortal: true }],
+      };
+
+      (global.fetch as any)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => profilesResponse,
+        })
+        .mockResolvedValueOnce({ ok: true })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => profilesResponse,
+        });
+
+      const helperWithCache = new ApiHelper({
+        apiDomain: mockApiDomain,
+        cache: { enabled: true, storageType: 'memory' },
+      });
+
+      await helperWithCache.getUserProfiles({ portalId: '200', authToken: 'test-token' });
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      await helperWithCache.selectUserProfile({
+        portalId: '200',
+        profileId: '10',
+        authToken: 'test-token',
+      });
+
+      await helperWithCache.getUserProfiles({ portalId: '200', authToken: 'test-token' });
+      expect(global.fetch).toHaveBeenCalledTimes(3);
+    });
   });
 
   describe('getUserDetails', () => {

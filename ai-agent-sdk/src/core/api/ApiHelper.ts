@@ -1020,6 +1020,8 @@ export class ApiHelper {
                 `Failed to select user profile: ${response.status} ${response.statusText}`
             );
         }
+
+        this.invalidateCache('getUserProfiles');
     }
 
     /**

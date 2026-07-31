@@ -32,6 +32,8 @@ await agent.send(createContextMessage({
 
 Context messages are automatically cached by the SDK. You can also pass context at **`initialize()`** so it is stored before connect and used to auto-select portal/profile when the portal pipeline runs (see [Portal initialization](./portal-initialization.md#initialization-context-initialize-context)).
 
+For profile selection, **`egain_personalization_profile_id`** in that context takes priority over the server’s last-used profile when both match rows in the fetched list (v0.2.1+). After a mid-session switch via **`updateUserProfile()`**, keep context in sync (or rely on the SDK’s stored context) so session recovery resolves the same profile.
+
 ```typescript
 await agent.initialize({
   context: {

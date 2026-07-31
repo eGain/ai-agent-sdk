@@ -54,6 +54,7 @@ describe('AiAgent', () => {
       getAgentsByPortal: vi.fn().mockResolvedValue([]),
       getUserProfiles: vi.fn().mockResolvedValue([]),
       selectUserProfile: vi.fn().mockResolvedValue(undefined),
+      invalidateCache: vi.fn(),
     };
 
     // Mock AuthenticationService
@@ -2020,12 +2021,15 @@ describe('AiAgent', () => {
       await initDone;
       const initializedPayloads: any[] = [];
       agent.on('initialized', (e: any) => initializedPayloads.push(e.payload));
+      const deleteSpy = vi.spyOn((agent as any).contextCacheAdapter, 'delete');
       await agent.updateUserProfile(newProfile);
       expect(restartConnectionSpy).toHaveBeenCalled();
       expect(initializedPayloads[initializedPayloads.length - 1].profile).toEqual(newProfile);
       expect(ccApiHelper.selectUserProfile).toHaveBeenCalledWith(
         expect.objectContaining({ portalId: 1, profileId: 20 })
       );
+      expect(deleteSpy).toHaveBeenCalledWith(expect.stringContaining('eg_profiles_'));
+      expect(ccApiHelper.invalidateCache).toHaveBeenCalledWith('getUserProfiles');
     });
 
     it('should emit initialized with updated profile', async () => {

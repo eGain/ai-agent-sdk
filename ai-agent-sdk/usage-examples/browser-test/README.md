@@ -306,7 +306,7 @@ The Vite configuration is set up to enable debugging with breakpoints directly i
    - Create `.vscode/launch.json`:
      ```json
      {
-       "version": "0.2.0",
+       "version": "0.2.1",
        "configurations": [
          {
            "type": "chrome",

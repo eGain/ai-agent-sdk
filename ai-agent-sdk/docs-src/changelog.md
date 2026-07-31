@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-07-30
+
+### Fixed
+
+- **Profile auto-select on recovery** — when multiple profiles are available, `egain_personalization_profile_id` in initialization context now wins over `isLastUsedInPortal` on the profile list
+- **Stale profile list caches** — `ApiHelper.selectUserProfile` invalidates cached `getUserProfiles` responses after a successful PUT; `AiAgent.updateUserProfile` clears the portal pipeline profile cache (`eg_profiles_*`) and invalidates `getUserProfiles` so the next pipeline run refetches fresh `isLastUsedInPortal` flags
+
+### Documentation
+
+- Portal initialization, context management, and caching guides: profile auto-select priority and profile-list cache invalidation on select / `updateUserProfile`
+
 ## [0.2.0] - 2026-07-29
 
 ### Added

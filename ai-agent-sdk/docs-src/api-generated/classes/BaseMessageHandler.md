@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.0](../README.md) / BaseMessageHandler
+[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / BaseMessageHandler
 
 # Class: BaseMessageHandler
 

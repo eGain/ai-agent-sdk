@@ -2,7 +2,7 @@
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
-**Current release:** v0.2.0
+**Current release:** v0.2.1
 
 [![npm version](https://img.shields.io/npm/v/@egain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@egain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -265,7 +265,7 @@ See [usage-examples](https://github.com/egain/ai-agent-sdk/tree/master/ai-agent-
 | `getInitParams()` | Copy of configured `initParams` |
 | `getIsInitialized()` | Whether `initialize()` completed |
 | `restartPortalInitializer()` | Re-run CC portal pipeline (or `restartConnection` fallback) |
-| `updateUserProfile(profile)` | Switch profile after CC init without full pipeline restart |
+| `updateUserProfile(profile)` | Switch profile after CC init (persists select, busts profile list caches, restarts session) |
 | `getUserDetails()` | User/customer details from init when the agent is authenticated (or `null`) |
 | `getCallTranscript()` / `clearCallTranscript()` | Telephony call transcript (connector) |
 | `getCallerInfo()` / `getConversationId()` | Connector-provided CTI state |

@@ -57,9 +57,18 @@ Pass host KB context when calling `initialize()` (or set `AiAgentConfig.context`
 | Context key | Effect |
 |-------------|--------|
 | `egain_portal_id` | When multiple portals remain after list fetch/filter, auto-select the matching portal (no `portalsAvailable` if matched) |
-| `egain_personalization_profile_id` | Auto-select matching profile when multiple profiles are available; customer mode may use a synthetic profile when the id is not the portal default |
+| `egain_personalization_profile_id` | When multiple profiles are available, auto-select the matching profile **before** server `isLastUsedInPortal` (v0.2.1+); customer mode may use a synthetic profile when the id is not the portal default |
 
-Values may be plain strings or eGain attribute objects `{ value: "..." }`. Non-matching ids fall back to the normal picker events.
+Values may be plain strings or eGain attribute objects `{ value: "..." }`. Non-matching ids fall back to the normal auto-select rules below.
+
+### Profile auto-select priority (multiple profiles)
+
+When the pipeline has a profile list and more than one row, the SDK picks in this order:
+
+1. **`egain_personalization_profile_id`** in initialization context (if that id exists in the list)
+2. Profile with **`isLastUsedInPortal: true`**
+3. Portal **default** profile from portal settings
+4. Otherwise emit **`profilesAvailable`** for the host to call `selectUserProfile`
 
 ### Top-level `AiAgentConfig`
 
@@ -135,8 +144,8 @@ await agent.initialize({
 
 ## Restarting the pipeline
 
-- **`restartPortalInitializer()`** — For agents that **completed** the CC portal pipeline, tears down state and re-runs portal → agent → profile selection. If the agent never used that pipeline, this delegates to `restartConnection()`.
-- **`updateUserProfile(profile)`** — After initialization, switch profile without re-running the full pipeline (persists selection, clears queue/transcript, new session).
+- **`restartPortalInitializer()`** — For agents that **completed** the CC portal pipeline, tears down state and re-runs portal → agent → profile selection. Clears the portal-scoped profile list cache so profiles are refetched. If the agent never used that pipeline, this delegates to `restartConnection()`.
+- **`updateUserProfile(profile)`** — After initialization, switch profile without re-running the full pipeline: persists selection via portalmgr select (when applicable), **invalidates cached profile lists** (pipeline `eg_profiles_*` and `ApiHelper` `getUserProfiles`), clears queue/transcript, starts a new session, and emits `initialized` with the new profile.
 
 ## Related docs
 
