@@ -9,6 +9,11 @@ on:
       tag:
         description: 'Release tag (e.g. v1.0.0)'
         required: false
+      is_beta:
+        description: 'Publish as beta release'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   publish:
@@ -41,7 +46,15 @@ jobs:
         run: npm run build --if-present
         working-directory: ai-agent-sdk
 
-      - name: Publish to npm
+      - name: Publish beta to npm
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.is_beta == true }}
+        run: npm publish --provenance --access public --tag beta
+        working-directory: ai-agent-sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish stable to npm
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.is_beta != true }}
         run: npm publish --provenance --access public
         working-directory: ai-agent-sdk
         env:
