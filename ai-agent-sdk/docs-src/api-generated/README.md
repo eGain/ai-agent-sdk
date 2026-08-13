@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.2.1
+# @egain/ai-agent-sdk API Reference - v0.2.2-beta.0
 
 # @egain/ai-agent-sdk
 
@@ -78,6 +78,7 @@ await agent.send("Hello!");
 - [MessageProcessor](classes/MessageProcessor.md)
 - [AgentMessageHandler](classes/AgentMessageHandler.md)
 - [ChatHistoryHandler](classes/ChatHistoryHandler.md)
+- [ContextValidationHandler](classes/ContextValidationHandler.md)
 - [ErrorMessageHandler](classes/ErrorMessageHandler.md)
 - [HeartbeatHandler](classes/HeartbeatHandler.md)
 - [TokenRefreshHandler](classes/TokenRefreshHandler.md)
@@ -136,6 +137,7 @@ await agent.send("Hello!");
 - [MessageObject](interfaces/MessageObject.md)
 - [TokenMessageParams](interfaces/TokenMessageParams.md)
 - [TokenRefreshHandlerOptions](interfaces/TokenRefreshHandlerOptions.md)
+- [ContextValidationIssue](interfaces/ContextValidationIssue.md)
 - [MessageData](interfaces/MessageData.md)
 - [MessageHandlerResult](interfaces/MessageHandlerResult.md)
 - [CallTranscriptEntry](interfaces/CallTranscriptEntry.md)
@@ -209,7 +211,7 @@ await agent.send("Hello!");
 
 ### AgentEventType
 
-Ƭ **AgentEventType**: ``"connected"`` \| ``"message"`` \| ``"agentMessage"`` \| ``"errorMessage"`` \| ``"error"`` \| ``"closed"`` \| ``"stateChanged"`` \| ``"queueFlushed"`` \| ``"heartbeat"`` \| ``"tokenExpiring"`` \| ``"transcriptUpdate"`` \| ``"callTranscriptUpdate"`` \| ``"callerInfoUpdate"`` \| ``"conversationIdUpdate"`` \| ``"userContextUpdate"`` \| ``"filterTagsUpdate"`` \| ``"initialized"`` \| ``"portalsAvailable"`` \| ``"agentsAvailable"`` \| ``"profilesAvailable"``
+Ƭ **AgentEventType**: ``"connected"`` \| ``"message"`` \| ``"agentMessage"`` \| ``"contextValidation"`` \| ``"errorMessage"`` \| ``"error"`` \| ``"closed"`` \| ``"stateChanged"`` \| ``"queueFlushed"`` \| ``"heartbeat"`` \| ``"tokenExpiring"`` \| ``"transcriptUpdate"`` \| ``"callTranscriptUpdate"`` \| ``"callerInfoUpdate"`` \| ``"conversationIdUpdate"`` \| ``"userContextUpdate"`` \| ``"filterTagsUpdate"`` \| ``"initialized"`` \| ``"portalsAvailable"`` \| ``"agentsAvailable"`` \| ``"profilesAvailable"``
 
 Agent event type identifiers
 
@@ -363,7 +365,7 @@ Type definitions for persona values
 
 #### Defined in
 
-[core/message/types.ts:36](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L36)
+[core/message/types.ts:37](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L37)
 
 ___
 
@@ -375,7 +377,7 @@ Type definitions for role values
 
 #### Defined in
 
-[core/message/types.ts:41](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L41)
+[core/message/types.ts:42](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L42)
 
 ## Variables
 
@@ -435,7 +437,7 @@ ___
 
 ### ROLE
 
-• `Const` **ROLE**: `Readonly`\<\{ `STALE_TOKEN`: ``"stale_token"`` = "stale\_token"; `EXPIRED_TOKEN`: ``"expired_token"`` = "expired\_token"; `TOKEN`: ``"token"`` = "token"; `CHAT_HISTORY`: ``"chat history"`` = "chat history"; `ERROR`: ``"error"`` = "error"; `HEARTBEAT`: ``"heartbeat"`` = "heartbeat"; `FOLLOW_UP_QUESTION`: ``"follow up question agent"`` = "follow up question agent"; `CUSTOMER_SUPPORT`: ``"customer support agent"`` = "customer support agent"; `CONTEXT`: ``"context"`` = "context"; `GRACEFUL_DISCONNECT`: ``"graceful disconnect"`` = "graceful disconnect"; `ESCALATION`: ``"escalation"`` = "escalation"; `FEEDBACK`: ``"feedback"`` = "feedback"; `HUMAN`: ``"human"`` = "human" }\>
+• `Const` **ROLE**: `Readonly`\<\{ `STALE_TOKEN`: ``"stale_token"`` = "stale\_token"; `EXPIRED_TOKEN`: ``"expired_token"`` = "expired\_token"; `TOKEN`: ``"token"`` = "token"; `CHAT_HISTORY`: ``"chat history"`` = "chat history"; `ERROR`: ``"error"`` = "error"; `HEARTBEAT`: ``"heartbeat"`` = "heartbeat"; `CONTEXT_VALIDATION`: ``"context validation"`` = "context validation"; `FOLLOW_UP_QUESTION`: ``"follow up question agent"`` = "follow up question agent"; `CUSTOMER_SUPPORT`: ``"customer support agent"`` = "customer support agent"; `CONTEXT`: ``"context"`` = "context"; `GRACEFUL_DISCONNECT`: ``"graceful disconnect"`` = "graceful disconnect"; `ESCALATION`: ``"escalation"`` = "escalation"; `FEEDBACK`: ``"feedback"`` = "feedback"; `HUMAN`: ``"human"`` = "human" }\>
 
 #### Defined in
 
@@ -449,7 +451,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:27](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L27)
+[core/message/types.ts:28](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L28)
 
 ## Functions
 

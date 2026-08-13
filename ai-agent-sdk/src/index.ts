@@ -159,6 +159,7 @@ export { TokenRefreshHandler } from './core/message/handlers/TokenRefreshHandler
 export type { TokenRefreshHandlerOptions } from './core/message/handlers/TokenRefreshHandler.js';
 export { HeartbeatHandler } from './core/message/handlers/HeartbeatHandler.js';
 export { ErrorMessageHandler } from './core/message/handlers/ErrorMessageHandler.js';
+export { ContextValidationHandler } from './core/message/handlers/ContextValidationHandler.js';
 export {
   PERSONA,
   ROLE,
@@ -167,6 +168,7 @@ export {
 export type {
   Persona,
   Role,
+  ContextValidationIssue,
   MessageData,
   MessageHandlerResult,
 } from './core/message/types.js';

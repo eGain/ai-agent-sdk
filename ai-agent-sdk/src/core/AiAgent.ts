@@ -9,7 +9,7 @@ import { ApiHelper, CacheConfig, type UserDetails } from './api/ApiHelper.js';
 import { CacheAdapter, createCacheAdapter } from './api/CacheAdapter.js';
 import { MessageProcessor } from './message/MessageProcessor.js';
 import { Message } from './message/Message.js';
-import { MessageHandlerResult, PERSONA, ROLE } from './message/types.js';
+import { MessageData, MessageHandlerResult, PERSONA, ROLE } from './message/types.js';
 import { TokenRefreshHandler } from './message/handlers/TokenRefreshHandler.js';
 import { Logger } from './logging/Logger.js';
 import { LogLevel } from './logging/LogLevel.js';
@@ -229,6 +229,7 @@ export type AgentEventType =
   | 'connected'
   | 'message'
   | 'agentMessage'
+  | 'contextValidation'
   | 'errorMessage'
   | 'error'
   | 'closed'
@@ -254,6 +255,10 @@ export interface AgentEventPayloadMap {
   connected: Record<string, never>;
   message: { data: any };
   agentMessage: Omit<MessageHandlerResult, 'timestamp' | 'sessionId' | 'agentId'>;
+  contextValidation: {
+    message: Message;
+    issues: NonNullable<MessageData['contextValidationErrors']>;
+  };
   errorMessage: { message: Message; error: Error };
   error: { error: Error };
   closed: { code?: number; reason?: string };
@@ -330,6 +335,11 @@ export interface AgentEvents {
    * Emitted when an agent message is received
    */
   agentMessage: AgentEvent<'agentMessage'>;
+
+  /**
+   * Emitted when some context attributes were rejected without terminating the session.
+   */
+  contextValidation: AgentEvent<'contextValidation'>;
 
   /**
    * Emitted when an error message is received
@@ -631,9 +641,10 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       config.cache
     );
 
-    // Initialize context cache adapter
-    // Use custom adapter if provided in cache config, otherwise create based on storage type
-    if (config.cache?.adapter) {
+    // Initialize context cache adapter (memory-only when caching is disabled)
+    if (config.cache?.enabled === false) {
+      this.contextCacheAdapter = createCacheAdapter('memory');
+    } else if (config.cache?.adapter) {
       this.contextCacheAdapter = config.cache.adapter;
     } else {
       this.contextCacheAdapter = createCacheAdapter(config.cache?.storageType || 'session');
@@ -763,7 +774,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
       // Get deployment info (use cached if getAgentDetails was called first)
       if (!this.deploymentInfo) {
-        this.deploymentInfo = await ApiHelper.getDeploymentInfo(this.config.endpoint);
+        this.deploymentInfo = await ApiHelper.getDeploymentInfo(this.config.endpoint, this.config.cache);
       }
 
       if (!this.deploymentInfo) {
@@ -1095,11 +1106,13 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       isAgentSelectionMode: this.isAgentSelectionMode,
       agentDetails: this.agentDetails,
       initialContext: this.initialContext,
-      pipelineCache: {
-        adapter: this.contextCacheAdapter,
-        profilesKey: (portalId) => this.getPipelineProfilesCacheKey(portalId),
-        ttl: this.config.cache?.ttl ?? 60 * 60 * 1000, // 1 hour
-      },
+      pipelineCache: this.config.cache?.enabled !== false
+        ? {
+            adapter: this.contextCacheAdapter,
+            profilesKey: (portalId) => this.getPipelineProfilesCacheKey(portalId),
+            ttl: this.config.cache?.ttl ?? 60 * 60 * 1000, // 1 hour
+          }
+        : undefined,
     });
 
     await this.portalInitializer.start();
@@ -1294,7 +1307,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     }
     // Fetch from network if not cached
     this.logger.debug('Fetching deployment info from network', { endpoint: this.config.endpoint });
-    this.deploymentInfo = await ApiHelper.getDeploymentInfo(this.config.endpoint);
+    this.deploymentInfo = await ApiHelper.getDeploymentInfo(this.config.endpoint, this.config.cache);
     return this.deploymentInfo;
   }
 
@@ -1307,6 +1320,43 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       throw new Error('Agent details not found. Call initialize() first.');
     }
     return this.agentDetails?.name ?? this.agentDetails?.agentProfileDetails?.name ?? '';
+  }
+
+  private getSessionStartContext(): object | undefined {
+    try {
+      const context = this.getContext();
+      const portalId = this.lastSelectedPortal?.id;
+      if (portalId == null) {
+        return context ?? undefined;
+      }
+
+      const storedContext = (context ?? {}) as Record<string, unknown>;
+      const storedPortalContext = storedContext.egain_portal_id;
+      const cachedPortalContext = storedPortalContext && typeof storedPortalContext === 'object' && !Array.isArray(storedPortalContext)
+        ? storedPortalContext as Record<string, unknown>
+        : {};
+      const cachedDescription = cachedPortalContext.description;
+      const portalContext = {
+        ...cachedPortalContext,
+        value: String(portalId),
+        type: 'string',
+        description: typeof cachedDescription === 'string' && cachedDescription.trim()
+          ? cachedDescription
+          : 'This is the egain portal_id to use',
+        notInLLM: true,
+      };
+
+      return {
+        ...storedContext,
+        egain_portal_id: portalContext,
+      };
+    } catch (error) {
+      this.logger.warn('Session-start context unavailable; creating a no-context session', {
+        agentId: this.resolvedAgentId,
+        errorType: error instanceof Error ? error.name : typeof error,
+      });
+      return undefined;
+    }
   }
 
   /**
@@ -1328,6 +1378,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     return await this.apiHelper?.getAiAgentSession({
       agentId: this.resolvedAgentId,
       authToken: accessToken ?? await this.authService.getToken() ?? null,
+      context: this.getSessionStartContext(),
     });
   }
 
@@ -1810,7 +1861,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * 2. Clears all queued messages and transcript
    * 3. Obtains a new session ID (or uses provided one)
    * 4. Reconnects to the new session
-   * 5. Sends any stored context to the new session
+   * 5. Persists stored context while creating the new session
    * 
    * **Note:** All queued messages will be lost during restart.
    * 
@@ -1879,6 +1930,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         newSessionId = await this.apiHelper?.getAiAgentSession({
           agentId: this.resolvedAgentId,
           authToken: accessToken,
+          context: this.getSessionStartContext(),
         });
 
         if (!newSessionId) {
@@ -1907,8 +1959,11 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       // Step 8: Connect to the new session
       await this.connect();
 
-      // Step 9: Send stored context immediately after reconnection
-      await this.sendStoredContext();
+      // A caller-provided session did not use the POST creation path, so preserve
+      // the legacy WebSocket context restore for that compatibility path only.
+      if (options?.sessionId !== undefined) {
+        await this.sendStoredContext();
+      }
 
       this.logger.info('Connection restarted successfully', {
         agentId: this.resolvedAgentId,
@@ -2196,17 +2251,25 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     return null;
   }
 
+  private getContextUpdates(context: object): Record<string, unknown> {
+    const storedContext = (this.getContext() ?? {}) as Record<string, unknown>;
+    return Object.fromEntries(
+      Object.entries(context).filter(([key, value]) => JSON.stringify(storedContext[key]) !== JSON.stringify(value))
+    );
+  }
+
   /**
    * Store context in cache
    * @param context - The context object to store
    */
   private storeContext(context: object): void {
     const cacheKey = this.getContextCacheKey();
+    const mergedContext = { ...(this.getContext() ?? {}), ...context };
     this.contextCacheAdapter.set(cacheKey, {
-      value: context,
+      value: mergedContext,
       timestamp: Date.now(),
     });
-      this.logger.debug('Context stored in cache', { agentId: this.resolvedAgentId, context });
+    this.logger.debug('Context stored in cache', { agentId: this.resolvedAgentId, context: mergedContext });
   }
 
   /**
@@ -2235,7 +2298,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
   /**
    * Set context for this agent
-   * Stores the context in cache and optionally sends it to the agent immediately
+   * Merges the context into the cache and optionally sends only changed values to the agent immediately
    * @param context - The context object to set
    * @param options - Optional settings
    * @param options.sendImmediately - If true, sends the context to the agent right away (default: false)
@@ -2252,11 +2315,12 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * ```
    */
   async setContext(context: object, options?: { sendImmediately?: boolean }): Promise<void> {
+    const contextUpdates = this.getContextUpdates(context);
     this.storeContext(context);
     this.logger.info('Context set', { agentId: this.resolvedAgentId, context });
 
-    if (options?.sendImmediately) {
-      const contextMessage = createContextMessage({ context });
+    if (options?.sendImmediately && Object.keys(contextUpdates).length > 0) {
+      const contextMessage = createContextMessage({ context: contextUpdates });
       await this.send(contextMessage);
       this.logger.debug('Context sent immediately after setContext', { agentId: this.resolvedAgentId });
     }
@@ -2278,9 +2342,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   }
 
   /**
-   * Send stored context to the agent
-   * This is called internally after reconnection to restore context
-   * @returns Promise that resolves when context is sent (or immediately if no context)
+   * Send stored context to an existing caller-provided session.
    */
   private async sendStoredContext(): Promise<void> {
     const context = this.getContext();
@@ -2297,7 +2359,6 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       this.logger.error('Failed to send stored context', err, { agentId: this.resolvedAgentId });
-      // Don't throw - allow the connection to continue even if context send fails
     }
   }
 
@@ -2382,6 +2443,11 @@ export class AiAgent extends EventEmitter<AgentEvents> {
                 agentId: this.resolvedAgentId ?? agentId,
               }
             ));
+          } else if (result.type === 'context_validation') {
+            this.emit('contextValidation', this.createAgentEventResponse('contextValidation', {
+              message,
+              issues: message.messageData?.contextValidationErrors || [],
+            }));
           } else if (result.type === 'error_message') {
             // Create error object with message details
             const errorMessage = message.content || 'Error message received';
@@ -2737,4 +2803,3 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     }
   }
 }
-

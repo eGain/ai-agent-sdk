@@ -1,6 +1,6 @@
 {
   "name": "@egain/ai-agent-sdk",
-  "version": "0.2.1",
+  "version": "0.2.2-beta.0",
   "description": "TypeScript SDK for eGain's AI Agent platform",
   "homepage": "https://egain.github.io/ai-agent-sdk",
   "type": "module",
@@ -37,6 +37,7 @@
     "example": "node usage-examples/basic-usage.js",
     "publish:dry-run": "npm run clean && npm run build:all && npm run test && npm pack",
     "publish-package": "node scripts/publish.js",
+    "publish-beta-package": "node scripts/publish.js beta",
     "docs:dev": "vitepress dev docs-src",
     "docs:build": "vitepress build docs-src",
     "docs:preview": "vitepress preview docs-src",
@@ -45,7 +46,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eGain/ai-agent-sdk.git"
+    "url": "https://github.com/egain/ai-agent-sdk.git"
   },
   "keywords": [
     "egain",

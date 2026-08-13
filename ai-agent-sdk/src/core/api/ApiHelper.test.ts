@@ -103,19 +103,92 @@ describe('ApiHelper', () => {
         architecture: 'v2',
         agentId: 'test-agent-id',
         authToken: 'test-token',
+        context: {
+          accountTier: {
+            value: 'gold',
+            type: 'string',
+            description: 'Customer tier',
+            notInLLM: false,
+          },
+        },
       });
 
       expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.example.com/core/aiservices/v4/aiagent/chat/agent/test-agent-id/session',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer test-token',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            context: {
+              accountTier: {
+                value: 'gold',
+                type: 'string',
+                description: 'Customer tier',
+                notInLLM: false,
+              },
+            },
+          }),
+        }
+      );
+      expect(result).toBe('test-session-id');
+    });
+
+    it('should fall back to the legacy GET route when the POST route is unavailable', async () => {
+      (global.fetch as any)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 403,
+          statusText: 'Forbidden',
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ sessionId: 'legacy-session-id' }),
+        });
+
+      const result = await apiHelper.getAiAgentSession({
+        architecture: 'v2',
+        agentId: 'test-agent-id',
+        authToken: 'test-token',
+        context: { accountTier: { value: 'gold' } },
+      });
+
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        2,
         'https://api.example.com/core/aiservices/v4/aiagent/chat/agent/test-agent-id/session',
         {
           method: 'GET',
           headers: { Authorization: 'Bearer test-token' },
         }
       );
-      expect(result).toBe('test-session-id');
+      expect(result).toBe('legacy-session-id');
     });
 
-    it('should throw error if fetch fails', async () => {
+    it('should throw the fallback error if the legacy GET route also fails', async () => {
+      (global.fetch as any)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 405,
+          statusText: 'Method Not Allowed',
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 503,
+          statusText: 'Service Unavailable',
+        });
+
+      await expect(
+        apiHelper.getAiAgentSession({
+          architecture: 'v2',
+          agentId: 'test-agent-id',
+          authToken: 'test-token',
+        })
+      ).rejects.toThrow('Failed to fetch AI Agent session: 503 Service Unavailable');
+    });
+
+    it('should not fall back when the POST route returns a server error', async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 500,
@@ -129,6 +202,7 @@ describe('ApiHelper', () => {
           authToken: 'test-token',
         })
       ).rejects.toThrow('Failed to fetch AI Agent session: 500 Internal Server Error');
+      expect(global.fetch).toHaveBeenCalledOnce();
     });
   });
 
@@ -989,5 +1063,25 @@ describe('ApiHelper', () => {
       expect(result).toBeNull();
     });
   });
-});
 
+  describe('getDeploymentInfo', () => {
+    it('should not use static cache when cache.enabled is false', async () => {
+      const { MemoryCacheAdapter } = await import('./CacheAdapter.js');
+      const adapter = new MemoryCacheAdapter();
+      const getSpy = vi.spyOn(adapter, 'get');
+      const setSpy = vi.spyOn(adapter, 'set');
+      ApiHelper.setStaticCacheAdapter(adapter);
+
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ apiDomain: 'api.example.com' }),
+      });
+
+      const result = await ApiHelper.getDeploymentInfo('https://example.com', { enabled: false });
+
+      expect(result).toEqual({ apiDomain: 'api.example.com' });
+      expect(getSpy).not.toHaveBeenCalled();
+      expect(setSpy).not.toHaveBeenCalled();
+    });
+  });
+});

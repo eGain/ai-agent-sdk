@@ -63,9 +63,8 @@ await agent.send(createContextMessage({
   }
 }));
 
-// Context is automatically restored on reconnect
+// Context is restored on restart (session POST for new sessions; WebSocket when sessionId is supplied)
 await agent.restartConnection();
-// Context is automatically sent to new session
 ```
 
 ### Feedback Message

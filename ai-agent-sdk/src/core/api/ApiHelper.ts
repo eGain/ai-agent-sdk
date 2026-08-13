@@ -111,6 +111,11 @@ export interface GetAiAgentSessionOptions {
      * Authentication token
      */
     authToken?: string | null;
+
+    /**
+     * Context to persist before the session is returned and pre-chat starts.
+     */
+    context?: object;
 }
 
 export interface GetPortalDetailsOptions {
@@ -548,14 +553,26 @@ export class ApiHelper {
     async getAiAgentSession(
         options: GetAiAgentSessionOptions
     ): Promise<string> {
-        const { agentId, authToken } = options;
+        const { agentId, authToken, context } = options;
         const token = await this.resolveAuthToken(authToken);
 
         const url = `${this.apiDomain}/core/aiservices/v4/aiagent/chat/agent/${agentId}/session`;
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${token}` },
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(context ? { context } : {}),
         });
+
+        // REST API Gateway returns 403 for an undeployed method; other gateways use 404 or 405.
+        if ([403, 404, 405].includes(response.status)) {
+            response = await fetch(url, {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        }
 
         if (!response.ok) {
             throw new Error(
@@ -1124,8 +1141,8 @@ export class ApiHelper {
      * @param {string} domain - The domain to get the deployment information for
      * @returns {Promise<Object>} The deployment information
      */
-    static async getDeploymentInfo(domain: string): Promise<any> {
-        const cacheAdapter = ApiHelper.getStaticCacheAdapter();
+    static async getDeploymentInfo(domain: string, cache?: Pick<CacheConfig, 'enabled'>): Promise<any> {
+        const cacheAdapter = cache?.enabled !== false ? ApiHelper.getStaticCacheAdapter() : null;
         const cacheKey = `${ApiHelper.staticCachePrefix}deployment-info-${domain}`;
 
         // Check session storage cache first
@@ -1171,4 +1188,3 @@ export class ApiHelper {
         }
     }
 }
-

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / BaseMessageHandler
+[@egain/ai-agent-sdk API Reference - v0.2.2-beta.0](../README.md) / BaseMessageHandler
 
 # Class: BaseMessageHandler
 
@@ -80,6 +80,8 @@ class SentimentHandler extends BaseMessageHandler {
   ↳ [`HeartbeatHandler`](HeartbeatHandler.md)
 
   ↳ [`ErrorMessageHandler`](ErrorMessageHandler.md)
+
+  ↳ [`ContextValidationHandler`](ContextValidationHandler.md)
 
 ## Table of contents
 

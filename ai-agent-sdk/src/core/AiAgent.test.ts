@@ -11,6 +11,7 @@ import { ApiHelper } from './api/ApiHelper.js';
 import { PortalInitializer } from './portal-initializer/PortalInitializer.js';
 import type { Portal, UserProfile } from './types/PortalTypes.js';
 import { DataMasker } from './data-masking/DataMasker.js';
+import { MemoryCacheAdapter } from './api/CacheAdapter.js';
 
 // Mock dependencies
 vi.mock('./connection/Connection.js');
@@ -918,7 +919,7 @@ describe('AiAgent', () => {
       expect((agent as any).isInitialized).toBe(true);
     });
 
-    it('should emit initialized with portal, profile (and optional agent) when CC pipeline completes', async () => {
+    it('should create the session with the auto-selected portal only when connecting', async () => {
       const mockPortal = { id: 1, name: 'Portal A', description: 'Desc A' };
       const mockPortalDetails = { id: 1, name: 'Portal A', departmentId: 100 };
       const mockProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
@@ -950,7 +951,6 @@ describe('AiAgent', () => {
         portals: [{ id: 1 }], // so CC pipeline completes (agent has associated portal matching mockPortal)
       });
       vi.spyOn((agent as any).authService, 'getToken').mockResolvedValue('mock-token');
-      vi.spyOn(agent as any, 'getSessionId').mockResolvedValue('session-123');
       vi.spyOn(agent as any, 'createConnection').mockResolvedValue(undefined);
 
       let initializedPayload: any;
@@ -961,7 +961,17 @@ describe('AiAgent', () => {
         });
       });
 
-      await agent.initialize();
+      await agent.initialize({
+        context: {
+          accountTier: { value: 'gold', type: 'string' },
+          egain_portal_id: {
+            value: 'stale-portal',
+            type: 'string',
+            description: 'Portal identifier',
+            notInLLM: true,
+          },
+        },
+      });
       await initDone;
 
       expect(initializedPayload).toBeDefined();
@@ -970,6 +980,90 @@ describe('AiAgent', () => {
       expect(initializedPayload.profile).toEqual(mockProfile);
       expect(initializedPayload.availablePortals).toEqual([mockPortal]);
       expect(initializedPayload.agent).toBeUndefined();
+      expect(ccApiHelper.getAiAgentSession).not.toHaveBeenCalled();
+
+      vi.spyOn(agent as any, 'createConnection').mockImplementation(async () => {
+        (agent as any).connection = mockConnection;
+      });
+      await agent.connect();
+
+      expect(ccApiHelper.getAiAgentSession).toHaveBeenCalledWith({
+        agentId: mockAgentId,
+        authToken: 'mock-token',
+        context: {
+          accountTier: { value: 'gold', type: 'string' },
+          egain_portal_id: {
+            value: '1',
+            type: 'string',
+            description: 'Portal identifier',
+            notInLLM: true,
+          },
+        },
+      });
+    });
+
+    it('should create the session with the user-selected portal only when connecting', async () => {
+      const portalA = { id: 1, name: 'Portal A' };
+      const portalB = { id: 2, name: 'Portal B' };
+      const profile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
+      const ccApiHelper = {
+        ...mockApiHelper,
+        getMyPortals: vi.fn().mockResolvedValue([portalA, portalB]),
+        getPortalDetails: vi.fn().mockResolvedValue({
+          id: portalB.id,
+          name: portalB.name,
+          departmentId: 100,
+        }),
+        getUserProfiles: vi.fn().mockResolvedValue([profile]),
+        selectUserProfile: vi.fn().mockResolvedValue(undefined),
+      };
+
+      vi.spyOn(ApiHelper, 'getDeploymentInfo').mockResolvedValue({
+        aiAgentDomain: 'test.example.com',
+        apiDomain: 'api.test.example.com',
+      });
+
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+      });
+      (agent as any).apiHelper = ccApiHelper;
+
+      vi.spyOn(agent as any, 'fetchAgentDetails').mockResolvedValue({
+        name: 'Test Agent',
+        agentType: 'contact-center',
+        isAuthenticated: false,
+        portals: [{ id: portalA.id }, { id: portalB.id }],
+      });
+      vi.spyOn((agent as any).authService, 'getToken').mockResolvedValue('mock-token');
+
+      const portalsAvailable = waitForEvent(agent, 'portalsAvailable');
+      await agent.initialize();
+      const portalsEvent = await portalsAvailable;
+
+      expect(portalsEvent.payload.portals).toEqual([portalA, portalB]);
+      expect(ccApiHelper.getAiAgentSession).not.toHaveBeenCalled();
+
+      await agent.selectPortal(portalB);
+      expect(ccApiHelper.getAiAgentSession).not.toHaveBeenCalled();
+
+      vi.spyOn(agent as any, 'createConnection').mockImplementation(async () => {
+        (agent as any).connection = mockConnection;
+      });
+      await agent.connect();
+
+      expect(ccApiHelper.getAiAgentSession).toHaveBeenCalledWith({
+        agentId: mockAgentId,
+        authToken: 'mock-token',
+        context: {
+          egain_portal_id: {
+            value: '2',
+            type: 'string',
+            description: 'This is the egain portal_id to use',
+            notInLLM: true,
+          },
+        },
+      });
     });
   });
 
@@ -1495,6 +1589,58 @@ describe('AiAgent', () => {
 
       expect(handler).toHaveBeenCalled();
     });
+
+    it('should emit message, transcriptUpdate, and contextValidation without errorMessage', async () => {
+      const messageHandler = vi.fn();
+      const transcriptHandler = vi.fn();
+      const validationHandler = vi.fn();
+      const errorMessageHandler = vi.fn();
+      agent.on('message', messageHandler);
+      agent.on('transcriptUpdate', transcriptHandler);
+      agent.on('contextValidation', validationHandler);
+      agent.on('errorMessage', errorMessageHandler);
+      (agent as any).connection = mockConnection;
+      (agent as any).sessionId = 'session-123';
+      (agent as any).resolvedAgentId = mockAgentId;
+      (agent as any).setupConnectionEvents();
+      const incomingHandler = mockConnection.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'message'
+      )[1];
+      const contextValidationErrors = [
+        {
+          name: 'count',
+          reason: 'type_mismatch',
+          expectedType: 'integer',
+          providedType: 'string',
+        },
+      ];
+
+      await incomingHandler({
+        data: JSON.stringify({
+          messageId: 'context-validation-1',
+          persona: PERSONA.SYSTEM,
+          role: ROLE.CONTEXT_VALIDATION,
+          content: 'Some context attributes could not be applied.',
+          messageData: { contextValidationErrors },
+        }),
+        timestamp: Date.now(),
+      });
+
+      expect(messageHandler).toHaveBeenCalledOnce();
+      expect(transcriptHandler).toHaveBeenCalledOnce();
+      expect(validationHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'contextValidation',
+          payload: expect.objectContaining({
+            issues: contextValidationErrors,
+            message: expect.objectContaining({
+              role: ROLE.CONTEXT_VALIDATION,
+            }),
+          }),
+        })
+      );
+      expect(errorMessageHandler).not.toHaveBeenCalled();
+    });
   });
 
   describe('message normalization', () => {
@@ -1514,6 +1660,88 @@ describe('AiAgent', () => {
       const message = createContextMessage({ context: { value: 'test context' } });
       const messageId = await agent.send(message);
       expect(messageId).toBeDefined();
+    });
+
+    it('should attach stored context to session creation without sending a WebSocket context message', async () => {
+      const context = {
+        accountTier: {
+          value: 'gold',
+          type: 'string',
+          description: 'Customer tier',
+          notInLLM: false,
+        },
+      };
+      (agent as any).apiHelper = mockApiHelper;
+      await agent.setContext(context);
+      const sendSpy = vi.spyOn(agent, 'send');
+
+      const sessionId = await (agent as any).getSessionId('test-token');
+
+      expect(sessionId).toBe('session-123');
+      expect(mockApiHelper.getAiAgentSession).toHaveBeenCalledWith({
+        agentId: mockAgentId,
+        authToken: 'test-token',
+        context,
+      });
+      expect(sendSpy).not.toHaveBeenCalled();
+    });
+
+    it('should send only changed context values while retaining the merged context', async () => {
+      const accountTier = {
+        value: 'gold',
+        type: 'string',
+        description: 'Customer tier',
+        notInLLM: false,
+      };
+      await agent.setContext({ accountTier });
+
+      await agent.setContext(
+        {
+          accountTier,
+          currentPage: {
+            value: '/billing',
+            type: 'string',
+            description: 'Current page',
+            notInLLM: false,
+          },
+        },
+        { sendImmediately: true }
+      );
+
+      expect(agent.getContext()).toEqual({
+        accountTier,
+        currentPage: {
+          value: '/billing',
+          type: 'string',
+          description: 'Current page',
+          notInLLM: false,
+        },
+      });
+      expect(mockConnection.send).toHaveBeenCalledOnce();
+      expect(JSON.parse(mockConnection.send.mock.calls[0][0]).messageData.context).toEqual({
+        currentPage: {
+          value: '/billing',
+          type: 'string',
+          description: 'Current page',
+          notInLLM: false,
+        },
+      });
+    });
+
+    it('should create a no-context session when stored context cannot be read', async () => {
+      (agent as any).apiHelper = mockApiHelper;
+      vi.spyOn(agent, 'getContext').mockImplementation(() => {
+        throw new Error('sensitive context failure');
+      });
+
+      const sessionId = await (agent as any).getSessionId('test-token');
+
+      expect(sessionId).toBe('session-123');
+      expect(mockApiHelper.getAiAgentSession).toHaveBeenCalledWith({
+        agentId: mockAgentId,
+        authToken: 'test-token',
+        context: undefined,
+      });
     });
 
     it('should preserve message options', async () => {
@@ -2066,6 +2294,19 @@ describe('AiAgent', () => {
       expect(emittedPayload).toBeDefined();
       expect(emittedPayload.profile).toEqual(newProfile);
       expect(emittedPayload.portal).toEqual(mockPortal);
+    });
+  });
+
+  describe('cache.enabled', () => {
+    it('should use in-memory context cache when caching is disabled', () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        cache: { enabled: false },
+        autoConnect: false,
+      });
+
+      expect((agent as any).contextCacheAdapter).toBeInstanceOf(MemoryCacheAdapter);
     });
   });
 });

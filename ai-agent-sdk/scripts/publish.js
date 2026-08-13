@@ -2,7 +2,10 @@
 
 /**
  * Publish script that uses GitHub PAT from environment variables or .env file
- * Usage: npm run publish-package
+ * Usage:
+ *   npm run publish-package           # publishes to the `latest` dist-tag
+ *   npm run publish-beta-package      # publishes with `--tag beta`
+ *   node scripts/publish.js [dist-tag]  # optional dist-tag (e.g. beta)
  *
  * Publishes this package to GitHub Packages only (`npm.pkg.github.com`).
  * Public npmjs.org releases are handled by workflows on the eGain/ai-agent-sdk repo.
@@ -30,6 +33,12 @@ const packageJsonPath = join(projectRoot, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 const packageVersion = packageJson.version;
 const packageName = packageJson.name;
+
+const distTag = process.argv[2]?.trim();
+if (distTag && !/^[a-zA-Z0-9._-]+$/.test(distTag)) {
+  console.error(`❌ Error: Invalid dist-tag "${distTag}". Use alphanumeric characters, ".", "_", or "-".`);
+  exit(1);
+}
 
 const REGISTRY = 'https://npm.pkg.github.com/';
 const AUTH_CONFIG_KEY = `//npm.pkg.github.com/:_authToken`;
@@ -67,15 +76,17 @@ try {
   // Verify registry is configured
   console.log('✅ Authentication configured');
   console.log('');
-  console.log(`📦 Publishing ${packageName}@${packageVersion}...`);
+  const tagLabel = distTag ? ` (dist-tag: ${distTag})` : ' (dist-tag: latest)';
+  console.log(`📦 Publishing ${packageName}@${packageVersion}${tagLabel}...`);
   console.log('');
   
   // Run npm publish (prepublishOnly will run automatically)
   // Use --no-workspaces to avoid workspace-related issues
   // Capture output to detect "already published" errors while still showing it
+  const tagFlag = distTag ? ` --tag ${distTag}` : '';
   try {
     const publishOutput = execSync(
-      `npm publish --no-workspaces --registry ${REGISTRY}`,
+      `npm publish --no-workspaces --registry ${REGISTRY}${tagFlag}`,
       {
         encoding: 'utf-8',
         stdio: 'pipe',
@@ -84,7 +95,7 @@ try {
     // Show the output
     process.stdout.write(publishOutput);
     console.log('');
-    console.log(`✅ Package ${packageName}@${packageVersion} published successfully!`);
+    console.log(`✅ Package ${packageName}@${packageVersion} published successfully${tagLabel}!`);
   } catch (publishErr) {
     // Show the output even on error
     if (publishErr.stdout) {
@@ -118,6 +129,7 @@ try {
     console.log('     npm version major   # 0.0.3 → 1.0.0');
     console.log('');
     console.log('   Then run: npm run publish-package');
+    console.log('   Or for beta: npm run publish-beta-package');
     console.log('');
     exit(0); // Exit with success since package version already exists
   } else if (fullError.includes('prepublishOnly') || 

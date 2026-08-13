@@ -51,11 +51,33 @@ await agent.send(createContextMessage({
   context: { userId: "user-123" }
 }));
 
-// Context persists across page refreshes (session storage)
-// When you restart the connection, context is auto-sent
+// Context persists across page refreshes (session storage by default)
+```
 
+### Session creation (POST context)
+
+When the SDK fetches a new session id (`connect()`, `restartConnection()` without `sessionId`, etc.), it calls `POST .../session` with stored context when available. If the platform gateway does not support POST, the SDK falls back to `GET`.
+
+After portal selection, the SDK also injects `egain_portal_id` into that session body from the last selected portal (merged with any stored portal attribute metadata).
+
+### `setContext()` merge and delta send
+
+`setContext()` merges into the cached context. With `sendImmediately: true`, only keys whose values changed since the last stored context are sent over the WebSocket:
+
+```typescript
+await agent.setContext({ userId: "user-123", plan: "premium" });
+await agent.setContext({ plan: "enterprise" }, { sendImmediately: true });
+// Sends only { plan: "enterprise" }
+```
+
+### Restarting connections
+
+```typescript
+// New session from API — context is included in the POST body
 await agent.restartConnection();
-// Context is automatically sent to new session!
+
+// Caller-provided session — legacy WebSocket context restore after connect
+await agent.restartConnection({ sessionId: "existing-session-id" });
 ```
 
 ## Retrieving Context

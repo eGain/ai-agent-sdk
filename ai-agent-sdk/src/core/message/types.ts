@@ -15,6 +15,7 @@ export const ROLE = Object.freeze({
   CHAT_HISTORY: "chat history",
   ERROR: "error",
   HEARTBEAT: "heartbeat",
+  CONTEXT_VALIDATION: "context validation",
   FOLLOW_UP_QUESTION: "follow up question agent",
   CUSTOMER_SUPPORT: "customer support agent",
   CONTEXT: "context",
@@ -40,12 +41,20 @@ export type Persona = typeof PERSONA[keyof typeof PERSONA];
  */
 export type Role = typeof ROLE[keyof typeof ROLE];
 
+export interface ContextValidationIssue {
+  name: string;
+  reason: string;
+  expectedType?: string;
+  providedType?: string;
+}
+
 /**
  * Message data structure
  */
 export interface MessageData {
   [key: string]: any;
   error_code?: string;
+  contextValidationErrors?: ContextValidationIssue[];
   chat_history?: any[];
   options?: string[];
   escalation?: boolean;

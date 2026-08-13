@@ -151,7 +151,7 @@ agent.on("stateChanged", (event) => {
 
 ## Connection Restart
 
-Restart with a fresh session (clears queue, transcript, sends stored context):
+Restart with a fresh session (clears queue and transcript):
 
 ```typescript
 // Useful when:
@@ -161,11 +161,11 @@ Restart with a fresh session (clears queue, transcript, sends stored context):
 
 // Restart with a new sessionId (fetched from network)
 await agent.restartConnection();
+// Stored context is sent in the session POST body (v0.2.2+)
 
 // Restart with a specific sessionId
 await agent.restartConnection({ sessionId: 'existing-session-id' });
-
-// Stored context is automatically sent to new session
+// Compatibility path: stored context is sent over the WebSocket after connect
 ```
 
 ### Updating Session ID After Initialization

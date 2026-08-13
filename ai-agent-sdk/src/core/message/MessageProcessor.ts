@@ -6,6 +6,7 @@ import { ChatHistoryHandler } from './handlers/ChatHistoryHandler.js';
 import { TokenRefreshHandler } from './handlers/TokenRefreshHandler.js';
 import { HeartbeatHandler } from './handlers/HeartbeatHandler.js';
 import { ErrorMessageHandler } from './handlers/ErrorMessageHandler.js';
+import { ContextValidationHandler } from './handlers/ContextValidationHandler.js';
 import { Logger } from '../logging/Logger.js';
 import { globalLogger } from '../logging/globalLogger.js';
 
@@ -37,6 +38,7 @@ export class MessageProcessor {
     // ErrorMessageHandler should come before AgentMessageHandler to catch errors early
     this.handlers = [
       new TokenRefreshHandler(),
+      new ContextValidationHandler(),
       new ErrorMessageHandler(),
       new ChatHistoryHandler(),
       new AgentMessageHandler(),
@@ -134,4 +136,3 @@ export class MessageProcessor {
     this.registerDefaultHandlers();
   }
 }
-

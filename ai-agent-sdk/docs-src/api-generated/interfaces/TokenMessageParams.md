@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / TokenMessageParams
+[@egain/ai-agent-sdk API Reference - v0.2.2-beta.0](../README.md) / TokenMessageParams
 
 # Interface: TokenMessageParams
 

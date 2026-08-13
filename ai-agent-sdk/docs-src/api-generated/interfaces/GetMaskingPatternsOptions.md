@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / GetMaskingPatternsOptions
+[@egain/ai-agent-sdk API Reference - v0.2.2-beta.0](../README.md) / GetMaskingPatternsOptions
 
 # Interface: GetMaskingPatternsOptions
 
@@ -20,7 +20,7 @@ Department ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:176](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L176)
+[core/api/ApiHelper.ts:181](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L181)
 
 ___
 
@@ -38,7 +38,7 @@ Channel name (e.g., "chat")
 
 #### Defined in
 
-[core/api/ApiHelper.ts:182](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L182)
+[core/api/ApiHelper.ts:187](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L187)
 
 ___
 
@@ -50,4 +50,4 @@ Authentication token (required if `ApiHelper` was constructed without `getToken`
 
 #### Defined in
 
-[core/api/ApiHelper.ts:187](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L187)
+[core/api/ApiHelper.ts:192](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L192)

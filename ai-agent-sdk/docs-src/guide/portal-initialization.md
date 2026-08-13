@@ -61,6 +61,8 @@ Pass host KB context when calling `initialize()` (or set `AiAgentConfig.context`
 
 Values may be plain strings or eGain attribute objects `{ value: "..." }`. Non-matching ids fall back to the normal auto-select rules below.
 
+After a portal is selected, the SDK also includes `egain_portal_id` in the session `POST` body when creating or restarting chat sessions (merged with any stored portal attribute metadata). See [Context management](./context-management.md#session-creation-post-context).
+
 ### Profile auto-select priority (multiple profiles)
 
 When the pipeline has a profile list and more than one row, the SDK picks in this order:

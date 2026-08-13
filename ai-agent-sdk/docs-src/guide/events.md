@@ -329,6 +329,24 @@ Telephony **call** transcript (platform connector), not the WebSocket chat trans
 |----------|------|-------------|
 | `filterTags` | `Record<string, string[]>` | Tags from `onPortalSelected` / connector |
 
+### `contextValidation`
+
+Emitted when the platform rejects one or more context attributes without ending the session (non-terminal system message). Use this to surface validation errors in the UI without treating the message as a fatal `errorMessage`.
+
+```typescript
+agent.on("contextValidation", (event) => {
+  const { message, issues } = event.payload;
+  for (const issue of issues) {
+    console.warn("Context rejected:", issue.attribute, issue.reason);
+  }
+});
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `message` | `Message` | The system message from the platform |
+| `issues` | `ContextValidationIssue[]` | Rejected attributes and reasons |
+
 ## Event Handling Patterns
 
 ### One-Time Listeners

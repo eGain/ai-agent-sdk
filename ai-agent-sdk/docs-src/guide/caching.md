@@ -92,6 +92,14 @@ const agent = new AiAgent({
 });
 ```
 
+When `enabled` is `false` (v0.2.2+):
+
+- **Context** uses a memory-only adapter (not session/local storage), even if `storageType` or a custom adapter is set
+- **`ApiHelper.getDeploymentInfo`** skips the static deployment-info cache
+- **Portal pipeline profile list** (`eg_profiles_*`) is not cached between pipeline restarts
+
+Other `ApiHelper` per-instance caches (agent details, portals, user profiles, etc.) still follow each helper’s own cache logic; use a fresh `AiAgent` instance or clear caches if you need a full no-cache run.
+
 ## Custom Cache Adapter
 
 Implement your own cache adapter for custom storage backends (Redis, IndexedDB, etc.):

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / WebSocketTransportConfig
+[@egain/ai-agent-sdk API Reference - v0.2.2-beta.0](../README.md) / WebSocketTransportConfig
 
 # Interface: WebSocketTransportConfig
 

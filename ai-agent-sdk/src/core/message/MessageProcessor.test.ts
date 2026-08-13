@@ -53,6 +53,33 @@ describe('MessageProcessor', () => {
   });
 
   describe('process', () => {
+    it('should process context validation as a non-terminal system message', async () => {
+      const message = new Message(
+        PERSONA.SYSTEM,
+        ROLE.CONTEXT_VALIDATION,
+        'Some context attributes could not be applied.',
+        {
+          messageData: {
+            contextValidationErrors: [
+              {
+                name: 'count',
+                reason: 'type_mismatch',
+                expectedType: 'integer',
+                providedType: 'string',
+              },
+            ],
+          },
+        }
+      );
+
+      const result = await processor.process(message);
+
+      expect(result?.type).toBe('context_validation');
+      expect(result?.contextValidationErrors).toEqual(
+        message.messageData?.contextValidationErrors
+      );
+    });
+
     it('should process message with matching handler', async () => {
       const handler = new MockHandler(
         (msg) => msg.messageId === 'msg-1',

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / GetConnectedAppsOptions
+[@egain/ai-agent-sdk API Reference - v0.2.2-beta.0](../README.md) / GetConnectedAppsOptions
 
 # Interface: GetConnectedAppsOptions
 
@@ -20,7 +20,7 @@ API domain
 
 #### Defined in
 
-[core/api/ApiHelper.ts:137](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L137)
+[core/api/ApiHelper.ts:142](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L142)
 
 ___
 
@@ -32,7 +32,7 @@ Tenant ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:142](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L142)
+[core/api/ApiHelper.ts:147](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L147)
 
 ___
 
@@ -44,4 +44,4 @@ Agent ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:147](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L147)
+[core/api/ApiHelper.ts:152](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L152)

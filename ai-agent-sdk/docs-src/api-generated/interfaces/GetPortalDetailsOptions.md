@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.1](../README.md) / GetPortalDetailsOptions
+[@egain/ai-agent-sdk API Reference - v0.2.2-beta.0](../README.md) / GetPortalDetailsOptions
 
 # Interface: GetPortalDetailsOptions
 
@@ -20,7 +20,7 @@ Portal ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:120](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L120)
+[core/api/ApiHelper.ts:125](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L125)
 
 ___
 
@@ -32,7 +32,7 @@ Authentication token (required if `ApiHelper` was constructed without `getToken`
 
 #### Defined in
 
-[core/api/ApiHelper.ts:125](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L125)
+[core/api/ApiHelper.ts:130](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L130)
 
 ___
 
@@ -44,4 +44,4 @@ Language code (optional)
 
 #### Defined in
 
-[core/api/ApiHelper.ts:130](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L130)
+[core/api/ApiHelper.ts:135](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L135)

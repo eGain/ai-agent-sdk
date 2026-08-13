@@ -2,7 +2,7 @@
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
-**Current release:** v0.2.1
+**Current release:** v0.2.2
 
 [![npm version](https://img.shields.io/npm/v/@egain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@egain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -151,6 +151,7 @@ agent.on("initialized", (event) => { /* CC init done; safe to connect */ });
 agent.on("portalsAvailable", (event) => { /* Call selectPortal */ });
 agent.on("agentsAvailable", (event) => { /* Call selectAgent */ });
 agent.on("profilesAvailable", (event) => { /* Call selectUserProfile */ });
+agent.on("contextValidation", (event) => { /* Rejected context attributes */ });
 ```
 
 ## Message Helpers
