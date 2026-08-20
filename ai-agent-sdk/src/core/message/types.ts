@@ -60,6 +60,8 @@ export interface MessageData {
   escalation?: boolean;
   escalationData?: {
     live?: boolean;
+    liveDomain?: string;
+    entrypointUrl?: string;
     phone?: boolean;
     phoneNumber?: string;
     sms?: boolean;

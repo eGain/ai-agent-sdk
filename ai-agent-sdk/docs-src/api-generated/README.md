@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.2.2-beta.0
+# @egain/ai-agent-sdk API Reference - v0.2.2-beta.1
 
 # @egain/ai-agent-sdk
 

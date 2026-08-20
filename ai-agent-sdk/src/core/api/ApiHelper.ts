@@ -581,7 +581,13 @@ export class ApiHelper {
         }
 
         const sessionResponse = await response.json();
-        return sessionResponse?.sessionId;
+        const sessionId = sessionResponse?.sessionId;
+        // A 2xx with no sessionId in the body would otherwise surface as the literal
+        // string "undefined" on the chat WebSocket URL, so fail at the source.
+        if (typeof sessionId !== 'string' || sessionId.trim() === '') {
+            throw new Error('Failed to fetch AI Agent session: response did not contain a sessionId');
+        }
+        return sessionId;
     }
 
     /**

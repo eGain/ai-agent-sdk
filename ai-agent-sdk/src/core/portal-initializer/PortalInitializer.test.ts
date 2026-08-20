@@ -1247,6 +1247,13 @@ describe('PortalInitializer', () => {
       portals: ['p1', 'p2'],
     };
 
+    it('rejects with InitializationPipelineError when getPortals fails', async () => {
+      mockApiHelper.getPortals.mockRejectedValue(new Error('504 Gateway Timeout'));
+      const deps = { ...defaultDeps, agentDetails: customerAgentDetails };
+      const initializer = new PortalInitializer(deps);
+      await expectPipelineRejection(() => initializer.start(), 'PORTAL_FETCH_FAILED');
+    });
+
     it('fetches getPortals and intersects with bot list for customer; does not call getMyPortals', async () => {
       const deps = { ...defaultDeps, agentDetails: customerAgentDetails };
       const initializer = new PortalInitializer(deps);

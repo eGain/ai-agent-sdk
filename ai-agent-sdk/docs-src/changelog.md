@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Session creation with context** — `ApiHelper.getAiAgentSession()` uses `POST .../session` with an optional `{ context }` body (falls back to `GET` on 403/404/405); `AiAgent` passes stored context when creating or restarting sessions, including `egain_portal_id` from the last selected portal when present
 - **`contextValidation` agent event** — emitted when the platform returns a non-terminal system message for rejected context attributes (without ending the session)
 - **`ContextValidationHandler`** and exported type **`ContextValidationIssue`** for custom message pipelines
+- **`MessageData.escalationData`** — optional `liveDomain` and `entrypointUrl` on inbound escalation payloads (Advisor Desktop chat transfer)
 
 ### Changed
 
@@ -22,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **`pipelineCache`** and **`getDeploymentInfo`** now honor `cache.enabled: false` instead of still reading or writing cached deployment info and profile lists
+- **Customer `getPortals` failures** — portal-trained self-service agents (`userType: customer` with configured `portals`) now reject `initialize()` with `InitializationPipelineError` (`PORTAL_FETCH_FAILED`) when the portalmgr API fails, matching the `getMyPortals` path so hosts can surface errors instead of staying in a loading state
+- **Session ID validation** — `getSessionId()`, `getWsEndpoint()`, and `ApiHelper.getAiAgentSession()` reject placeholder or missing session ids (`undefined`, `null`, blank strings) before constructing the chat WebSocket URL; the query parameter is set via `URLSearchParams` instead of string interpolation
 
 ## [0.2.1] - 2026-07-30
 

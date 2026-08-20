@@ -204,6 +204,23 @@ describe('ApiHelper', () => {
       ).rejects.toThrow('Failed to fetch AI Agent session: 500 Internal Server Error');
       expect(global.fetch).toHaveBeenCalledOnce();
     });
+
+    it.each([{}, { sessionId: null }, { sessionId: '' }, { sessionId: '   ' }])(
+      'should throw rather than return an unusable sessionId from a 2xx body: %o',
+      async (body) => {
+        (global.fetch as any).mockResolvedValueOnce({
+          ok: true,
+          json: async () => body,
+        });
+
+        await expect(
+          apiHelper.getAiAgentSession({
+            agentId: 'test-agent-id',
+            authToken: 'test-token',
+          })
+        ).rejects.toThrow('Failed to fetch AI Agent session: response did not contain a sessionId');
+      }
+    );
   });
 
   describe('getPortalDetails', () => {

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.2-beta.0](../README.md) / MessageData
+[@egain/ai-agent-sdk API Reference - v0.2.2-beta.1](../README.md) / MessageData
 
 # Interface: MessageData
 
@@ -89,6 +89,8 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `live?` | `boolean` |
+| `liveDomain?` | `string` |
+| `entrypointUrl?` | `string` |
 | `phone?` | `boolean` |
 | `phoneNumber?` | `string` |
 | `sms?` | `boolean` |
@@ -107,7 +109,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:69](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L69)
+[core/message/types.ts:71](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L71)
 
 ___
 
@@ -117,7 +119,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:70](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L70)
+[core/message/types.ts:72](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L72)
 
 ___
 
@@ -127,7 +129,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:71](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L71)
+[core/message/types.ts:73](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L73)
 
 ___
 
@@ -144,7 +146,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:72](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L72)
+[core/message/types.ts:74](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L74)
 
 ___
 
@@ -154,7 +156,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:76](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L76)
+[core/message/types.ts:78](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L78)
 
 ___
 
@@ -164,7 +166,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:77](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L77)
+[core/message/types.ts:79](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L79)
 
 ___
 
@@ -174,7 +176,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:78](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L78)
+[core/message/types.ts:80](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L80)
 
 ___
 
@@ -184,7 +186,7 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:79](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L79)
+[core/message/types.ts:81](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L81)
 
 ___
 
@@ -194,4 +196,4 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:80](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L80)
+[core/message/types.ts:82](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L82)

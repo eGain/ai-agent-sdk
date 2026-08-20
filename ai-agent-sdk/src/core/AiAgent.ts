@@ -449,6 +449,28 @@ const CONTEXT_CACHE_KEY_PREFIX = 'egain_aiagent_context_';
 /** Session-scoped cache key prefix for profile list (restart reuse). Suffix: agentId_portalId. */
 const PIPELINE_PROFILES_CACHE_KEY_PREFIX = 'eg_profiles_';
 
+/** Stringified values that mean "the session id never resolved". */
+const PLACEHOLDER_SESSION_IDS = ['undefined', 'null', 'nan'];
+
+/**
+ * Narrow a session id to a value that can safely be put on the wire.
+ *
+ * The chat WebSocket URL carries the session id as a query parameter, so an
+ * unresolved value would otherwise be interpolated as the literal text
+ * `undefined` and be rejected by the connect processor after the fact. Failing
+ * here instead keeps the failure attributable to the SDK that produced it.
+ */
+function isUsableSessionId(sessionId: unknown): sessionId is string | number {
+  if (typeof sessionId === 'number') {
+    return Number.isFinite(sessionId);
+  }
+  if (typeof sessionId !== 'string') {
+    return false;
+  }
+  const trimmed = sessionId.trim();
+  return trimmed !== '' && !PLACEHOLDER_SESSION_IDS.includes(trimmed.toLowerCase());
+}
+
 /**
  * Main class for interacting with the eGain AI Agent platform.
  *
@@ -1364,9 +1386,17 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @param accessToken - The access token to use for authentication
    * @returns The session ID
    */
-  private async getSessionId(accessToken: any): Promise<any> {
+  private async getSessionId(accessToken: any): Promise<string | number> {
     // If sessionId was provided in config, return it (skip network fetch)
     if (this.sessionId !== undefined) {
+      if (!isUsableSessionId(this.sessionId)) {
+        const err = new Error('Configured sessionId is not a usable session id');
+        this.logger.error('Failed to resolve sessionId: configured value is unusable', err, {
+          agentId: this.resolvedAgentId,
+          sessionIdType: typeof this.sessionId,
+        });
+        throw err;
+      }
       this.logger.debug('Using sessionId from config, skipping network fetch', {
         sessionId: this.sessionId,
         agentId: this.resolvedAgentId,
@@ -1374,12 +1404,31 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       return this.sessionId;
     }
 
+    if (!this.apiHelper) {
+      const err = new Error('Cannot resolve a sessionId: API helper not initialized');
+      this.logger.error('Failed to resolve sessionId: API helper not initialized', err, {
+        agentId: this.resolvedAgentId,
+      });
+      throw err;
+    }
+
     // Otherwise, fetch from network (uses resolvedAgentId for chat identity)
-    return await this.apiHelper?.getAiAgentSession({
+    const sessionId = await this.apiHelper.getAiAgentSession({
       agentId: this.resolvedAgentId,
       authToken: accessToken ?? await this.authService.getToken() ?? null,
       context: this.getSessionStartContext(),
     });
+
+    if (!isUsableSessionId(sessionId)) {
+      const err = new Error('Session API did not return a usable sessionId');
+      this.logger.error('Failed to resolve sessionId: session API returned an unusable value', err, {
+        agentId: this.resolvedAgentId,
+        sessionIdType: typeof sessionId,
+      });
+      throw err;
+    }
+
+    return sessionId;
   }
 
   /**
@@ -1388,13 +1437,22 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @returns The WebSocket endpoint
    */
   private getWsEndpoint(sessionId: any): string {
+    if (!isUsableSessionId(sessionId)) {
+      const err = new Error('Cannot construct a WebSocket endpoint without a valid sessionId');
+      this.logger.error('Failed to construct WebSocket endpoint: sessionId is unusable', err, {
+        agentId: this.resolvedAgentId,
+        sessionIdType: typeof sessionId,
+      });
+      throw err;
+    }
+
     let websocketUrl = this.deploymentInfo?.aiAgentDomain;
     websocketUrl = websocketUrl.indexOf("http") !== 0 ? "https://" + websocketUrl : websocketUrl;
     try {
       const parsedUrl = new URL(websocketUrl);
       parsedUrl.hostname = `chat.${parsedUrl.hostname}`;
+      parsedUrl.searchParams.set('sessionId', String(sessionId));
       websocketUrl = parsedUrl.toString();
-      websocketUrl = `${websocketUrl}?sessionId=${sessionId}`;
       this.logger.debug('WebSocket endpoint constructed', { endpoint: websocketUrl, sessionId });
     } catch (error) {
       const err = new Error('Failed to get WebSocket endpoint');

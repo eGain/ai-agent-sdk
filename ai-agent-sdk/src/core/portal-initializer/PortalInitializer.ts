@@ -300,11 +300,13 @@ export class PortalInitializer {
         const fromApi = await apiHelper.getPortals({ language, departmentId });
         portals = Array.isArray(fromApi) ? fromApi : [];
       } catch (err) {
-        logger.error(
-          'Failed to fetch customer portals',
-          err instanceof Error ? err : new Error(String(err))
+        const error = err instanceof Error ? err : new Error(String(err));
+        logger.error('Failed to fetch customer portals', error);
+        throw new InitializationPipelineError(
+          'Failed to fetch portals',
+          InitializationPipelineErrorCode.PORTAL_FETCH_FAILED,
+          error
         );
-        throw err;
       }
 
       if (!isAgentSelectionMode) {

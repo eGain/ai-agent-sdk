@@ -2297,6 +2297,86 @@ describe('AiAgent', () => {
     });
   });
 
+  describe('sessionId resolution', () => {
+    // Regression coverage: an unresolved sessionId used to be interpolated into the
+    // chat WebSocket URL as the literal text "undefined", which the connect
+    // processor could only reject after the connection attempt.
+    const newAgent = (config: any = {}) =>
+      new AiAgent({ id: mockAgentId, endpoint: mockEndpoint, autoConnect: false, ...config });
+
+    const withDeployment = (agent: AiAgent) => {
+      (agent as any).deploymentInfo = { aiAgentDomain: 'test.example.com' };
+      return agent;
+    };
+
+    it('should put the sessionId on the WebSocket endpoint as a query parameter', () => {
+      const agent = withDeployment(newAgent());
+
+      expect((agent as any).getWsEndpoint('session-123')).toBe(
+        'https://chat.test.example.com/?sessionId=session-123'
+      );
+    });
+
+    it('should accept a numeric sessionId', () => {
+      const agent = withDeployment(newAgent());
+
+      expect((agent as any).getWsEndpoint(42)).toBe('https://chat.test.example.com/?sessionId=42');
+    });
+
+    it.each(['undefined', 'null', 'NaN', '', '   ', undefined, null, NaN, {}])(
+      'should refuse to construct a WebSocket endpoint for the unusable sessionId %o',
+      (sessionId) => {
+        const agent = withDeployment(newAgent());
+
+        expect(() => (agent as any).getWsEndpoint(sessionId)).toThrow(
+          'Cannot construct a WebSocket endpoint without a valid sessionId'
+        );
+      }
+    );
+
+    it('should return the configured sessionId without a network fetch', async () => {
+      const agent = newAgent({ sessionId: 'session-abc' });
+      (agent as any).apiHelper = mockApiHelper;
+
+      await expect((agent as any).getSessionId('mock-token')).resolves.toBe('session-abc');
+      expect(mockApiHelper.getAiAgentSession).not.toHaveBeenCalled();
+    });
+
+    it('should reject a configured sessionId that is a placeholder value', async () => {
+      const agent = newAgent({ sessionId: 'undefined' });
+      (agent as any).apiHelper = mockApiHelper;
+
+      await expect((agent as any).getSessionId('mock-token')).rejects.toThrow(
+        'Configured sessionId is not a usable session id'
+      );
+      expect(mockApiHelper.getAiAgentSession).not.toHaveBeenCalled();
+    });
+
+    it.each([undefined, null, ''])(
+      'should reject an unusable sessionId returned by the session API: %o',
+      async (sessionId) => {
+        const agent = newAgent();
+        (agent as any).apiHelper = {
+          ...mockApiHelper,
+          getAiAgentSession: vi.fn().mockResolvedValue(sessionId),
+        };
+
+        await expect((agent as any).getSessionId('mock-token')).rejects.toThrow(
+          'Session API did not return a usable sessionId'
+        );
+      }
+    );
+
+    it('should reject instead of resolving undefined when the API helper is missing', async () => {
+      const agent = newAgent();
+      (agent as any).apiHelper = undefined;
+
+      await expect((agent as any).getSessionId('mock-token')).rejects.toThrow(
+        'Cannot resolve a sessionId: API helper not initialized'
+      );
+    });
+  });
+
   describe('cache.enabled', () => {
     it('should use in-memory context cache when caching is disabled', () => {
       const agent = new AiAgent({
