@@ -13,10 +13,27 @@ import type { Portal, UserProfile } from './types/PortalTypes.js';
 import { DataMasker } from './data-masking/DataMasker.js';
 import { MemoryCacheAdapter } from './api/CacheAdapter.js';
 
+const authServiceMock = vi.hoisted(() => ({
+  getToken: vi.fn().mockResolvedValue('mock-token'),
+  getCachedToken: vi.fn().mockReturnValue('mock-token'),
+  initialize: vi.fn().mockResolvedValue(undefined),
+  getIsInitialized: vi.fn().mockReturnValue(false),
+  isAnonymousStrategy: vi.fn().mockReturnValue(true),
+  getAuthenticationType: vi.fn().mockReturnValue('anonymous'),
+  authenticate: vi.fn().mockResolvedValue(undefined),
+  setTokenExpiringCallback: vi.fn(),
+  switchStrategyTo: vi.fn().mockResolvedValue(true),
+  cleanup: vi.fn().mockResolvedValue(undefined),
+}));
+
 // Mock dependencies
 vi.mock('./connection/Connection.js');
 vi.mock('./api/ApiHelper.js');
-vi.mock('./auth/AuthenticationService.js');
+vi.mock('./auth/AuthenticationService.js', () => ({
+  AuthenticationService: vi.fn(function AuthenticationService() {
+    return authServiceMock;
+  }),
+}));
 
 function waitForEvent(agent: AiAgent, event: string): Promise<any> {
   return new Promise(resolve => agent.on(event as any, resolve));
@@ -25,7 +42,6 @@ function waitForEvent(agent: AiAgent, event: string): Promise<any> {
 describe('AiAgent', () => {
   let mockConnection: any;
   let mockApiHelper: any;
-  let mockAuthService: any;
   const mockEndpoint = 'https://test.example.com';
   const mockAgentId = 'test-agent-id';
 
@@ -58,15 +74,17 @@ describe('AiAgent', () => {
       invalidateCache: vi.fn(),
     };
 
-    // Mock AuthenticationService
-    mockAuthService = {
-      getToken: vi.fn().mockResolvedValue('mock-token'),
-      initialize: vi.fn().mockResolvedValue(undefined),
-      getIsInitialized: vi.fn().mockReturnValue(false),
-      isAnonymousStrategy: vi.fn().mockReturnValue(true),
-      getAuthenticationType: vi.fn().mockReturnValue('anonymous'),
-      authenticate: vi.fn().mockResolvedValue(undefined),
-    };
+    // Reset auth service mock (constructor returns authServiceMock via vi.hoisted)
+    authServiceMock.getToken.mockResolvedValue('mock-token');
+    authServiceMock.getCachedToken.mockReturnValue('mock-token');
+    authServiceMock.initialize.mockResolvedValue(undefined);
+    authServiceMock.getIsInitialized.mockReturnValue(false);
+    authServiceMock.isAnonymousStrategy.mockReturnValue(true);
+    authServiceMock.getAuthenticationType.mockReturnValue('anonymous');
+    authServiceMock.authenticate.mockResolvedValue(undefined);
+    authServiceMock.setTokenExpiringCallback.mockReset();
+    authServiceMock.switchStrategyTo.mockResolvedValue(true);
+    authServiceMock.cleanup.mockResolvedValue(undefined);
 
     // Setup module mocks
     vi.doMock('./connection/Connection.js', () => ({
@@ -75,10 +93,6 @@ describe('AiAgent', () => {
 
     vi.doMock('./api/ApiHelper.js', () => ({
       ApiHelper: vi.fn().mockImplementation(() => mockApiHelper),
-    }));
-
-    vi.doMock('./auth/AuthenticationService.js', () => ({
-      AuthenticationService: vi.fn().mockImplementation(() => mockAuthService),
     }));
   });
 
@@ -808,15 +822,14 @@ describe('AiAgent', () => {
 
       const authService = (agent as any).authService;
       vi.spyOn(authService, 'isAnonymousStrategy').mockReturnValue(true);
-      vi.spyOn(authService, 'switchStrategyTo').mockImplementation(async (config: any, callback?: any) => {
-        // Simulate calling onAuthComplete after switch
-        if (callback && typeof callback === 'function') {
-          await callback('test-token');
-        }
-        return true;
-      });
+      vi.spyOn(authService, 'switchStrategyTo').mockResolvedValue(true);
+      vi.spyOn(authService, 'getToken').mockResolvedValue('test-token');
       vi.spyOn(authService, 'getIsInitialized').mockReturnValue(false);
-      vi.spyOn(authService, 'initialize').mockResolvedValue(undefined);
+      vi.spyOn(authService, 'initialize').mockImplementation(async (opts: { postAuthentication?: (token: string) => Promise<void> }) => {
+        if (opts?.postAuthentication) {
+          await opts.postAuthentication('test-token');
+        }
+      });
       vi.spyOn(authService, 'authenticate').mockResolvedValue(undefined);
       vi.spyOn(authService, 'setTokenExpiringCallback').mockReturnValue(undefined);
 
@@ -2009,7 +2022,7 @@ describe('AiAgent', () => {
       await agent.initialize();
       await initDone;
       vi.mocked((agent as any).authService.getToken).mockResolvedValue(null);
-      await expect(agent.restartPortalInitializer()).rejects.toThrow(/Failed to get access token for restart/);
+      await expect(agent.restartPortalInitializer()).rejects.toThrow(/No access token found/);
     });
 
     it('should reset isInitialized to false and re-run pipeline', async () => {

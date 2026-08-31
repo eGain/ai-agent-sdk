@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.2](../README.md) / InitializationPipelineError
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.0](../README.md) / InitializationPipelineError
 
 # Class: InitializationPipelineError
 

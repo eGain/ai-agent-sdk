@@ -885,7 +885,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
           // Switch to PKCE strategy with postAuthentication callback
           // postAuthentication will be called once authentication type is confirmed
           this.logger.debug('Switching from anonymous to PKCE strategy', { agentId: this.config.id });
-          await this.authService.switchStrategyTo(pkceConfig, this.onAuthComplete.bind(this));
+          await this.authService.switchStrategyTo(pkceConfig, this.finishAuthentication);
         } else {
           this.logger.debug('Current strategy is not anonymous, keeping existing strategy', {
             agentId: this.config.id,
@@ -898,7 +898,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
         await this.authService.initialize({
           deploymentInfo: this.deploymentInfo,
-          postAuthentication: this.onAuthComplete,
+          postAuthentication: this.finishAuthentication,
           scopes: effectiveScopes,
           userType: this.agentDetails?.userType,
         });
@@ -910,9 +910,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         this.logger.debug('Agent does not require authentication, using anonymous strategy', { agentId: this.config.id });
         // Complete initialization manually (get session, create connection)
 
-        // TODO: POST AUTHENTICATION CALLBACK
-        const accessToken = await this.authService.getToken();
-        await this.onAuthComplete(accessToken);
+        await this.finishAuthentication();
       }
     } catch (error) {
       // Ensure we don't mark as initialized if initialization failed
@@ -933,7 +931,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       getInitParams: () => ({ ...this.initParams }),
       getQueryParams: () => ({ ...this.initParams }),
       getAgentDetails: () => this.agentDetails,
-      getMsalAccessToken: () => { this.authService.getToken().catch(() => {}); return this.authService.getCachedToken(); },
+      getMsalAccessToken: () => this.authService.getCachedToken(),
       getAccessToken: () => this.authService.getToken(),
       getDeploymentInfo: () => this.deploymentInfo,
       getPlatformType: () => this.initParams.platform ?? null,
@@ -1139,6 +1137,20 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
     await this.portalInitializer.start();
   }
+
+  /**
+   * Sync the access token from the active strategy into {@link AuthenticationService},
+   * then run post-auth initialization. Registered as `postAuthentication` for auth strategies.
+   */
+  private readonly finishAuthentication = async (_tokenFromStrategy?: unknown): Promise<void> => {
+    const accessToken = await this.authService.getToken();
+    if (!accessToken) {
+      const error = new Error('No access token found');
+      this.logger.error('finishAuthentication: Failed to get access token', error, { agentId: this.config.id });
+      throw error;
+    }
+    await this.onAuthComplete(accessToken);
+  };
 
   /**
    * Post-authentication callback. Runs the portal initializer when
@@ -1464,7 +1476,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
   /**
    * Create the connection after authentication is complete
-   * This is called by the postAuthentication callback
+   * This is called by {@link finishAuthentication} after auth completes.
    */
   private async createConnection(sessionId: string): Promise<void> {
     if (this.connection) {
@@ -1812,13 +1824,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     this.resolvedAgentId = this.config.id;
     this.isInitialized = false;
 
-    const accessToken = await this.authService.getToken();
-    if (!accessToken) {
-      const error = new Error('Failed to get access token for restart');
-      this.logger.error('restartPortalInitializer: no access token', error, { agentId: this.config.id });
-      throw error;
-    }
-    await this.onAuthComplete(accessToken);
+    await this.finishAuthentication();
   }
 
   /**

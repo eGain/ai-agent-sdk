@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2026-09-XX
+
+### Fixed
+
+- **Auth token propagation** — new `finishAuthentication` callback syncs the access token from the active auth strategy via `AuthenticationService.getToken()` before `onAuthComplete`, fixing cases where strategy callbacks supplied tokens that were not cached in `AuthenticationService` (e.g. anonymous → PKCE switch, anonymous agents, and `restartPortalInitializer()`)
+
+### Changed
+
+- **`HookContract.getMsalAccessToken()`** — returns only the cached token synchronously; removed fire-and-forget `getToken()` side effect (use `getAccessToken()` when a fresh token is required)
+
 ## [0.2.2] - 2026-08-21
 
 ### Added
