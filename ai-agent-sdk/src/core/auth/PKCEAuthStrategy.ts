@@ -220,7 +220,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
       scopes: prefixedScopes,
       authScheme: authScheme ?? 'popup',
       cacheLocation: "sessionStorage",
-      nextRoute: nextRoute,
+      ...(authScheme === 'redirect' && nextRoute && { nextRoute }),
       ...(localLogin != null && { localLogin }),
     };
   }
@@ -390,8 +390,8 @@ export class PKCEAuthStrategy implements AuthStrategy {
       scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
     };
 
-    // Add state parameter from nextRoute if available (similar to egAuthentication.js)
-    if (this.config.nextRoute) {
+    // Add state parameter from nextRoute if available and if the scheme is redirect(similar to egAuthentication.js)
+    if (this.authScheme === 'redirect' && this.config.nextRoute) {
       // Remove hash from URL if present (similar to #removeHashFromURL in egAuthentication.js)
       const relayState = this.config.nextRoute.split('#')[0];
       loginRequest.state = relayState;

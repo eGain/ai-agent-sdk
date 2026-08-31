@@ -885,7 +885,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
           // Switch to PKCE strategy with postAuthentication callback
           // postAuthentication will be called once authentication type is confirmed
           this.logger.debug('Switching from anonymous to PKCE strategy', { agentId: this.config.id });
-          await this.authService.switchStrategyTo(pkceConfig, this.finishAuthentication);
+          await this.authService.switchStrategyTo(pkceConfig, () => {});
         } else {
           this.logger.debug('Current strategy is not anonymous, keeping existing strategy', {
             agentId: this.config.id,
@@ -898,7 +898,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
         await this.authService.initialize({
           deploymentInfo: this.deploymentInfo,
-          postAuthentication: this.finishAuthentication,
+          postAuthentication: () => {},
           scopes: effectiveScopes,
           userType: this.agentDetails?.userType,
         });
@@ -910,8 +910,9 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         this.logger.debug('Agent does not require authentication, using anonymous strategy', { agentId: this.config.id });
         // Complete initialization manually (get session, create connection)
 
-        await this.finishAuthentication();
       }
+
+      await this.finishAuthentication();
     } catch (error) {
       // Ensure we don't mark as initialized if initialization failed
       this.isInitialized = false;
@@ -1138,11 +1139,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     await this.portalInitializer.start();
   }
 
-  /**
-   * Sync the access token from the active strategy into {@link AuthenticationService},
-   * then run post-auth initialization. Registered as `postAuthentication` for auth strategies.
-   */
-  private readonly finishAuthentication = async (_tokenFromStrategy?: unknown): Promise<void> => {
+  /** Get an access token and run post-auth initialization ({@link onAuthComplete}). */
+  private readonly finishAuthentication = async (): Promise<void> => {
     const accessToken = await this.authService.getToken();
     if (!accessToken) {
       const error = new Error('No access token found');
