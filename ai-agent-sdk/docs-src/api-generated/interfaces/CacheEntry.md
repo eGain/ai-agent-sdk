@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.1](../README.md) / CacheEntry
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.2](../README.md) / CacheEntry
 
 # Interface: CacheEntry\<T\>
 

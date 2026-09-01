@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.1](../README.md) / CacheConfig
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.2](../README.md) / CacheConfig
 
 # Interface: CacheConfig
 

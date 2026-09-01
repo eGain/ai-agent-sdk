@@ -32,7 +32,7 @@ import type { PlatformComponentService } from "../platform/PlatformComponentServ
 import type { HookContract } from "../platform/HookContract.js";
 import {
   InitializationPipelineError,
-  InitializationPipelineErrorCode,
+  InitializationPipelineErrorCode
 } from "../errors/SDKError.js";
 
 /**
@@ -277,33 +277,40 @@ export class PortalInitializer {
    * Order: `portalIds` initParam → customer `getPortals` + intersection → agent `getMyPortals` + PCS / Flow B filters.
    */
   private async fetchPortals(): Promise<void> {
-    const { apiHelper, logger, initParams, agentDetails, isAgentSelectionMode } = this.deps;
+    const {
+      apiHelper,
+      logger,
+      initParams,
+      agentDetails,
+      isAgentSelectionMode
+    } = this.deps;
 
     let portals: Portal[];
 
     const idList = parsePortalIdsFromParams(initParams);
     if (idList.length > 0) {
-      logger.info('Using portalIds from params', { count: idList.length });
-      portals = idList.map((id) => ({ id } as Portal));
+      logger.info("Using portalIds from params", { count: idList.length });
+      portals = idList.map((id) => ({ id }) as Portal);
     } else if (
-      agentDetails?.userType === 'customer' &&
+      agentDetails?.userType === "customer" &&
       (agentDetails.portals?.length ?? 0) > 0
     ) {
       const language =
-        typeof agentDetails.languageCode === 'string' && agentDetails.languageCode.trim()
+        typeof agentDetails.languageCode === "string" &&
+        agentDetails.languageCode.trim()
           ? agentDetails.languageCode.trim()
-          : 'en-us';
+          : "en-us";
       const departmentId = agentDetails?.departmentId;
 
-      logger.info('Fetching customer portals (getPortals)...');
+      logger.info("Fetching customer portals (getPortals)...");
       try {
         const fromApi = await apiHelper.getPortals({ language, departmentId });
         portals = Array.isArray(fromApi) ? fromApi : [];
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
-        logger.error('Failed to fetch customer portals', error);
+        logger.error("Failed to fetch customer portals", error);
         throw new InitializationPipelineError(
-          'Failed to fetch portals',
+          "Failed to fetch portals",
           InitializationPipelineErrorCode.PORTAL_FETCH_FAILED,
           error
         );
@@ -313,30 +320,42 @@ export class PortalInitializer {
         portals = this.intersectWithBotPortals(portals);
       }
 
-      logger.info('Customer portal list after fetch (and Flow A intersection when applicable)', {
-        count: portals.length,
-      });
+      logger.info(
+        "Customer portal list after fetch (and Flow A intersection when applicable)",
+        {
+          count: portals.length
+        }
+      );
     } else {
-      const userId = initParams.userid ?? initParams.userId ?? '';
-      const themeTemplate = (initParams.templateName || initParams.shortUrlTemplate || '').trim();
+      const userId = initParams.userid ?? initParams.userId ?? "";
+      const themeTemplate = (
+        initParams.templateName ||
+        initParams.shortUrlTemplate ||
+        ""
+      ).trim();
       const shortUrlTemplate = themeTemplate || undefined;
       const language =
-        typeof agentDetails?.languageCode === 'string' && agentDetails.languageCode.trim()
+        typeof agentDetails?.languageCode === "string" &&
+        agentDetails.languageCode.trim()
           ? agentDetails.languageCode.trim()
-          : 'en-us';
+          : "en-us";
 
-      logger.info('Fetching portals...');
+      logger.info("Fetching portals...");
       try {
-        const fromMy = await apiHelper.getMyPortals({ language, userId, shortUrlTemplate });
+        const fromMy = await apiHelper.getMyPortals({
+          language,
+          userId,
+          shortUrlTemplate
+        });
         portals = Array.isArray(fromMy) ? fromMy : [];
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
-          logger.error("Failed to fetch portals", error);
+        logger.error("Failed to fetch portals", error);
         throw new InitializationPipelineError(
-            "Failed to fetch portals",
-            InitializationPipelineErrorCode.PORTAL_FETCH_FAILED,
-            error
-          );
+          "Failed to fetch portals",
+          InitializationPipelineErrorCode.PORTAL_FETCH_FAILED,
+          error
+        );
       }
 
       let filterResult: { portals: Portal[]; pcsAutoSelected?: Portal };
@@ -372,13 +391,15 @@ export class PortalInitializer {
       return portals;
     }
 
-    const botList = Array.isArray(agentDetails?.portals) ? agentDetails.portals : [];
+    const botList = Array.isArray(agentDetails?.portals)
+      ? agentDetails.portals
+      : [];
     const beforeCount = portals.length;
     const filtered = filterPortalsUserAndAgent(portals, botList as unknown[]);
-    logger.info('Filtered portals (agent intersection)', {
+    logger.info("Filtered portals (agent intersection)", {
       before: beforeCount,
       after: filtered.length,
-      agentid: agentIdForFilter,
+      agentid: agentIdForFilter
     });
     return filtered;
   }
@@ -408,7 +429,10 @@ export class PortalInitializer {
 
     portals = pcsResult.portals;
 
-    const flowBDepartmentId = resolveDepartmentIdForAgentSelection(agentDetails, initParams);
+    const flowBDepartmentId = resolveDepartmentIdForAgentSelection(
+      agentDetails,
+      initParams
+    );
     if (flowBDepartmentId == null) {
       throw new InitializationPipelineError(
         "departmentId is required for Flow B (agent selection mode): set agentDetails.departmentId from the default agent API response, or pass initParams.departmentId",
@@ -416,11 +440,13 @@ export class PortalInitializer {
       );
     }
     const beforeDept = portals.length;
-    portals = portals.filter((p) => sameId(p.department?.id, flowBDepartmentId));
-    logger.info('Filtered portals by department (Flow B)', {
+    portals = portals.filter((p) =>
+      sameId(p.department?.id, flowBDepartmentId)
+    );
+    logger.info("Filtered portals by department (Flow B)", {
       before: beforeDept,
       after: portals.length,
-      departmentId: flowBDepartmentId,
+      departmentId: flowBDepartmentId
     });
 
     return { portals };
@@ -485,13 +511,17 @@ export class PortalInitializer {
     logger.info("Portals fetched", { count: portals.length });
 
     if (portals.length === 1) {
-      await this.autoSelectPortalAndContinue(portals[0], "Auto-selected single portal");
+      await this.autoSelectPortalAndContinue(
+        portals[0],
+        "Auto-selected single portal"
+      );
       return;
     }
 
-    const preferredPortalId = extractContextAttribute(this.deps.initialContext, [
-      "egain_portal_id",
-    ]);
+    const preferredPortalId = extractContextAttribute(
+      this.deps.initialContext,
+      ["egain_portal_id"]
+    );
     if (preferredPortalId) {
       const match = portals.find((p) => sameId(p.id, preferredPortalId));
       if (match) {
@@ -503,10 +533,9 @@ export class PortalInitializer {
       }
     }
 
-    logger.info(
-      "Emitting portalsAvailable; awaiting consumer selectPortal()",
-      { count: portals.length }
-    );
+    logger.info("Emitting portalsAvailable; awaiting consumer selectPortal()", {
+      count: portals.length
+    });
     emit(
       "portalsAvailable",
       createAgentEventResponse("portalsAvailable", { portals })
@@ -521,7 +550,7 @@ export class PortalInitializer {
     this.selectedPortal = portal;
     logger.info(logMessage, {
       portalId: this.selectedPortal.id,
-      name: this.selectedPortal.name,
+      name: this.selectedPortal.name
     });
     await this.callOnPortalSelected(this.selectedPortal);
     await this.handleSelectedPortal();
@@ -541,11 +570,17 @@ export class PortalInitializer {
       agentDetails?.userType === "customer" ||
       initParams.authType?.trim().toLowerCase() === "customer";
 
+    const language =
+      typeof agentDetails?.languageCode === "string" &&
+      agentDetails.languageCode.trim()
+        ? agentDetails.languageCode.trim()
+        : "en-us";
+
     const resolved =
-      (await this.resolveProfilesFromCache(portalId)) ??
+      (await this.resolveProfilesFromCache(portalId, language)) ??
       (isCustomer
-        ? await this.resolveProfilesForCustomer(portalId)
-        : await this.resolveProfilesFromApi(portalId));
+        ? await this.resolveProfilesForCustomer(portalId, language)
+        : await this.resolveProfilesFromApi(portalId, language));
 
     this.portalDetails = resolved.portalDetails;
     this.profiles = resolved.profiles;
@@ -569,12 +604,16 @@ export class PortalInitializer {
 
   /** Fetch portal details from API. Throws {@link InitializationPipelineError} on API failure. */
   private async fetchPortalDetails(
-    portalId: string | number
+    portalId: string | number,
+    language: string
   ): Promise<any | undefined> {
     const { apiHelper } = this.deps;
     if (!apiHelper.getPortalDetails) return undefined;
     try {
-      return await apiHelper.getPortalDetails({ portalId: String(portalId) });
+      return await apiHelper.getPortalDetails({
+        portalId: String(portalId),
+        language: language
+      });
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       throw new InitializationPipelineError(
@@ -587,13 +626,14 @@ export class PortalInitializer {
 
   /** Cache-hit strategy: return cached profiles with fresh portal details, or null if cache miss. */
   private async resolveProfilesFromCache(
-    portalId: string | number
+    portalId: string | number,
+    language: string
   ): Promise<{ portalDetails: any; profiles: UserProfile[] } | null> {
     const key = this.deps.pipelineCache?.profilesKey(portalId) ?? "";
     const cached = this.readCachedFromAdapter<UserProfile[]>(key);
     if (cached == null) return null;
     this.deps.logger.info("Using cached profiles", { count: cached.length });
-    const portalDetails = await this.fetchPortalDetails(portalId);
+    const portalDetails = await this.fetchPortalDetails(portalId, language);
     return { portalDetails, profiles: [...cached] };
   }
 
@@ -602,32 +642,41 @@ export class PortalInitializer {
    * extract defaultUserProfile from portal settings if present.
    */
   private async resolveProfilesForCustomer(
-    portalId: string | number
+    portalId: string | number,
+    language: string
   ): Promise<{ portalDetails: any; profiles: UserProfile[] }> {
     const { logger } = this.deps;
     logger.info(
       "Customer profile mode: skipping getUserProfiles (cc-widget parity)"
     );
-    const portalDetails = await this.fetchPortalDetails(portalId);
+    const portalDetails = await this.fetchPortalDetails(portalId, language);
     let profiles = this.extractCustomerProfileFromDetails(portalDetails);
-    const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
-      "egain_personalization_profile_id",
-    ]);
-    if (preferredProfileId && !profiles.some((p) => sameId(p.id, preferredProfileId))) {
+    const preferredProfileId = extractContextAttribute(
+      this.deps.initialContext,
+      ["egain_personalization_profile_id"]
+    );
+    if (
+      preferredProfileId &&
+      !profiles.some((p) => sameId(p.id, preferredProfileId))
+    ) {
       profiles = [
-        { id: preferredProfileId, name: String(preferredProfileId) } as UserProfile,
+        {
+          id: preferredProfileId,
+          name: String(preferredProfileId)
+        } as UserProfile
       ];
     }
     return { portalDetails, profiles };
   }
 
   private async resolveProfilesFromApi(
-    portalId: string | number
+    portalId: string | number,
+    language: string
   ): Promise<{ portalDetails: any; profiles: UserProfile[] }> {
     const { apiHelper } = this.deps;
     const [portalResult, profilesResult] = await Promise.allSettled([
-      this.fetchPortalDetails(portalId),
-      apiHelper.getUserProfiles({ portalId }),
+      this.fetchPortalDetails(portalId, language),
+      apiHelper.getUserProfiles({ portalId })
     ]);
 
     if (portalResult.status === "rejected") {
@@ -651,9 +700,7 @@ export class PortalInitializer {
    * Extract the default user profile from portal details for customer mode.
    * Returns a single-element array if a valid default exists, otherwise empty.
    */
-  private extractCustomerProfileFromDetails(
-    portalDetails: any
-  ): UserProfile[] {
+  private extractCustomerProfileFromDetails(portalDetails: any): UserProfile[] {
     const { logger } = this.deps;
     const defaultFromPortal =
       portalDetails?.portal?.[0]?.portalSettings?.defaultUserProfile ??
@@ -781,15 +828,16 @@ export class PortalInitializer {
     const profiles = this.profiles;
 
     if (!profiles || profiles.length === 0) {
-      const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
-        "egain_personalization_profile_id",
-      ]);
+      const preferredProfileId = extractContextAttribute(
+        this.deps.initialContext,
+        ["egain_personalization_profile_id"]
+      );
       if (preferredProfileId) {
         return {
           profile: {
             id: preferredProfileId,
-            name: String(preferredProfileId),
-          } as UserProfile,
+            name: String(preferredProfileId)
+          } as UserProfile
         };
       }
       return { profile: undefined };
@@ -798,11 +846,14 @@ export class PortalInitializer {
       return { profile: profiles[0] };
     }
 
-    const preferredProfileId = extractContextAttribute(this.deps.initialContext, [
-      "egain_personalization_profile_id",
-    ]);
+    const preferredProfileId = extractContextAttribute(
+      this.deps.initialContext,
+      ["egain_personalization_profile_id"]
+    );
     if (preferredProfileId) {
-      const fromContext = profiles.find((p) => sameId(p.id, preferredProfileId));
+      const fromContext = profiles.find((p) =>
+        sameId(p.id, preferredProfileId)
+      );
       if (fromContext) return { profile: fromContext };
     }
 
