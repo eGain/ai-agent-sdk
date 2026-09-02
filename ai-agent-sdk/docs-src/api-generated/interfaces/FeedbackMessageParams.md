@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.2](../README.md) / FeedbackMessageParams
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.3](../README.md) / FeedbackMessageParams
 
 # Interface: FeedbackMessageParams
 

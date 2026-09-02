@@ -13,6 +13,7 @@ Modes:
 
 from __future__ import annotations
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -119,6 +120,23 @@ def sanitize_built_dir(root: Path, replacements: list[tuple[str, str]]) -> int:
     return changed
 
 
+def patch_package_json_repository_url() -> bool:
+    pkg_path = ROOT / "package.json"
+    if not pkg_path.is_file():
+        return False
+    url = os.environ.get(
+        "PUBLIC_SDK_REPO_PACKAGE_JSON",
+        "https://github.com/eGain/ai-agent-sdk.git",
+    )
+    data = json.loads(pkg_path.read_text(encoding="utf-8"))
+    repo = data.get("repository")
+    if not isinstance(repo, dict) or repo.get("url") == url:
+        return False
+    repo["url"] = url
+    pkg_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    return True
+
+
 def prepare_sources(replacements: list[tuple[str, str]]) -> int:
     explicit = [
         ROOT / "package.json",
@@ -144,6 +162,8 @@ def prepare_sources(replacements: list[tuple[str, str]]) -> int:
         paths.extend(src_dir.rglob("*.ts"))
 
     changed = apply_to_files(paths, replacements)
+    if patch_package_json_repository_url():
+        changed += 1
     print(f"prepare-public-sdk-docs: updated {changed} file(s)")
     return 0
 

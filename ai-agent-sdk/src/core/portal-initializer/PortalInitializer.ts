@@ -331,6 +331,7 @@ export class PortalInitializer {
       const themeTemplate = (
         initParams.templateName ||
         initParams.shortUrlTemplate ||
+        initParams.egtemplate || 
         ""
       ).trim();
       const shortUrlTemplate = themeTemplate || undefined;
