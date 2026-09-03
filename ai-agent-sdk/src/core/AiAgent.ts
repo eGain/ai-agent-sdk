@@ -903,7 +903,11 @@ export class AiAgent extends EventEmitter<AgentEvents> {
           userType: this.agentDetails?.userType,
         });
 
-        await this.authService.authenticate();
+        // authenticate() always opens login. After redirect return, initialize()
+        // already restored the account — skip a second login.
+        if (!this.authService.getStrategy().isAuthenticated?.()) {
+          await this.authService.authenticate();
+        }
 
       } else {
         // Agent doesn't require authentication - use anonymous strategy

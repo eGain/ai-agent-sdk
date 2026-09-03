@@ -21,6 +21,7 @@ const authServiceMock = vi.hoisted(() => ({
   isAnonymousStrategy: vi.fn().mockReturnValue(true),
   getAuthenticationType: vi.fn().mockReturnValue('anonymous'),
   authenticate: vi.fn().mockResolvedValue(undefined),
+  getStrategy: vi.fn().mockReturnValue({ isAuthenticated: () => false }),
   setTokenExpiringCallback: vi.fn(),
   switchStrategyTo: vi.fn().mockResolvedValue(true),
   cleanup: vi.fn().mockResolvedValue(undefined),

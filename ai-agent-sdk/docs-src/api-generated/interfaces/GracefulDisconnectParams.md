@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.3](../README.md) / GracefulDisconnectParams
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.4](../README.md) / GracefulDisconnectParams
 
 # Interface: GracefulDisconnectParams
 

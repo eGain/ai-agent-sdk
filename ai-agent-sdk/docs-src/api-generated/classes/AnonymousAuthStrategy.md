@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.3](../README.md) / AnonymousAuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.4](../README.md) / AnonymousAuthStrategy
 
 # Class: AnonymousAuthStrategy
 
@@ -136,6 +136,10 @@ Check if the user is currently authenticated
 #### Returns
 
 `boolean`
+
+#### Implementation of
+
+[AuthStrategy](../interfaces/AuthStrategy.md).[isAuthenticated](../interfaces/AuthStrategy.md#isauthenticated)
 
 #### Defined in
 

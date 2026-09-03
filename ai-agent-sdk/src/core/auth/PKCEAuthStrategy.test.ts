@@ -388,9 +388,22 @@ describe('PKCEAuthStrategy', () => {
               acquireTokenSilent: vi.fn().mockResolvedValue({
                 accessToken: 'silent-token-123',
               }),
+              acquireTokenPopup: vi.fn().mockResolvedValue({
+                account: { username: 'test@example.com' },
+                accessToken: 'popup-token-123',
+              }),
+              acquireTokenRedirect: vi.fn(),
             };
             return mockMsalInstance;
           }),
+          InteractionRequiredAuthError: class InteractionRequiredAuthError extends Error {
+            errorCode: string;
+            constructor(message = 'interaction_required') {
+              super(message);
+              this.name = 'InteractionRequiredAuthError';
+              this.errorCode = 'interaction_required';
+            }
+          },
         },
       };
 
@@ -507,8 +520,7 @@ describe('PKCEAuthStrategy', () => {
         expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
       });
 
-      it('should handle already authenticated state', async () => {
-        // Set up strategy as already authenticated
+      it('should always run interactive login even if already authenticated', async () => {
         (strategy as any).isAuthenticatedFlag = true;
         (strategy as any).accessToken = 'existing-token-123';
 
@@ -519,10 +531,8 @@ describe('PKCEAuthStrategy', () => {
 
         await strategy.authenticate();
 
-        // Should call postAuthentication with existing token
-        expect(postAuthCallback).toHaveBeenCalledWith('existing-token-123');
-        // Should not call loginPopup again
-        expect(mockMsalInstance.loginPopup).not.toHaveBeenCalled();
+        expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
+        expect(postAuthCallback).toHaveBeenCalledWith('pkce-token-123');
       });
 
       it('should include domain_hint in extraQueryParameters when deploymentInfo has domainHint', async () => {
@@ -618,6 +628,101 @@ describe('PKCEAuthStrategy', () => {
         const token = await strategy.getToken();
         expect(token).toBe('stored-token-123');
       });
+
+      it('should fall back to acquireTokenPopup on monitor_window_timeout', async () => {
+        const mockAccount = { username: 'test@example.com' };
+        await strategy.initialize();
+        (strategy as any).account = mockAccount;
+        mockMsalInstance.acquireTokenSilent.mockRejectedValue(
+          new Error('monitor_window_timeout: Token acquisition in iframe failed due to timeout.')
+        );
+
+        const token = await strategy.getToken();
+
+        expect(mockMsalInstance.acquireTokenPopup).toHaveBeenCalled();
+        expect(token).toBe('popup-token-123');
+      });
+
+      it('should fall back to authenticate() when interaction is required in popup scheme', async () => {
+        const InteractionRequiredAuthError = (global as any).window.msal.InteractionRequiredAuthError;
+        const mockAccount = { username: 'test@example.com' };
+        await strategy.initialize();
+        (strategy as any).account = mockAccount;
+        (strategy as any).isAuthenticatedFlag = true;
+        mockMsalInstance.acquireTokenSilent.mockRejectedValue(new InteractionRequiredAuthError());
+
+        const token = await strategy.getToken();
+
+        expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
+        expect(token).toBe('pkce-token-123');
+      });
+
+      it('should use acquireTokenRedirect when interaction is required in redirect scheme', async () => {
+        const InteractionRequiredAuthError = (global as any).window.msal.InteractionRequiredAuthError;
+        const mockAccount = { username: 'test@example.com' };
+        (global as any).window.msal.PublicClientApplication = vi.fn().mockImplementation(() => {
+          mockMsalInstance = {
+            initialize: vi.fn().mockResolvedValue(undefined),
+            getAllAccounts: vi.fn().mockReturnValue([mockAccount]),
+            loginPopup: vi.fn(),
+            loginRedirect: vi.fn(),
+            handleRedirectPromise: vi.fn().mockResolvedValue(null),
+            setActiveAccount: vi.fn(),
+            acquireTokenSilent: vi.fn().mockRejectedValue(new InteractionRequiredAuthError()),
+            acquireTokenPopup: vi.fn(),
+            acquireTokenRedirect: vi.fn(),
+          };
+          return mockMsalInstance;
+        });
+
+        const redirectStrategy = new PKCEAuthStrategy({
+          authorizationUrl: 'https://auth.example.com/authorize',
+          tokenUrl: 'https://auth.example.com/token',
+          clientId: 'test-client-id',
+          redirectUri: 'https://app.example.com/callback',
+          knownAuthorities: ['auth.example.com'],
+          authScheme: 'redirect',
+        });
+
+        await redirectStrategy.initialize({
+          deploymentInfo: { apiDomain: 'test.example.com' },
+        });
+
+        await expect(redirectStrategy.getToken()).rejects.toThrow(
+          'Redirect initiated for token acquisition - response will be handled on page reload'
+        );
+        expect(mockMsalInstance.acquireTokenRedirect).toHaveBeenCalled();
+        expect(mockMsalInstance.acquireTokenPopup).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('refreshToken', () => {
+      it('should fall back to acquireTokenPopup on monitor_window_timeout', async () => {
+        const mockAccount = { username: 'test@example.com' };
+        await strategy.initialize();
+        (strategy as any).account = mockAccount;
+        mockMsalInstance.acquireTokenSilent.mockRejectedValue(
+          new Error('monitor_window_timeout: Token acquisition in iframe failed due to timeout.')
+        );
+
+        const token = await strategy.refreshToken();
+
+        expect(mockMsalInstance.acquireTokenPopup).toHaveBeenCalled();
+        expect(token).toBe('popup-token-123');
+      });
+
+      it('should fall back to authenticate() when interaction is required in popup scheme', async () => {
+        const InteractionRequiredAuthError = (global as any).window.msal.InteractionRequiredAuthError;
+        const mockAccount = { username: 'test@example.com' };
+        await strategy.initialize();
+        (strategy as any).account = mockAccount;
+        mockMsalInstance.acquireTokenSilent.mockRejectedValue(new InteractionRequiredAuthError());
+
+        const token = await strategy.refreshToken();
+
+        expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
+        expect(token).toBe('pkce-token-123');
+      });
     });
 
     describe('isAuthenticated', () => {
@@ -686,24 +791,26 @@ describe('PKCEAuthStrategy', () => {
         expect(postAuthCallback).not.toHaveBeenCalled();
       });
 
-      it('should call postAuthentication only from authenticate after redirect return', async () => {
+      it('should still start loginRedirect from authenticate after redirect return', async () => {
         mockMsalWithRedirectResponse({
           account: { username: 'test@example.com' },
           accessToken: 'redirect-token-123',
         });
 
         const redirectStrategy = new PKCEAuthStrategy(redirectConfig);
-        const postAuthCallback = vi.fn();
 
         await redirectStrategy.initialize({
           deploymentInfo: { apiDomain: 'test.example.com' },
-          postAuthentication: postAuthCallback,
         });
 
-        await redirectStrategy.authenticate();
+        expect(redirectStrategy.isAuthenticated()).toBe(true);
 
-        expect(postAuthCallback).toHaveBeenCalledTimes(1);
-        expect(postAuthCallback).toHaveBeenCalledWith('redirect-token-123');
+        // Don't await — redirect flow returns a never-resolving promise
+        redirectStrategy.authenticate();
+
+        await vi.waitFor(() => {
+          expect(mockMsalInstance.loginRedirect).toHaveBeenCalled();
+        });
       });
 
       it('should call loginRedirect when no prior redirect response exists', async () => {
@@ -725,7 +832,7 @@ describe('PKCEAuthStrategy', () => {
         expect(mockMsalInstance.loginPopup).not.toHaveBeenCalled();
       });
 
-      it('should acquire token silently when account exists but no cached token after redirect', async () => {
+      it('should acquire token silently via getToken when account exists after redirect', async () => {
         const mockAccount = { username: 'test@example.com' };
 
         // Simulate post-redirect: handleRedirectPromise returns null,
@@ -746,20 +853,18 @@ describe('PKCEAuthStrategy', () => {
         });
 
         const redirectStrategy = new PKCEAuthStrategy(redirectConfig);
-        const postAuthCallback = vi.fn();
 
         await redirectStrategy.initialize({
           deploymentInfo: { apiDomain: 'test.example.com' },
-          postAuthentication: postAuthCallback,
         });
 
-        await redirectStrategy.authenticate();
+        const token = await redirectStrategy.getToken();
 
         expect(mockMsalInstance.acquireTokenSilent).toHaveBeenCalledWith({
           scopes: ['openid', 'profile', 'offline_access'],
           account: mockAccount,
         });
-        expect(postAuthCallback).toHaveBeenCalledWith('silent-redirect-token-123');
+        expect(token).toBe('silent-redirect-token-123');
         expect(mockMsalInstance.loginRedirect).not.toHaveBeenCalled();
       });
     });

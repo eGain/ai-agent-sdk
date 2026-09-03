@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.3](../README.md) / AuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.4](../README.md) / AuthStrategy
 
 # Interface: AuthStrategy
 
@@ -26,6 +26,7 @@ All authentication strategies must implement this interface
 - [getToken](AuthStrategy.md#gettoken)
 - [initialize](AuthStrategy.md#initialize)
 - [authenticate](AuthStrategy.md#authenticate)
+- [isAuthenticated](AuthStrategy.md#isauthenticated)
 - [cleanup](AuthStrategy.md#cleanup)
 - [getDomain](AuthStrategy.md#getdomain)
 
@@ -95,6 +96,22 @@ The postAuthentication callback registered during initialize() will be called af
 
 ___
 
+### isAuthenticated
+
+▸ **isAuthenticated**(): `boolean`
+
+Whether the strategy currently has an authenticated session
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[core/auth/AuthStrategy.ts:77](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L77)
+
+___
+
 ### cleanup
 
 ▸ **cleanup**(): `Promise`\<`void`\>
@@ -107,7 +124,7 @@ Cleanup resources when the strategy is no longer needed
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:77](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L77)
+[core/auth/AuthStrategy.ts:82](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L82)
 
 ___
 
@@ -123,4 +140,4 @@ Get the domain for authentication
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:82](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L82)
+[core/auth/AuthStrategy.ts:87](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L87)

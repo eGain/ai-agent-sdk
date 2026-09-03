@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.3](../README.md) / Portal
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.4](../README.md) / Portal
 
 # Interface: Portal
 

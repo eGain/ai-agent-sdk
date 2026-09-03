@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **PKCE silent token errors** — `PKCEAuthStrategy.getToken()` and `refreshToken()` match cc-widget `auth.ts` on silent SSO failure: `InteractionRequiredAuthError` falls back to `authenticate()` (popup) or `acquireTokenRedirect` (redirect); `monitor_window_timeout` falls back to `acquireTokenPopup`. `authenticate()` always runs interactive login (`loginPopup` / `loginRedirect`); `AiAgent` skips it when initialize already restored a session. Previously those errors were rethrown or a stale token was returned, which aborted portal init in embedded hosts such as Genesys.
 - **PKCE popup authentication** — `PKCEAuthStrategy` omits `nextRoute` and OAuth `state` when `authScheme` is `popup`, matching legacy cc-widget `auth.ts` behavior. Prevents `auth-redirect.html` from bouncing the MSAL popup to the app URL and triggering MSAL `block_nested_popups` during cc-widget bootstrap. Redirect flow is unchanged (`state` still carries the return URL).
 - **Auth token propagation** — new `finishAuthentication` callback syncs the access token from the active auth strategy via `AuthenticationService.getToken()` before `onAuthComplete`, fixing cases where strategy callbacks supplied tokens that were not cached in `AuthenticationService` (e.g. anonymous → PKCE switch, anonymous agents, and `restartPortalInitializer()`)
 

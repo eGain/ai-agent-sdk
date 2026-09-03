@@ -72,6 +72,11 @@ export interface AuthStrategy extends AuthProvider {
     authenticate(): Promise<void>;
 
     /**
+     * Whether the strategy currently has an authenticated session
+     */
+    isAuthenticated?(): boolean;
+
+    /**
      * Cleanup resources when the strategy is no longer needed
      */
     cleanup?(): Promise<void>;

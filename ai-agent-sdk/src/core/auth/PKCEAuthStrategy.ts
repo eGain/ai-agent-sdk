@@ -366,26 +366,6 @@ export class PKCEAuthStrategy implements AuthStrategy {
       await this.initialize();
     }
 
-    // If we have an account from a previous redirect but no cached token,
-    // acquire one silently from MSAL's cache before proceeding
-    if (this.isAuthenticatedFlag && this.account && !this.accessToken) {
-      const silentRequest = {
-        scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
-        account: this.account,
-      };
-      const response = await this.msalInstance.acquireTokenSilent(silentRequest);
-      this.accessToken = response.accessToken;
-    }
-
-    // Check if already authenticated
-    if (this.isAuthenticatedFlag && this.accessToken) {
-      if (this.postAuthentication) {
-        await this.postAuthentication(this.accessToken);
-      }
-      return;
-    }
-
-    // Build login request
     const loginRequest: any = {
       scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
     };
@@ -458,22 +438,41 @@ export class PKCEAuthStrategy implements AuthStrategy {
 
     // If we have a cached token and account, try to get it silently
     if (this.account) {
-      try {
-        const silentRequest = {
-          scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
-          account: this.account,
-        };
+      const silentRequest = {
+        scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
+        account: this.account,
+      };
 
+      try {
         const response = await this.msalInstance.acquireTokenSilent(silentRequest);
         this.accessToken = response.accessToken;
         return response.accessToken;
       } catch (error: any) {
-        // If silent acquisition fails, we may need to re-authenticate
-        // For now, if we have a stored token, return it
+        const isInteractionRequired =
+          error?.name === 'InteractionRequiredAuthError' ||
+          error?.errorCode === 'interaction_required';
+
+        if (isInteractionRequired) {
+          if (this.authScheme === 'redirect') {
+            this.msalInstance.acquireTokenRedirect(silentRequest);
+            throw new Error('Redirect initiated for token acquisition - response will be handled on page reload');
+          }
+          await this.authenticate();
+          if (!this.accessToken) {
+            throw error;
+          }
+          return this.accessToken;
+        }
+
+        if (error?.message?.includes('monitor_window_timeout')) {
+          const popupResponse = await this.msalInstance.acquireTokenPopup(silentRequest);
+          this.accessToken = popupResponse.accessToken;
+          return popupResponse.accessToken;
+        }
+
         if (this.accessToken) {
           return this.accessToken;
         }
-        // Otherwise, throw the error
         throw error;
       }
     }
@@ -523,7 +522,31 @@ export class PKCEAuthStrategy implements AuthStrategy {
       this.accessToken = response.accessToken;
       return response.accessToken;
     } catch (error: any) {
-      // If silent refresh fails, may need interactive login
+      const isInteractionRequired =
+        error?.name === 'InteractionRequiredAuthError' ||
+        error?.errorCode === 'interaction_required';
+
+      if (isInteractionRequired) {
+        if (this.authScheme === 'redirect') {
+          this.msalInstance.acquireTokenRedirect(silentRequest);
+          throw new Error('Redirect initiated for token acquisition - response will be handled on page reload');
+        }
+        await this.authenticate();
+        if (!this.accessToken) {
+          throw error;
+        }
+        return this.accessToken;
+      }
+
+      if (error?.message?.includes('monitor_window_timeout')) {
+        const popupResponse = await this.msalInstance.acquireTokenPopup(silentRequest);
+        this.accessToken = popupResponse.accessToken;
+        return popupResponse.accessToken;
+      }
+
+      if (this.accessToken) {
+        return this.accessToken;
+      }
       throw error;
     }
   }

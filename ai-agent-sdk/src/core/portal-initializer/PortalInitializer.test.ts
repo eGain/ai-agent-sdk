@@ -98,6 +98,59 @@ describe('PortalInitializer', () => {
       );
     });
 
+    it('should pass initParams.egtemplate as shortUrlTemplate to getMyPortals', async () => {
+      const deps = {
+        ...defaultDeps,
+        initParams: { egtemplate: 'ombre' },
+        agentDetails: { languageCode: 'en-us' },
+      };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+      expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
+        expect.objectContaining({ shortUrlTemplate: 'ombre', language: 'en-us' })
+      );
+    });
+
+    it('should prefer templateName over shortUrlTemplate and egtemplate for getMyPortals', async () => {
+      const deps = {
+        ...defaultDeps,
+        initParams: {
+          templateName: 'mirage',
+          shortUrlTemplate: 'ombre',
+          egtemplate: 'legacy',
+        },
+      };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+      expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
+        expect.objectContaining({ shortUrlTemplate: 'mirage' })
+      );
+    });
+
+    it('should prefer shortUrlTemplate over egtemplate when templateName is absent', async () => {
+      const deps = {
+        ...defaultDeps,
+        initParams: { shortUrlTemplate: 'ombre', egtemplate: 'legacy' },
+      };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+      expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
+        expect.objectContaining({ shortUrlTemplate: 'ombre' })
+      );
+    });
+
+    it('should omit shortUrlTemplate from getMyPortals when theme template initParams are empty', async () => {
+      const deps = {
+        ...defaultDeps,
+        initParams: { egtemplate: '   ' },
+      };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+      expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
+        expect.not.objectContaining({ shortUrlTemplate: expect.anything() })
+      );
+    });
+
     it('should use portalIds from initParams without calling getMyPortals', async () => {
       const deps = { ...defaultDeps, initParams: { portalIds: '7,8' } };
       const initializer = new PortalInitializer(deps);
