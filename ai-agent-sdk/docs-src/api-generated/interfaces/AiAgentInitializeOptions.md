@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.4](../README.md) / AiAgentInitializeOptions
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.5](../README.md) / AiAgentInitializeOptions
 
 # Interface: AiAgentInitializeOptions
 

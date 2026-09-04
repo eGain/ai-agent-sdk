@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.4](../README.md) / HookContract
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.5](../README.md) / HookContract
 
 # Interface: HookContract
 
@@ -529,7 +529,7 @@ ___
 
 • **setUserFilterTags**: (`filterTags`: `Record`\<`string`, `string`[]\>) => `void`
 
-Set filter tags for portal content filtering.
+Set filter tags for portal content filtering. Merges `user_filter_tags` into `userContext` and stored agent context (does not replace either object).
 
 #### Type declaration
 

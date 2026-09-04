@@ -260,7 +260,7 @@ export class Connection extends EventEmitter<ConnectionEvents> {
       this.emit('closed', event);
 
       // Attempt reconnection if needed
-      if (this.shouldReconnect && event.code !== 1000) {
+      if (this.shouldReconnect && ![1000, 1005].includes(event.code ?? 0)) {
         // Don't reconnect on normal closure
         this.scheduleReconnect();
       } else {

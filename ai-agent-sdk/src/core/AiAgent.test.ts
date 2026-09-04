@@ -1700,6 +1700,52 @@ describe('AiAgent', () => {
       expect(sendSpy).not.toHaveBeenCalled();
     });
 
+    it('setUserFilterTags should add or override user_filter_tags without replacing existing context', async () => {
+      const accountTier = {
+        value: 'gold',
+        type: 'string',
+        description: 'Customer tier',
+        notInLLM: false,
+      };
+      await agent.setContext({ accountTier });
+
+      const hooks = (agent as any).buildHookContract();
+      hooks.setUserContext({ region: 'west' });
+      const tags = { topic: ['billing'] };
+      hooks.setUserFilterTags(tags);
+
+      const expectedFilterTags = {
+        value: tags,
+        type: 'object',
+        description: 'This is the list of user filter tag ids to use',
+      };
+      expect(hooks.getUserContext()).toEqual({
+        region: 'west',
+        user_filter_tags: expectedFilterTags,
+      });
+      expect(agent.getContext()).toEqual({
+        accountTier,
+        user_filter_tags: expectedFilterTags,
+      });
+
+      const updatedTags = { topic: ['payments'] };
+      hooks.setUserFilterTags(updatedTags);
+
+      const expectedUpdatedFilterTags = {
+        value: updatedTags,
+        type: 'object',
+        description: 'This is the list of user filter tag ids to use',
+      };
+      expect(hooks.getUserContext()).toEqual({
+        region: 'west',
+        user_filter_tags: expectedUpdatedFilterTags,
+      });
+      expect(agent.getContext()).toEqual({
+        accountTier,
+        user_filter_tags: expectedUpdatedFilterTags,
+      });
+    });
+
     it('should send only changed context values while retaining the merged context', async () => {
       const accountTier = {
         value: 'gold',

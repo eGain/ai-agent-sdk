@@ -794,6 +794,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
       this.authScopesAugmentedByPlatform = false;
 
+      this.logger.debug("initialize: getDeploymentInfo start");
       // Get deployment info (use cached if getAgentDetails was called first)
       if (!this.deploymentInfo) {
         this.deploymentInfo = await ApiHelper.getDeploymentInfo(this.config.endpoint, this.config.cache);
@@ -804,6 +805,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         this.logger.error('Failed to initialize: deployment information not found', error, { agentId: this.config.id });
         throw error;
       }
+      this.logger.debug("initialize: getDeploymentInfo end");
 
       // Set up apiHelper if not already set (may have been set by getAgentDetails)
       if (!this.apiHelper) {
@@ -815,6 +817,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       }
       this.logger.debug('Deployment info retrieved', { apiDomain: this.deploymentInfo.apiDomain });
 
+      this.logger.debug("initialize: setTokenExpiringCallback start");
       // Set up token expiring callback to emit tokenExpiring event
       this.authService.setTokenExpiringCallback((expiresAt: number) => {
         this.logger.debug('Token expiring callback triggered', { expiresAt, agentId: this.config.id });
@@ -823,7 +826,9 @@ export class AiAgent extends EventEmitter<AgentEvents> {
           expiresAt,
         }));
       });
+      this.logger.debug("initialize: setTokenExpiringCallback end");
 
+      this.logger.debug("initialize: fetchAgentDetails start");
       if (!this.agentDetails) {
         // Initialize auth service with deployment info if not already initialized
         // Default strategy is already anonymous, so we can get token from current strategy
@@ -836,21 +841,26 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         const accessToken = await this.authService.getToken();
         this.agentDetails = await this.fetchAgentDetails(accessToken);
       }
+      this.logger.debug("initialize: fetchAgentDetails end");
 
+      this.logger.debug("initialize: loadAndInitializePlatform start");
       // Load platform connector script if platform is set (before auth so scopes can be augmented).
       // Parity with cc-widget: includes standalone/test (test → standalone URL).
       if (this.initParams.platform && this.agentDetails?.agentType === 'contact-center') {
         await this.loadAndInitializePlatform();
       }
+      this.logger.debug("initialize: loadAndInitializePlatform end");
 
+      this.logger.debug("initialize: authService.getIsInitialized start");
       // Branch based on whether agent requires authentication
       if (this.agentDetails?.isAuthenticated) {
         const effectiveScopes = this.getAuthScopesForFlow();
-
+        this.logger.debug("initialize: authService.getIsInitialized end");
         // Agent requires authentication - use PKCE
         // Check if current strategy is anonymous, and switch to PKCE if needed
         // Otherwise keep the same strategy
         if (this.authService.isAnonymousStrategy()) {
+          this.logger.debug("initialize: authService.isAnonymousStrategy true");
           // Build PKCE config from deployment info and agent details
           let pkceConfig: PKCEAuthConfig;
 
@@ -982,6 +992,15 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       },
       setUserFilterTags: (tags) => {
         this.filterTags = tags;
+        const userFilterTags = {
+          user_filter_tags: {
+            value: tags,
+            type: 'object',
+            description: "This is the list of user filter tag ids to use"
+          }
+        };
+        this.userContext = { ...this.userContext, ...userFilterTags };
+        void this.setContext(userFilterTags);
         this.emit('filterTagsUpdate', this.createAgentEventResponse('filterTagsUpdate', {
           filterTags: tags,
         }));
@@ -1004,6 +1023,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * Called from initialize() when an alphabetic platform is set (incl. standalone/test).
    */
   private async loadAndInitializePlatform(): Promise<void> {
+    this.logger.debug("loadAndInitializePlatform: start");
     const platform = this.initParams.platform!.toLowerCase();
     const environment = deriveEnvironment(
       this.deploymentInfo?.apiDomain,
@@ -1011,6 +1031,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     );
 
     this.logger.info('Loading platform connector', { platform, environment });
+    this.logger.debug("loadAndInitializePlatform: loadPlatformScript start");
 
     await loadPlatformScript({
       platform,
@@ -1018,6 +1039,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       overrideUrl: this.config.platformScriptUrl,
       logger: this.logger,
     });
+    this.logger.debug("loadAndInitializePlatform: loadPlatformScript end");
 
     this.platformComponentService =
       (typeof window !== 'undefined' ? (window as any) : globalThis).PlatformComponentService ?? undefined;
@@ -1026,7 +1048,9 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       throw new Error(`Failed to load platform connector script for '${platform}'`);
     }
 
+    this.logger.debug("loadAndInitializePlatform: buildHookContract start");
     this.hookContract = this.buildHookContract();
+    this.logger.debug("loadAndInitializePlatform: buildHookContract end");
 
     if (this.platformComponentService.setHookContract) {
       this.platformComponentService.setHookContract(this.hookContract);
@@ -1036,6 +1060,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       this.platformComponentService.loadCustomHook(this.hookContract);
     }
 
+    this.logger.debug("loadAndInitializePlatform: addCustomAuthScopes start");
     if (this.platformComponentService.addCustomAuthScopes) {
       const currentScopes = this.resolveEffectiveAuthScopes();
       const augmentedScopes = await this.platformComponentService.addCustomAuthScopes(currentScopes);
@@ -1044,7 +1069,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         this.authScopesAugmentedByPlatform = true;
       }
     }
-
+    this.logger.debug("loadAndInitializePlatform: addCustomAuthScopes end");
     this.logger.info('Platform connector initialized', { platform });
   }
 
@@ -1088,9 +1113,12 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   }
 
   private async runPortalInitializerPipeline(accessToken: any): Promise<void> {
+    this.logger.debug(`runPortalInitializerPipeline: initPlatform start`);
     if (this.platformComponentService?.initPlatform) {
       await this.platformComponentService.initPlatform(this.hookContract!);
     }
+
+    this.logger.debug(`runPortalInitializerPipeline: initPlatform wrapped`);
 
     this.portalInitializer = new PortalInitializer({
       agentId: this.config.id,
@@ -1466,6 +1494,10 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       const parsedUrl = new URL(websocketUrl);
       parsedUrl.hostname = `chat.${parsedUrl.hostname}`;
       parsedUrl.searchParams.set('sessionId', String(sessionId));
+      if (this.conversationId) {
+        this.logger.debug("getWsEndpoint: setting externalCallId to chat websocket url", { conversationId: this.conversationId });
+        parsedUrl.searchParams.set('externalCallId', this.conversationId);
+      }
       websocketUrl = parsedUrl.toString();
       this.logger.debug('WebSocket endpoint constructed', { endpoint: websocketUrl, sessionId });
     } catch (error) {
@@ -2381,6 +2413,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * ```
    */
   async setContext(context: object, options?: { sendImmediately?: boolean }): Promise<void> {
+    this.logger.debug('setContext start', { agentId: this.resolvedAgentId, context });
     const contextUpdates = this.getContextUpdates(context);
     this.storeContext(context);
     this.logger.info('Context set', { agentId: this.resolvedAgentId, context });

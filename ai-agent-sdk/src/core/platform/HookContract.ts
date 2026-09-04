@@ -124,7 +124,7 @@ export interface HookContract {
   /** Append to the user context (merge, not overwrite). */
   setUserContext: (userContext: Record<string, unknown>) => void;
 
-  /** Set filter tags for portal content filtering. */
+  /** Set filter tags for portal content filtering. Merges `user_filter_tags` into `userContext` and stored agent context (does not replace either object). */
   setUserFilterTags: (filterTags: Record<string, string[]>) => void;
 
   // --- Event subscription ---
