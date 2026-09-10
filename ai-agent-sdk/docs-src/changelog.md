@@ -94,7 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Platform connector script loads for any set `initParams.platform` when `agentType` is `contact-center`, including **`standalone`** and **`test`** (cc-widget parity). `test` resolves to the standalone connector URL
+- Platform connector script loads for any set `initParams.platform` (CC and SS), including **`standalone`** and **`test`** (cc-widget parity). `test` resolves to the standalone connector URL
 - `HookContract.getMsalAccessToken()` is **synchronous** and returns the cached auth token (`AuthenticationService.getCachedToken()`), matching cc-widget connectors that do not `await`
 - `HookContract.getUserId()` returns the authenticated **user/customer details** `id` (from `getUserDetails` / `getCustomerDetails`), not `initParams.userid`
 

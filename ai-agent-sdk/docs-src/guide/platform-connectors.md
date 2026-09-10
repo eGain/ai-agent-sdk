@@ -8,7 +8,7 @@ Contact center integrations (e.g. Genesys, Amazon Connect) use a **platform conn
 
 ## Lifecycle
 
-1. During `initialize()`, when `initParams.platform` is set and the agent is `contact-center`, the SDK loads the connector script from `AiAgentConfig.connector.connectorUrl` when provided; otherwise it uses a production default URL derived from `initParams.platform` (`test` maps to the standalone connector path).
+1. During `initialize()`, when `initParams.platform` is set, the SDK loads the connector script from `AiAgentConfig.connector.connectorUrl` when provided; otherwise it uses a production default URL derived from `initParams.platform` (`test` maps to the standalone connector path).
 2. The script is injected in the browser (`<script>`) or dynamically imported in Node.
 3. The SDK expects `globalThis.PlatformComponentService` (or `window.PlatformComponentService`) to exist after load.
 4. The SDK wires **`HookContract`** (via `setHookContract` / `loadCustomHook` as available) so the connector can augment auth scopes before login, then continues authentication and the portal initialization pipeline as needed.

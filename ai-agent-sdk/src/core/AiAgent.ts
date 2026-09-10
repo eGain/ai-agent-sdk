@@ -856,8 +856,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
       this.logger.debug("initialize: loadAndInitializePlatform start");
       // Load platform connector script if platform is set (before auth so scopes can be augmented).
-      // Parity with cc-widget: includes standalone/test (test → standalone URL).
-      if (this.initParams.platform && this.agentDetails?.agentType === 'contact-center') {
+      // Parity with cc-widget: includes standalone/test (test → standalone URL) for CC and SS.
+      if (this.initParams.platform) {
         await this.loadAndInitializePlatform();
       }
       this.logger.debug("initialize: loadAndInitializePlatform end");

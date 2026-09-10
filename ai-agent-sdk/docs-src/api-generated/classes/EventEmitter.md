@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.6](../README.md) / EventEmitter
+[@egain/ai-agent-sdk API Reference - v0.2.3-beta.7](../README.md) / EventEmitter
 
 # Class: EventEmitter\<T\>
 
