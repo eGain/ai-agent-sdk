@@ -75,7 +75,7 @@ When the pipeline has a profile list and more than one row, the SDK picks in thi
 ### Top-level `AiAgentConfig`
 
 - **`scopes`** — Custom OAuth resource scopes (defaults differ for agent vs customer).
-- **`platformScriptUrl`** — Override URL for the platform connector script.
+- **`connector`** — `{ env?, connectorUrl? }` for platform connector script URL and `HookContract.getEnvironment()`.
 - **`authScheme`** — `'popup'` or `'redirect'` when the SDK **auto-builds** PKCE from deployment info (ignored if you pass a full `PKCEAuthConfig` in `auth`).
 - **`sessionId`** — Skip session fetch if you already have a session id.
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { loadPlatformScript, deriveEnvironment, buildPlatformScriptUrl } from './PlatformScriptLoader.js';
+import { loadPlatformScript } from './PlatformScriptLoader.js';
 
 describe('PlatformScriptLoader', () => {
   const mockLogger = {
@@ -9,6 +9,9 @@ describe('PlatformScriptLoader', () => {
     error: vi.fn(),
   };
 
+  const prodGenesysUrl =
+    'https://apps.egain.services/ai-agent-connector-genesys/web/static/connector-ai-agent.js';
+
   beforeEach(() => {
     vi.clearAllMocks();
     delete (globalThis as any).PlatformComponentService;
@@ -16,59 +19,6 @@ describe('PlatformScriptLoader', () => {
 
   afterEach(() => {
     delete (globalThis as any).PlatformComponentService;
-  });
-
-  describe('deriveEnvironment', () => {
-    it('returns explicit env when provided', () => {
-      expect(deriveEnvironment('anything.com', 'dev')).toBe('dev');
-      expect(deriveEnvironment('anything.com', 'QA')).toBe('qa');
-      expect(deriveEnvironment('anything.com', 'Prod')).toBe('prod');
-    });
-
-    it('parses dev from domain', () => {
-      expect(deriveEnvironment('dev-api.egeng.info')).toBe('dev');
-    });
-
-    it('parses qa from domain', () => {
-      expect(deriveEnvironment('qa-api.egeng.info')).toBe('qa');
-    });
-
-    it('defaults to prod', () => {
-      expect(deriveEnvironment('api.egain.services')).toBe('prod');
-      expect(deriveEnvironment(undefined)).toBe('prod');
-    });
-  });
-
-  describe('buildPlatformScriptUrl', () => {
-    it('constructs correct URL for dev environment', () => {
-      const url = buildPlatformScriptUrl('genesys', 'dev');
-      expect(url).toBe('https://dev-apps.egeng.info/ai-agent-connector-genesys/web/static/connector-ai-agent.js');
-    });
-
-    it('constructs correct URL for qa environment', () => {
-      const url = buildPlatformScriptUrl('genesys', 'qa');
-      expect(url).toBe('https://qa-apps.egeng.info/ai-agent-connector-genesys/web/static/connector-ai-agent.js');
-    });
-
-    it('constructs correct URL for production environment', () => {
-      const url = buildPlatformScriptUrl('genesys', 'prod');
-      expect(url).toBe('https://apps.egain.services/ai-agent-connector-genesys/web/static/connector-ai-agent.js');
-    });
-
-    it('defaults to production for unknown environment', () => {
-      const url = buildPlatformScriptUrl('genesys', 'staging');
-      expect(url).toBe('https://apps.egain.services/ai-agent-connector-genesys/web/static/connector-ai-agent.js');
-    });
-
-    it('maps test platform to standalone connector (cc-widget parity)', () => {
-      const url = buildPlatformScriptUrl('test', 'prod');
-      expect(url).toBe('https://apps.egain.services/ai-agent-connector-standalone/web/static/connector-ai-agent.js');
-    });
-
-    it('uses standalone connector path for standalone platform', () => {
-      const url = buildPlatformScriptUrl('standalone', 'dev');
-      expect(url).toBe('https://dev-apps.egeng.info/ai-agent-connector-standalone/web/static/connector-ai-agent.js');
-    });
   });
 
   describe('loadPlatformScript (browser path)', () => {
@@ -104,12 +54,10 @@ describe('PlatformScriptLoader', () => {
       };
 
       const promise = loadPlatformScript({
-        platform: 'genesys',
-        baseUrl: 'prod',
+        scriptUrl: prodGenesysUrl,
         logger: mockLogger,
       });
 
-      // Simulate script load and PCS registration
       (globalThis as any).PlatformComponentService = { initPlatform: vi.fn() };
       (globalThis as any).window = { PlatformComponentService: (globalThis as any).PlatformComponentService };
       mockScript.onload();
@@ -127,42 +75,13 @@ describe('PlatformScriptLoader', () => {
       };
 
       const promise = loadPlatformScript({
-        platform: 'genesys',
-        baseUrl: 'prod',
+        scriptUrl: prodGenesysUrl,
         logger: mockLogger,
       });
 
       mockScript.onerror();
 
       await expect(promise).rejects.toThrow('Failed to load platform connector script from');
-    });
-
-    it('uses overrideUrl when provided', async () => {
-      let capturedSrc: string | undefined;
-      const mockScript: any = { onload: null, onerror: null };
-      Object.defineProperty(mockScript, 'src', {
-        set(val: string) { capturedSrc = val; },
-        get() { return capturedSrc; },
-      });
-      (globalThis as any).document = {
-        createElement: vi.fn().mockReturnValue(mockScript),
-        head: { appendChild: vi.fn() },
-      };
-
-      const customUrl = 'https://custom.example.com/connector.js';
-      const promise = loadPlatformScript({
-        platform: 'genesys',
-        baseUrl: 'prod',
-        overrideUrl: customUrl,
-        logger: mockLogger,
-      });
-
-      (globalThis as any).PlatformComponentService = { initPlatform: vi.fn() };
-      (globalThis as any).window = { PlatformComponentService: (globalThis as any).PlatformComponentService };
-      mockScript.onload();
-
-      await promise;
-      expect(capturedSrc).toBe(customUrl);
     });
   });
 
@@ -180,36 +99,15 @@ describe('PlatformScriptLoader', () => {
       }
     });
 
-    it('lazy loads module via import() using constructed URL', async () => {
-      // We can't fully test dynamic import in a unit test, but we can verify
-      // the non-browser path is taken and the correct URL is used
-      const url = buildPlatformScriptUrl('genesys', 'prod');
-
+    it('lazy loads module via import() using the provided URL', async () => {
       await expect(loadPlatformScript({
-        platform: 'genesys',
-        baseUrl: 'prod',
+        scriptUrl: prodGenesysUrl,
         logger: mockLogger,
-      })).rejects.toThrow(); // Will fail because the URL doesn't resolve to a module
+      })).rejects.toThrow();
 
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Loading platform connector module via dynamic import()',
-        expect.objectContaining({ url }),
-      );
-    });
-
-    it('uses overrideUrl for import() when provided', async () => {
-      const customUrl = './custom-connector.js';
-
-      await expect(loadPlatformScript({
-        platform: 'genesys',
-        baseUrl: 'prod',
-        overrideUrl: customUrl,
-        logger: mockLogger,
-      })).rejects.toThrow(); // Will fail because the module doesn't exist
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Loading platform connector module via dynamic import()',
-        expect.objectContaining({ url: customUrl }),
+        expect.objectContaining({ url: prodGenesysUrl }),
       );
     });
   });

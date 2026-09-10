@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.2.3-beta.5
+# @egain/ai-agent-sdk API Reference - v0.2.3-beta.6
 
 # @egain/ai-agent-sdk
 
@@ -49,12 +49,9 @@ await agent.send("Hello!");
 - [ConnectionState](enums/ConnectionState.md)
 - [LogLevel](enums/LogLevel.md)
 
-### Core Classes
-
-- [AiAgent](classes/AiAgent.md)
-
 ### Events Classes
 
+- [AiAgent](classes/AiAgent.md)
 - [EventEmitter](classes/EventEmitter.md)
 
 ### Other Classes
@@ -89,6 +86,7 @@ await agent.send("Hello!");
 
 ### Other Interfaces
 
+- [AiAgentConnectorConfig](interfaces/AiAgentConnectorConfig.md)
 - [AiAgentInitializeOptions](interfaces/AiAgentInitializeOptions.md)
 - [AgentEventPayloadMap](interfaces/AgentEventPayloadMap.md)
 - [AgentEvent](interfaces/AgentEvent.md)
@@ -217,7 +215,7 @@ Agent event type identifiers
 
 #### Defined in
 
-[core/AiAgent.ts:228](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L228)
+[core/AiAgent.ts:237](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L237)
 
 ___
 

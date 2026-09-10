@@ -75,7 +75,10 @@ export interface HookContract {
   /** Returns the platform type string (e.g. "genesys"). */
   getPlatformType: () => string | null;
 
-  /** Returns the deployment environment ("dev" | "qa" | "prod"). */
+  /**
+   * Returns the deployment environment from `initParams.env` (e.g. `dev`, `qa`,
+   * `non-prod`, `prod`, or legacy `stage`, `eustage`, `euprod`, `devrf`).
+   */
   getEnvironment: () => string;
 
   /** Returns the authenticated user/customer details id, or null if not yet fetched. */

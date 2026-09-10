@@ -51,6 +51,7 @@ import './core/polyfills.js';
 export { AiAgent } from './core/AiAgent.js';
 export type {
   AiAgentConfig,
+  AiAgentConnectorConfig,
   AiAgentInitializeOptions,
   AgentEvents,
   AgentEvent,

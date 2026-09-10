@@ -19,11 +19,21 @@ import { PortalInitializer } from './portal-initializer/PortalInitializer.js';
 import type { Portal, UserProfile, AgentListItem } from './types/PortalTypes.js';
 import type { HookContract, CallerInfo, CallTranscriptEntry } from './platform/HookContract.js';
 import type { PlatformComponentService } from './platform/PlatformComponentService.js';
-import { loadPlatformScript, deriveEnvironment } from './platform/PlatformScriptLoader.js';
+import { loadPlatformScript } from './platform/PlatformScriptLoader.js';
 import { DataMasker } from './data-masking/DataMasker.js';
 import { loadDataMasking } from './data-masking/util.js';
 
 export type { UserDetails } from './api/ApiHelper.js';
+
+/**
+ * Platform connector hosting configuration supplied by the host application.
+ */
+export interface AiAgentConnectorConfig {
+  /** Deployment environment label exposed on {@link HookContract.getEnvironment}. */
+  env?: string;
+  /** Full URL of the platform connector script to load during initialize(). */
+  connectorUrl?: string;
+}
 
 /**
  * Configuration options for creating an AiAgent instance.
@@ -195,12 +205,11 @@ export interface AiAgentConfig {
   context?: Record<string, unknown>;
 
   /**
-   * Override URL for the platform connector script.
-   * When provided, the SDK loads this URL instead of constructing one
-   * from the platform name and deployment environment.
-   * Useful for local development or custom connector deployments.
+   * Platform connector script URL and environment label from the host (e.g. cc-widget).
+   * When `connectorUrl` is omitted, the SDK loads from `https://apps.egain.services/` using
+   * `initParams.platform` (with `test` mapped to the standalone connector path).
    */
-  platformScriptUrl?: string;
+  connector?: AiAgentConnectorConfig;
 
   /**
    * Authentication scheme for the PKCE flow.
@@ -554,6 +563,8 @@ function isUsableSessionId(sessionId: unknown): sessionId is string | number {
  * @see {@link AiAgentConfig} for configuration options
  * @see {@link AgentEvents} for available events
  */
+const DEFAULT_PLATFORM_CONNECTOR_ORIGIN = 'https://apps.egain.services/';
+
 export class AiAgent extends EventEmitter<AgentEvents> {
   private connection?: Connection;
   private messageQueue!: MessageQueue;
@@ -949,8 +960,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       getMsalAccessToken: () => this.authService.getCachedToken(),
       getAccessToken: () => this.authService.getToken(),
       getDeploymentInfo: () => this.deploymentInfo,
-      getPlatformType: () => this.initParams.platform ?? null,
-      getEnvironment: () => deriveEnvironment(this.initParams.env),
+      getPlatformType: () => (this.initParams.platform === "test" ? "standalone" : this.initParams.platform) ?? null,
+      getEnvironment: () => this.config.connector?.env?.trim() || 'prod',
       getUserId: () => (this.userDetails?.id != null ? String(this.userDetails.id) : null),
       getUserContext: () => this.userContext,
       getConversationId: () => this.conversationId,
@@ -1018,6 +1029,15 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     };
   }
 
+  private resolvePlatformScriptUrl(platform: string): string {
+    const configuredUrl = this.config.connector?.connectorUrl?.trim();
+    if (configuredUrl) {
+      return configuredUrl;
+    }
+    const connectorPlatform = platform === 'test' ? 'standalone' : platform;
+    return `${DEFAULT_PLATFORM_CONNECTOR_ORIGIN}ai-agent-connector-${connectorPlatform}/web/static/connector-ai-agent.js`;
+  }
+
   /**
    * Load the platform connector script and wire up the HookContract.
    * Called from initialize() when an alphabetic platform is set (incl. standalone/test).
@@ -1025,18 +1045,13 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   private async loadAndInitializePlatform(): Promise<void> {
     this.logger.debug("loadAndInitializePlatform: start");
     const platform = this.initParams.platform!.toLowerCase();
-    const environment = deriveEnvironment(
-      this.deploymentInfo?.apiDomain,
-      this.initParams.env,
-    );
+    const scriptUrl = this.resolvePlatformScriptUrl(platform);
 
-    this.logger.info('Loading platform connector', { platform, environment });
+    this.logger.info('Loading platform connector', { platform, scriptUrl });
     this.logger.debug("loadAndInitializePlatform: loadPlatformScript start");
 
     await loadPlatformScript({
-      platform,
-      baseUrl: environment,
-      overrideUrl: this.config.platformScriptUrl,
+      scriptUrl,
       logger: this.logger,
     });
     this.logger.debug("loadAndInitializePlatform: loadPlatformScript end");
@@ -1113,13 +1128,6 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   }
 
   private async runPortalInitializerPipeline(accessToken: any): Promise<void> {
-    this.logger.debug(`runPortalInitializerPipeline: initPlatform start`);
-    if (this.platformComponentService?.initPlatform) {
-      await this.platformComponentService.initPlatform(this.hookContract!);
-    }
-
-    this.logger.debug(`runPortalInitializerPipeline: initPlatform wrapped`);
-
     this.portalInitializer = new PortalInitializer({
       agentId: this.config.id,
       apiHelper: this.apiHelper!,
@@ -1179,6 +1187,11 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       this.logger.error('finishAuthentication: Failed to get access token', error, { agentId: this.config.id });
       throw error;
     }
+    this.logger.debug("onAuthComplete: PlatformComponentService.initPlatform start");
+    if (this.platformComponentService?.initPlatform) {
+      await this.platformComponentService.initPlatform(this.hookContract!);
+    }
+    this.logger.debug("onAuthComplete: PlatformComponentService.initPlatform end");
     await this.onAuthComplete(accessToken);
   };
 
