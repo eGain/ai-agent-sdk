@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.3] - 2026-09-09
+## [0.2.3] - 2026-09-11
 
 ### Added
 
@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **`ApiHelper.setLanguage()`** — updates the instance default used by portal and masking APIs; per-call `language` options remain as overrides; `Accept-Language` header mapping follows cc-widget rules (e.g. `en-GB` → `en-us`)
+- **`ApiHelper.setLanguage()`** — updates the instance language used by portal and masking APIs (`$lang` and `Accept-Language`); per-call `language` options are not supported; `Accept-Language` header mapping follows cc-widget rules (e.g. `en-GB` → `en-us`)
 - **`ApiHelper.getPortals()` caching** — responses are cached when `cache.enabled` is true, keyed by language and `departmentId` (aligned with `getMyPortals`; previously always fetched fresh)
 - **`HookContract.getMsalAccessToken()`** — returns only the cached token synchronously; removed fire-and-forget `getToken()` side effect (use `getAccessToken()` when a fresh token is required)
 - **`HookContract.getEnvironment()`** — documents `"non-prod"` as a valid value (stage / eustage builds)

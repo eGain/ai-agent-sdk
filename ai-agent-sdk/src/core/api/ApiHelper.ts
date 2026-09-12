@@ -761,7 +761,6 @@ export class ApiHelper {
      * ```typescript
      * const portals = await apiHelper.getMyPortals({
      *   authToken: token,
-     *   language: 'en-us',
      *   userId: 'user-123'
      * });
      * ```
@@ -803,7 +802,6 @@ export class ApiHelper {
      * ```typescript
      * const portals = await apiHelper.getPortals({
      *   authToken: token,
-     *   language: 'en-us',
      *   departmentId: 12,
      * });
      * ```

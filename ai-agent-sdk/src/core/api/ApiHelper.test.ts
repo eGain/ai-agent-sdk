@@ -279,33 +279,6 @@ describe('ApiHelper', () => {
       );
       expect(result).toEqual(mockResponse.portal[0]);
     });
-
-    it('should use provided language if specified', async () => {
-      const mockResponse = {
-        portal: [
-          {
-            id: 'test-portal-id',
-            name: 'Test Portal',
-          },
-        ],
-      };
-
-      (global.fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResponse,
-      });
-
-      await apiHelper.getPortalDetails({
-        portalId: 'test-portal-id',
-        authToken: 'test-token',
-        language: 'fr-fr',
-      });
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('$lang=fr-fr'),
-        expect.any(Object)
-      );
-    });
   });
 
   describe('getConnectedApps', () => {
