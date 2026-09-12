@@ -1,6 +1,6 @@
 {
   "name": "@egain/ai-agent-sdk",
-  "version": "0.2.3-beta.7",
+  "version": "0.2.3",
   "description": "TypeScript SDK for eGain's AI Agent platform",
   "homepage": "https://egain.github.io/ai-agent-sdk",
   "type": "module",
@@ -85,6 +85,7 @@
     }
   },
   "dependencies": {
+    "jwt-decode": "^4.0.0",
     "semver": "^7.7.2"
   }
 }

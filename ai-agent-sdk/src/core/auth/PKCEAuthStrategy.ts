@@ -1,6 +1,8 @@
+import { jwtDecode } from 'jwt-decode';
 import { AuthStrategy, PostAuthenticationCallback, AuthStrategyInitializeOptions } from './AuthStrategy.js';
 import { Logger } from '../logging/Logger.js';
-import './msal-loader.js'; // Ensure MSAL is loaded before using it
+import { PublicClientApplication } from './msal-loader.js';
+import { AuthError } from '../errors/SDKError.js';
 
 /**
  * Configuration for PKCE authentication strategy
@@ -62,21 +64,6 @@ export interface PKCEAuthConfig {
    * When true, forces local account login instead of federated SSO.
    */
   localLogin?: boolean;
-}
-
-// Type declarations for MSAL (since msal-browser.js is a UMD module)
-declare global {
-  interface Window {
-    msal?: {
-      PublicClientApplication: any;
-      InteractionType: any;
-      PopupRequest: any;
-      RedirectRequest: any;
-      SilentRequest: any;
-      AccountInfo: any;
-      AuthenticationResult: any;
-    };
-  }
 }
 
 /**
@@ -261,10 +248,8 @@ export class PKCEAuthStrategy implements AuthStrategy {
       return;
     }
 
-    // Check if MSAL is available (deferred from constructor to allow lazy loading)
-    // The msal-loader import ensures MSAL is bundled, but we still need to verify it's available
-    if (!window.msal) {
-      throw new Error('MSAL library not found. Please ensure msal-browser.js is loaded. The SDK bundle should include MSAL automatically. If you see this error, there may be a bundling issue.');
+    if (!PublicClientApplication) {
+      throw new Error('MSAL PublicClientApplication not available.');
     }
 
     this.deploymentInfo = options?.deploymentInfo;
@@ -319,7 +304,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
     }
 
     // Create MSAL instance
-    this.msalInstance = new window.msal!.PublicClientApplication(msalConfig);
+    this.msalInstance = new PublicClientApplication(msalConfig);
 
     // Initialize MSAL
     await this.msalInstance.initialize();
@@ -341,6 +326,26 @@ export class PKCEAuthStrategy implements AuthStrategy {
   }
 
   /**
+   * Check if the cached access token is still valid.
+   * Matches cc-widget `isValidToken` (5-minute default buffer).
+   */
+  private isAccessTokenValid(bufferTimeMinutes: number = 5): boolean {
+    if (!this.accessToken) {
+      return false;
+    }
+
+    try {
+      const decoded = jwtDecode<{ exp?: number }>(this.accessToken);
+      if (!decoded?.exp) {
+        return false;
+      }
+      return decoded?.exp * 1000 > Date.now() + bufferTimeMinutes * 60 * 1000;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Handle redirect promise after OAuth redirect
    */
   private async handleRedirectPromise(): Promise<void> {
@@ -354,6 +359,11 @@ export class PKCEAuthStrategy implements AuthStrategy {
       }
     } catch (error) {
       console.error('Error handling redirect promise:', error);
+
+      if ((error as Error)?.message?.includes('hash_empty_error')) {
+        throw new AuthError('Authentication failed due to browser compatibility issue. Please try refreshing the page.', error as Error);
+      }
+
       throw error;
     }
   }
@@ -436,6 +446,10 @@ export class PKCEAuthStrategy implements AuthStrategy {
       await this.initialize();
     }
 
+    if (this.accessToken && this.isAccessTokenValid()) {
+      return this.accessToken;
+    }
+
     // If we have a cached token and account, try to get it silently
     if (this.account) {
       const silentRequest = {
@@ -470,9 +484,10 @@ export class PKCEAuthStrategy implements AuthStrategy {
           return popupResponse.accessToken;
         }
 
-        if (this.accessToken) {
-          return this.accessToken;
+        if ((error as Error)?.message?.includes('hash_empty_error')) {
+          throw new AuthError('Authentication failed due to browser compatibility issue. Please try refreshing the page.', error as Error);
         }
+
         throw error;
       }
     }
@@ -542,6 +557,10 @@ export class PKCEAuthStrategy implements AuthStrategy {
         const popupResponse = await this.msalInstance.acquireTokenPopup(silentRequest);
         this.accessToken = popupResponse.accessToken;
         return popupResponse.accessToken;
+      }
+
+      if ((error as Error)?.message?.includes('hash_empty_error')) {
+        throw new AuthError('Authentication failed due to browser compatibility issue. Please try refreshing the page.', error as Error);
       }
 
       if (this.accessToken) {

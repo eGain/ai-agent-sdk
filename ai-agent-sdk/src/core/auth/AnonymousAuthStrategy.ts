@@ -342,13 +342,16 @@ export class AnonymousAuthStrategy implements AuthStrategy {
     }
 
     /**
-     * Cleanup resources
+     * Cleanup resources.
+     *
+     * Intentionally a no-op: token and metadata live in sessionStorage so a later
+     * widget remount (or a new AnonymousAuthStrategy after anonymous→PKCE switch)
+     * can reuse them instead of calling the anonymous token API again.
+     * Call {@link clearTokenCache} / {@link clearMetadataCache} to force a refresh.
      */
     async cleanup(): Promise<void> {
-        // Clear the token cache
-        this.clearTokenCache();
-        // Clear metadata cache
-        this.clearMetadataCache();
+        // Keep sessionStorage token/metadata. switchStrategyTo (anonymous→PKCE) and widget remount
+        // must not force a new anonymous-token API call; use clearTokenCache/clearMetadataCache to refresh.
     }
 
     /**

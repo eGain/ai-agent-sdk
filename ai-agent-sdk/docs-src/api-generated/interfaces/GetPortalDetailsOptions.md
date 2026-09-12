@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.7](../README.md) / GetPortalDetailsOptions
+[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / GetPortalDetailsOptions
 
 # Interface: GetPortalDetailsOptions
 
@@ -8,7 +8,6 @@
 
 - [portalId](GetPortalDetailsOptions.md#portalid)
 - [authToken](GetPortalDetailsOptions.md#authtoken)
-- [language](GetPortalDetailsOptions.md#language)
 
 ## Properties
 
@@ -33,15 +32,3 @@ Authentication token (required if `ApiHelper` was constructed without `getToken`
 #### Defined in
 
 [core/api/ApiHelper.ts:130](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L130)
-
-___
-
-### language
-
-• `Optional` **language**: `string`
-
-Language code (optional)
-
-#### Defined in
-
-[core/api/ApiHelper.ts:135](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L135)

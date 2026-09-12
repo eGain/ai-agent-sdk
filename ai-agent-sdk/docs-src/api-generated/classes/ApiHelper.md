@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.7](../README.md) / ApiHelper
+[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / ApiHelper
 
 # Class: ApiHelper
 
@@ -13,6 +13,7 @@ API Helper class for making eGain AI Agent API calls
 ### Methods
 
 - [setStaticCacheAdapter](ApiHelper.md#setstaticcacheadapter)
+- [setLanguage](ApiHelper.md#setlanguage)
 - [getAiAgentDetails](ApiHelper.md#getaiagentdetails)
 - [getAiAgentSession](ApiHelper.md#getaiagentsession)
 - [getPortalDetails](ApiHelper.md#getportaldetails)
@@ -49,7 +50,7 @@ API Helper class for making eGain AI Agent API calls
 
 #### Defined in
 
-[core/api/ApiHelper.ts:369](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L369)
+[core/api/ApiHelper.ts:358](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L358)
 
 ## Methods
 
@@ -73,7 +74,29 @@ for caching deployment information.
 
 #### Defined in
 
-[core/api/ApiHelper.ts:365](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L365)
+[core/api/ApiHelper.ts:354](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L354)
+
+___
+
+### setLanguage
+
+▸ **setLanguage**(`language`): `void`
+
+Updates the default language for API calls (e.g. after agent details are loaded).
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `language` | `string` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[core/api/ApiHelper.ts:387](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L387)
 
 ___
 
@@ -97,7 +120,7 @@ The AI Agent details
 
 #### Defined in
 
-[core/api/ApiHelper.ts:515](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L515)
+[core/api/ApiHelper.ts:511](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L511)
 
 ___
 
@@ -121,7 +144,7 @@ The AI Agent session ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:553](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L553)
+[core/api/ApiHelper.ts:549](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L549)
 
 ___
 
@@ -145,7 +168,7 @@ The portal details
 
 #### Defined in
 
-[core/api/ApiHelper.ts:598](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L598)
+[core/api/ApiHelper.ts:594](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L594)
 
 ___
 
@@ -169,7 +192,7 @@ The connected apps
 
 #### Defined in
 
-[core/api/ApiHelper.ts:645](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L645)
+[core/api/ApiHelper.ts:641](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L641)
 
 ___
 
@@ -193,7 +216,7 @@ The previous transcript messages
 
 #### Defined in
 
-[core/api/ApiHelper.ts:684](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L684)
+[core/api/ApiHelper.ts:680](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L680)
 
 ___
 
@@ -221,7 +244,7 @@ If the API request fails
 
 #### Defined in
 
-[core/api/ApiHelper.ts:715](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L715)
+[core/api/ApiHelper.ts:711](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L711)
 
 ___
 
@@ -259,7 +282,7 @@ const portals = await apiHelper.getMyPortals({
 
 #### Defined in
 
-[core/api/ApiHelper.ts:773](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L773)
+[core/api/ApiHelper.ts:769](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L769)
 
 ___
 
@@ -269,7 +292,6 @@ ___
 
 Gets all portals in the partition/department via `GET .../knowledge/portalmgr/v3/portals` (paginated).
 Used for customer and anonymous customer portal lists (Get All Portals API).
-Responses are not cached (portal lists are always fetched fresh).
 
 #### Parameters
 
@@ -293,13 +315,13 @@ Error if the API request fails
 const portals = await apiHelper.getPortals({
   authToken: token,
   language: 'en-us',
-  shortUrlTemplate: 'ombre',
+  departmentId: 12,
 });
 ```
 
 #### Defined in
 
-[core/api/ApiHelper.ts:816](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L816)
+[core/api/ApiHelper.ts:811](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L811)
 
 ___
 
@@ -338,7 +360,7 @@ const agents = await apiHelper.getAgentsByPortal({
 
 #### Defined in
 
-[core/api/ApiHelper.ts:917](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L917)
+[core/api/ApiHelper.ts:924](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L924)
 
 ___
 
@@ -375,7 +397,7 @@ const profiles = await apiHelper.getUserProfiles({
 
 #### Defined in
 
-[core/api/ApiHelper.ts:970](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L970)
+[core/api/ApiHelper.ts:977](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L977)
 
 ___
 
@@ -414,7 +436,7 @@ await apiHelper.selectUserProfile({
 
 #### Defined in
 
-[core/api/ApiHelper.ts:1026](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1026)
+[core/api/ApiHelper.ts:1033](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1033)
 
 ___
 
@@ -430,7 +452,7 @@ Clears all cached entries for this ApiHelper instance
 
 #### Defined in
 
-[core/api/ApiHelper.ts:1053](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1053)
+[core/api/ApiHelper.ts:1060](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1060)
 
 ___
 
@@ -452,7 +474,7 @@ Invalidates cached entries matching a specific pattern or method name
 
 #### Defined in
 
-[core/api/ApiHelper.ts:1064](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1064)
+[core/api/ApiHelper.ts:1071](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1071)
 
 ___
 
@@ -475,7 +497,7 @@ Returns null on failure so that initialization is not blocked.
 
 #### Defined in
 
-[core/api/ApiHelper.ts:1087](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1087)
+[core/api/ApiHelper.ts:1094](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1094)
 
 ___
 
@@ -498,7 +520,7 @@ Returns null on failure so that initialization is not blocked.
 
 #### Defined in
 
-[core/api/ApiHelper.ts:1118](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1118)
+[core/api/ApiHelper.ts:1125](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1125)
 
 ___
 
@@ -523,7 +545,7 @@ The deployment information
 
 #### Defined in
 
-[core/api/ApiHelper.ts:1150](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1150)
+[core/api/ApiHelper.ts:1157](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1157)
 
 ___
 
@@ -539,4 +561,4 @@ Clears the static deployment info cache
 
 #### Defined in
 
-[core/api/ApiHelper.ts:1190](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1190)
+[core/api/ApiHelper.ts:1197](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L1197)

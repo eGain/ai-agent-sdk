@@ -1,6 +1,61 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { PKCEAuthStrategy } from './PKCEAuthStrategy.js';
 
+let msalAvailable = true;
+
+const {
+  createDefaultMsalInstance,
+  InteractionRequiredAuthError,
+  PublicClientApplication,
+} = vi.hoisted(() => {
+  class InteractionRequiredAuthError extends Error {
+    errorCode: string;
+    constructor(message = 'interaction_required') {
+      super(message);
+      this.name = 'InteractionRequiredAuthError';
+      this.errorCode = 'interaction_required';
+    }
+  }
+
+  function createDefaultMsalInstance(overrides: Record<string, unknown> = {}) {
+    return {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      getAllAccounts: vi.fn().mockReturnValue([]),
+      loginPopup: vi.fn().mockResolvedValue({
+        account: { username: 'test@example.com' },
+        accessToken: 'pkce-token-123',
+      }),
+      loginRedirect: vi.fn(),
+      handleRedirectPromise: vi.fn().mockResolvedValue(null),
+      setActiveAccount: vi.fn(),
+      acquireTokenSilent: vi.fn().mockResolvedValue({
+        accessToken: 'silent-token-123',
+      }),
+      acquireTokenPopup: vi.fn().mockResolvedValue({
+        account: { username: 'test@example.com' },
+        accessToken: 'popup-token-123',
+      }),
+      acquireTokenRedirect: vi.fn(),
+      ...overrides,
+    };
+  }
+
+  const PublicClientApplication = vi.fn().mockImplementation(() => createDefaultMsalInstance());
+
+  return {
+    createDefaultMsalInstance,
+    InteractionRequiredAuthError,
+    PublicClientApplication,
+  };
+});
+
+vi.mock('./msal-loader.js', () => ({
+  get PublicClientApplication() {
+    return msalAvailable ? PublicClientApplication : undefined;
+  },
+  InteractionRequiredAuthError,
+}));
+
 // Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -371,40 +426,15 @@ describe('PKCEAuthStrategy', () => {
     let strategy: PKCEAuthStrategy;
 
     beforeEach(() => {
-      // Mock window.msal
+      msalAvailable = true;
+      PublicClientApplication.mockReset();
+      PublicClientApplication.mockImplementation(() => {
+        mockMsalInstance = createDefaultMsalInstance();
+        return mockMsalInstance;
+      });
+
       (global as any).window = {
-        msal: {
-          PublicClientApplication: vi.fn().mockImplementation(() => {
-            mockMsalInstance = {
-              initialize: vi.fn().mockResolvedValue(undefined),
-              getAllAccounts: vi.fn().mockReturnValue([]),
-              loginPopup: vi.fn().mockResolvedValue({
-                account: { username: 'test@example.com' },
-                accessToken: 'pkce-token-123',
-              }),
-              loginRedirect: vi.fn(),
-              handleRedirectPromise: vi.fn().mockResolvedValue(null),
-              setActiveAccount: vi.fn(),
-              acquireTokenSilent: vi.fn().mockResolvedValue({
-                accessToken: 'silent-token-123',
-              }),
-              acquireTokenPopup: vi.fn().mockResolvedValue({
-                account: { username: 'test@example.com' },
-                accessToken: 'popup-token-123',
-              }),
-              acquireTokenRedirect: vi.fn(),
-            };
-            return mockMsalInstance;
-          }),
-          InteractionRequiredAuthError: class InteractionRequiredAuthError extends Error {
-            errorCode: string;
-            constructor(message = 'interaction_required') {
-              super(message);
-              this.name = 'InteractionRequiredAuthError';
-              this.errorCode = 'interaction_required';
-            }
-          },
-        },
+        location: { href: 'https://app.example.com/' },
       };
 
       strategy = new PKCEAuthStrategy({
@@ -418,6 +448,7 @@ describe('PKCEAuthStrategy', () => {
     });
 
     afterEach(() => {
+      msalAvailable = true;
       delete (global as any).window;
     });
 
@@ -456,13 +487,13 @@ describe('PKCEAuthStrategy', () => {
       });
 
       it('should throw error if MSAL is not available', async () => {
-        delete (global as any).window.msal;
+        msalAvailable = false;
 
         await expect(
           strategy.initialize({
             deploymentInfo: { apiDomain: 'test.example.com' },
           })
-        ).rejects.toThrow('MSAL library not found');
+        ).rejects.toThrow('MSAL PublicClientApplication not available');
       });
 
       it('should set navigateToLoginRequestUrl to true in MSAL config', async () => {
@@ -470,7 +501,7 @@ describe('PKCEAuthStrategy', () => {
           deploymentInfo: { apiDomain: 'test.example.com' },
         });
 
-        const msalConfigArg = (global as any).window.msal.PublicClientApplication.mock.calls[0][0];
+        const msalConfigArg = PublicClientApplication.mock.calls[0][0];
         expect(msalConfigArg.auth.navigateToLoginRequestUrl).toBe(true);
       });
 
@@ -479,7 +510,7 @@ describe('PKCEAuthStrategy', () => {
           deploymentInfo: { apiDomain: 'test.example.com' },
         });
 
-        const msalConfigArg = (global as any).window.msal.PublicClientApplication.mock.calls[0][0];
+        const msalConfigArg = PublicClientApplication.mock.calls[0][0];
         expect(msalConfigArg.system).toBeDefined();
         expect(msalConfigArg.system.allowRedirectInIframe).toBe(true);
       });
@@ -616,17 +647,21 @@ describe('PKCEAuthStrategy', () => {
         await expect(strategy.getToken()).rejects.toThrow('No access token available');
       });
 
-      it('should return stored token if silent acquisition fails', async () => {
-        mockMsalInstance.getAllAccounts.mockReturnValue([
-          { username: 'test@example.com' },
-        ]);
-        mockMsalInstance.acquireTokenSilent.mockRejectedValue(new Error('Silent failed'));
-        (strategy as any).accessToken = 'stored-token-123';
+      it('should return stored token when cached JWT is still valid', async () => {
+        const exp = Math.floor(Date.now() / 1000) + 3600;
+        const payload = btoa(JSON.stringify({ exp }))
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, '');
+        const validToken = `header.${payload}.signature`;
+
+        (strategy as any).accessToken = validToken;
 
         await strategy.initialize();
 
         const token = await strategy.getToken();
-        expect(token).toBe('stored-token-123');
+        expect(token).toBe(validToken);
+        expect(mockMsalInstance.acquireTokenSilent).not.toHaveBeenCalled();
       });
 
       it('should fall back to acquireTokenPopup on monitor_window_timeout', async () => {
@@ -644,7 +679,6 @@ describe('PKCEAuthStrategy', () => {
       });
 
       it('should fall back to authenticate() when interaction is required in popup scheme', async () => {
-        const InteractionRequiredAuthError = (global as any).window.msal.InteractionRequiredAuthError;
         const mockAccount = { username: 'test@example.com' };
         await strategy.initialize();
         (strategy as any).account = mockAccount;
@@ -658,20 +692,12 @@ describe('PKCEAuthStrategy', () => {
       });
 
       it('should use acquireTokenRedirect when interaction is required in redirect scheme', async () => {
-        const InteractionRequiredAuthError = (global as any).window.msal.InteractionRequiredAuthError;
         const mockAccount = { username: 'test@example.com' };
-        (global as any).window.msal.PublicClientApplication = vi.fn().mockImplementation(() => {
-          mockMsalInstance = {
-            initialize: vi.fn().mockResolvedValue(undefined),
+        PublicClientApplication.mockImplementation(() => {
+          mockMsalInstance = createDefaultMsalInstance({
             getAllAccounts: vi.fn().mockReturnValue([mockAccount]),
-            loginPopup: vi.fn(),
-            loginRedirect: vi.fn(),
-            handleRedirectPromise: vi.fn().mockResolvedValue(null),
-            setActiveAccount: vi.fn(),
             acquireTokenSilent: vi.fn().mockRejectedValue(new InteractionRequiredAuthError()),
-            acquireTokenPopup: vi.fn(),
-            acquireTokenRedirect: vi.fn(),
-          };
+          });
           return mockMsalInstance;
         });
 
@@ -712,7 +738,6 @@ describe('PKCEAuthStrategy', () => {
       });
 
       it('should fall back to authenticate() when interaction is required in popup scheme', async () => {
-        const InteractionRequiredAuthError = (global as any).window.msal.InteractionRequiredAuthError;
         const mockAccount = { username: 'test@example.com' };
         await strategy.initialize();
         (strategy as any).account = mockAccount;
@@ -759,16 +784,10 @@ describe('PKCEAuthStrategy', () => {
       };
 
       function mockMsalWithRedirectResponse(response: any) {
-        (global as any).window.msal.PublicClientApplication = vi.fn().mockImplementation(() => {
-          mockMsalInstance = {
-            initialize: vi.fn().mockResolvedValue(undefined),
-            getAllAccounts: vi.fn().mockReturnValue([]),
-            loginPopup: vi.fn(),
-            loginRedirect: vi.fn(),
+        PublicClientApplication.mockImplementation(() => {
+          mockMsalInstance = createDefaultMsalInstance({
             handleRedirectPromise: vi.fn().mockResolvedValue(response),
-            setActiveAccount: vi.fn(),
-            acquireTokenSilent: vi.fn(),
-          };
+          });
           return mockMsalInstance;
         });
       }
@@ -837,18 +856,13 @@ describe('PKCEAuthStrategy', () => {
 
         // Simulate post-redirect: handleRedirectPromise returns null,
         // but MSAL has an account in session storage from auth-redirect.html
-        (global as any).window.msal.PublicClientApplication = vi.fn().mockImplementation(() => {
-          mockMsalInstance = {
-            initialize: vi.fn().mockResolvedValue(undefined),
+        PublicClientApplication.mockImplementation(() => {
+          mockMsalInstance = createDefaultMsalInstance({
             getAllAccounts: vi.fn().mockReturnValue([mockAccount]),
-            loginPopup: vi.fn(),
-            loginRedirect: vi.fn(),
-            handleRedirectPromise: vi.fn().mockResolvedValue(null),
-            setActiveAccount: vi.fn(),
             acquireTokenSilent: vi.fn().mockResolvedValue({
               accessToken: 'silent-redirect-token-123',
             }),
-          };
+          });
           return mockMsalInstance;
         });
 

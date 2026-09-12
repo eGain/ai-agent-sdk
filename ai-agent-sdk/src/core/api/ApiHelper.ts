@@ -128,11 +128,6 @@ export interface GetPortalDetailsOptions {
      * Authentication token (required if `ApiHelper` was constructed without `getToken`)
      */
     authToken?: string;
-
-    /**
-     * Language code (optional)
-     */
-    language?: string;
 }
 
 export interface GetConnectedAppsOptions {
@@ -200,12 +195,6 @@ export interface GetMyPortalsOptions {
      * Authentication token (required if `ApiHelper` was constructed without `getToken`)
      */
     authToken?: string;
-
-    /**
-     * Language code (e.g., "en-us", "da-dk")
-     * @default "en-us"
-     */
-    language?: string;
 
     /**
      * Optional user ID for cache keying
@@ -390,6 +379,13 @@ export class ApiHelper {
         }
 
         this.tokenProvider = config.getToken;
+    }
+
+    /**
+     * Updates the default language for API calls (e.g. after agent details are loaded).
+     */
+    setLanguage(language: string): void {
+        this.language = language?.trim() || 'en-us';
     }
 
     /**
@@ -598,9 +594,9 @@ export class ApiHelper {
     async getPortalDetails(
         options: GetPortalDetailsOptions
     ): Promise<any> {
-        const { portalId, authToken, language } = options;
+        const { portalId, authToken } = options;
         const token = await this.resolveAuthToken(authToken);
-        const lang = language || this.getLanguage();
+        const lang = this.getLanguage();
 
         // Check cache first
         const cacheKey = this.getCacheKey('getPortalDetails', {
@@ -771,9 +767,9 @@ export class ApiHelper {
      * ```
      */
     async getMyPortals(options: GetMyPortalsOptions): Promise<any[]> {
-        const { authToken, language, userId, shortUrlTemplate } = options;
+        const { authToken, userId, shortUrlTemplate } = options;
         const token = await this.resolveAuthToken(authToken);
-        const lang = language || this.getLanguage();
+        const lang = this.getLanguage();
 
         const cacheParams: Record<string, unknown> = { lang, userId: userId ?? 'default' };
         if (shortUrlTemplate) cacheParams.shortUrlTemplate = shortUrlTemplate;
@@ -798,7 +794,6 @@ export class ApiHelper {
     /**
      * Gets all portals in the partition/department via `GET .../knowledge/portalmgr/v3/portals` (paginated).
      * Used for customer and anonymous customer portal lists (Get All Portals API).
-     * Responses are not cached (portal lists are always fetched fresh).
      *
      * @param options - Options for the API call
      * @returns Promise resolving to array of Portal objects
@@ -809,21 +804,33 @@ export class ApiHelper {
      * const portals = await apiHelper.getPortals({
      *   authToken: token,
      *   language: 'en-us',
-     *   shortUrlTemplate: 'ombre',
+     *   departmentId: 12,
      * });
      * ```
      */
     async getPortals(options: GetPortalsOptions): Promise<any[]> {
-        const { authToken, language, departmentId } = options;
+        const { authToken, departmentId } = options;
         const token = await this.resolveAuthToken(authToken);
-        const lang = language || this.getLanguage();
+        const lang = this.getLanguage();
 
-        return this.fetchPortalmgrV3PortalPages({
+        const cacheKey = this.getCacheKey('getPortals', {
+            lang,
+            departmentId: departmentId ?? 'default',
+        });
+        const cached = this.getFromCache<any[]>(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const allPortals = await this.fetchPortalmgrV3PortalPages({
             authToken: token,
             lang,
             departmentId,
             pathSegment: 'portals',
         });
+
+        this.setInCache(cacheKey, allPortals);
+        return allPortals;
     }
 
     /**

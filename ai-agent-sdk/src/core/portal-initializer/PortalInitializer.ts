@@ -81,7 +81,7 @@ export interface PortalInitializerConfig {
   isAgentSelectionMode: boolean;
   /**
    * Agent details stored on the agent (e.g. AiAgent's agentDetails).
-   * - `languageCode` — forwarded to portalmgr portal list APIs (`getMyPortals` / `getPortals`) as `$lang`.
+   * - `languageCode` — synced onto `apiHelper` by `AiAgent` after agent details are fetched.
    * - `departmentId` — Flow B: filters portals by `portal.department.id` (cc-widget: from default agent API details). `initParams.departmentId` is fallback only.
    * - `portals` — bot-configured portal IDs; intersected with list API results in Flow A (agent and customer).
    * - `userType` — `'customer'` uses `getPortals` + intersection for portal list; enables customer profile and select-API behavior.
@@ -295,16 +295,11 @@ export class PortalInitializer {
       agentDetails?.userType === "customer" &&
       (agentDetails.portals?.length ?? 0) > 0
     ) {
-      const language =
-        typeof agentDetails.languageCode === "string" &&
-        agentDetails.languageCode.trim()
-          ? agentDetails.languageCode.trim()
-          : "en-us";
       const departmentId = agentDetails?.departmentId;
 
       logger.info("Fetching customer portals (getPortals)...");
       try {
-        const fromApi = await apiHelper.getPortals({ language, departmentId });
+        const fromApi = await apiHelper.getPortals({ departmentId });
         portals = Array.isArray(fromApi) ? fromApi : [];
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err));
@@ -335,16 +330,10 @@ export class PortalInitializer {
         ""
       ).trim();
       const shortUrlTemplate = themeTemplate || undefined;
-      const language =
-        typeof agentDetails?.languageCode === "string" &&
-        agentDetails.languageCode.trim()
-          ? agentDetails.languageCode.trim()
-          : "en-us";
 
       logger.info("Fetching portals...");
       try {
         const fromMy = await apiHelper.getMyPortals({
-          language,
           userId,
           shortUrlTemplate
         });
@@ -571,17 +560,11 @@ export class PortalInitializer {
       agentDetails?.userType === "customer" ||
       initParams.authType?.trim().toLowerCase() === "customer";
 
-    const language =
-      typeof agentDetails?.languageCode === "string" &&
-      agentDetails.languageCode.trim()
-        ? agentDetails.languageCode.trim()
-        : "en-us";
-
     const resolved =
-      (await this.resolveProfilesFromCache(portalId, language)) ??
+      (await this.resolveProfilesFromCache(portalId)) ??
       (isCustomer
-        ? await this.resolveProfilesForCustomer(portalId, language)
-        : await this.resolveProfilesFromApi(portalId, language));
+        ? await this.resolveProfilesForCustomer(portalId)
+        : await this.resolveProfilesFromApi(portalId));
 
     this.portalDetails = resolved.portalDetails;
     this.profiles = resolved.profiles;
@@ -605,15 +588,13 @@ export class PortalInitializer {
 
   /** Fetch portal details from API. Throws {@link InitializationPipelineError} on API failure. */
   private async fetchPortalDetails(
-    portalId: string | number,
-    language: string
+    portalId: string | number
   ): Promise<any | undefined> {
     const { apiHelper } = this.deps;
     if (!apiHelper.getPortalDetails) return undefined;
     try {
       return await apiHelper.getPortalDetails({
-        portalId: String(portalId),
-        language: language
+        portalId: String(portalId)
       });
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
@@ -627,14 +608,13 @@ export class PortalInitializer {
 
   /** Cache-hit strategy: return cached profiles with fresh portal details, or null if cache miss. */
   private async resolveProfilesFromCache(
-    portalId: string | number,
-    language: string
+    portalId: string | number
   ): Promise<{ portalDetails: any; profiles: UserProfile[] } | null> {
     const key = this.deps.pipelineCache?.profilesKey(portalId) ?? "";
     const cached = this.readCachedFromAdapter<UserProfile[]>(key);
     if (cached == null) return null;
     this.deps.logger.info("Using cached profiles", { count: cached.length });
-    const portalDetails = await this.fetchPortalDetails(portalId, language);
+    const portalDetails = await this.fetchPortalDetails(portalId);
     return { portalDetails, profiles: [...cached] };
   }
 
@@ -643,14 +623,13 @@ export class PortalInitializer {
    * extract defaultUserProfile from portal settings if present.
    */
   private async resolveProfilesForCustomer(
-    portalId: string | number,
-    language: string
+    portalId: string | number
   ): Promise<{ portalDetails: any; profiles: UserProfile[] }> {
     const { logger } = this.deps;
     logger.info(
       "Customer profile mode: skipping getUserProfiles (cc-widget parity)"
     );
-    const portalDetails = await this.fetchPortalDetails(portalId, language);
+    const portalDetails = await this.fetchPortalDetails(portalId);
     let profiles = this.extractCustomerProfileFromDetails(portalDetails);
     const preferredProfileId = extractContextAttribute(
       this.deps.initialContext,
@@ -671,12 +650,11 @@ export class PortalInitializer {
   }
 
   private async resolveProfilesFromApi(
-    portalId: string | number,
-    language: string
+    portalId: string | number
   ): Promise<{ portalDetails: any; profiles: UserProfile[] }> {
     const { apiHelper } = this.deps;
     const [portalResult, profilesResult] = await Promise.allSettled([
-      this.fetchPortalDetails(portalId, language),
+      this.fetchPortalDetails(portalId),
       apiHelper.getUserProfiles({ portalId })
     ]);
 

@@ -5,17 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.3] - 2026-09-XX
+## [0.2.3] - 2026-09-09
+
+### Added
+
+- **`externalCallId` on chat WebSocket** — when a platform connector sets `conversationId`, `getWsEndpoint()` appends it as the `externalCallId` query parameter on the chat WebSocket URL (cc-widget parity for call-linked sessions)
+- **`egtemplate` init param** — portal initializer resolves the short URL template from `initParams.egtemplate` when `templateName` and `shortUrlTemplate` are absent (priority: `templateName` → `shortUrlTemplate` → `egtemplate`)
+- **`jwt-decode` dependency** — used by `PKCEAuthStrategy` for cached access-token expiry checks
 
 ### Fixed
 
 - **PKCE silent token errors** — `PKCEAuthStrategy.getToken()` and `refreshToken()` match cc-widget `auth.ts` on silent SSO failure: `InteractionRequiredAuthError` falls back to `authenticate()` (popup) or `acquireTokenRedirect` (redirect); `monitor_window_timeout` falls back to `acquireTokenPopup`. `authenticate()` always runs interactive login (`loginPopup` / `loginRedirect`); `AiAgent` skips it when initialize already restored a session. Previously those errors were rethrown or a stale token was returned, which aborted portal init in embedded hosts such as Genesys.
 - **PKCE popup authentication** — `PKCEAuthStrategy` omits `nextRoute` and OAuth `state` when `authScheme` is `popup`, matching legacy cc-widget `auth.ts` behavior. Prevents `auth-redirect.html` from bouncing the MSAL popup to the app URL and triggering MSAL `block_nested_popups` during cc-widget bootstrap. Redirect flow is unchanged (`state` still carries the return URL).
+- **PKCE cached token validation** — `PKCEAuthStrategy.getToken()` validates the cached access token with a 5-minute expiry buffer before silent acquisition; expired tokens are refreshed instead of returned
+- **PKCE `hash_empty_error`** — MSAL browser-compatibility failures map to `AuthError` with an actionable refresh message instead of surfacing the raw MSAL error
 - **Auth token propagation** — new `finishAuthentication` callback syncs the access token from the active auth strategy via `AuthenticationService.getToken()` before `onAuthComplete`, fixing cases where strategy callbacks supplied tokens that were not cached in `AuthenticationService` (e.g. anonymous → PKCE switch, anonymous agents, and `restartPortalInitializer()`)
+- **API language from agent details** — `AiAgent` syncs `agentDetails.languageCode` onto `ApiHelper` after fetching agent details, so portal and masking APIs use the bot-configured locale instead of defaulting to `en-us`
+- **`HookContract.setUserFilterTags()`** — merges `user_filter_tags` into `userContext` and stored agent context instead of only updating in-memory filter tags; existing context keys are preserved
+- **`initPlatform` timing** — `PlatformComponentService.initPlatform()` runs in `onAuthComplete` after data-masking patterns are loaded and before the portal pipeline, so connectors can rely on masking being available during platform init
+- **Anonymous token reuse on remount** — `AnonymousAuthStrategy.cleanup()` is a no-op so sessionStorage token and metadata survive widget remounts and anonymous → PKCE strategy switches; use `clearTokenCache()` / `clearMetadataCache()` to force a refresh
+- **WebSocket reconnection on normal close** — `Connection` no longer schedules reconnect when the close code is `1000` or `1005` (normal or no-status closure)
 
 ### Changed
 
+- **`ApiHelper.setLanguage()`** — updates the instance default used by portal and masking APIs; per-call `language` options remain as overrides; `Accept-Language` header mapping follows cc-widget rules (e.g. `en-GB` → `en-us`)
+- **`ApiHelper.getPortals()` caching** — responses are cached when `cache.enabled` is true, keyed by language and `departmentId` (aligned with `getMyPortals`; previously always fetched fresh)
 - **`HookContract.getMsalAccessToken()`** — returns only the cached token synchronously; removed fire-and-forget `getToken()` side effect (use `getAccessToken()` when a fresh token is required)
+- **`HookContract.getEnvironment()`** — documents `"non-prod"` as a valid value (stage / eustage builds)
+- **Platform environment derivation** — `deriveEnvironment()` uses only the `env` init param (`dev`, `qa`, `non-prod`, `prod`); API-domain parsing and legacy env aliases (`stage`, `euprod`, etc.) removed — unrecognized values default to `prod`
+- **MSAL browser bundling** — PKCE loads the vendored `msal-browser.js` via `msal-loader` module import instead of relying on a global `window.msal`; the browser bundle no longer exposes `window.msal`
 
 ## [0.2.2] - 2026-08-21
 

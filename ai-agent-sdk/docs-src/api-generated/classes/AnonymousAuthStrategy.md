@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.7](../README.md) / AnonymousAuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / AnonymousAuthStrategy
 
 # Class: AnonymousAuthStrategy
 
@@ -190,7 +190,12 @@ ___
 
 ▸ **cleanup**(): `Promise`\<`void`\>
 
-Cleanup resources
+Cleanup resources.
+
+Intentionally a no-op: token and metadata live in sessionStorage so a later
+widget remount (or a new AnonymousAuthStrategy after anonymous→PKCE switch)
+can reuse them instead of calling the anonymous token API again.
+Call [clearTokenCache](AnonymousAuthStrategy.md#cleartokencache) / [clearMetadataCache](AnonymousAuthStrategy.md#clearmetadatacache) to force a refresh.
 
 #### Returns
 
@@ -202,7 +207,7 @@ Cleanup resources
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:347](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L347)
+[core/auth/AnonymousAuthStrategy.ts:352](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L352)
 
 ___
 
@@ -224,4 +229,4 @@ Get deployment information a given domain
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:357](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L357)
+[core/auth/AnonymousAuthStrategy.ts:360](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L360)

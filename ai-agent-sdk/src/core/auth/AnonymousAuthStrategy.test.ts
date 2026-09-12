@@ -354,12 +354,11 @@ describe('AnonymousAuthStrategy', () => {
   });
 
   describe('cleanup', () => {
-    it('should clear cached token', async () => {
+    it('should keep the cached token so a remount can reuse it', async () => {
       const strategy = new AnonymousAuthStrategy({
         cache: { enabled: true, storageType: 'memory' },
       });
 
-      // Mock metadata fetch (first call)
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({
@@ -371,8 +370,44 @@ describe('AnonymousAuthStrategy', () => {
           },
         }),
       });
-      
-      // Mock token fetch (first call)
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({
+          access_token: 'token-to-keep',
+          expires_in: 3600,
+        }),
+      });
+
+      await strategy.initialize({
+        deploymentInfo: { apiDomain: 'test.example.com', tenantId: 'tenant-123' },
+      });
+
+      await strategy.getToken();
+      await strategy.cleanup();
+
+      const token = await strategy.getToken();
+      expect(token).toBe('token-to-keep');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('should fetch a new token after clearTokenCache', async () => {
+      const strategy = new AnonymousAuthStrategy({
+        cache: { enabled: true, storageType: 'memory' },
+      });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({
+          authenticationDetails: {
+            oAuthAnonymousCustomer: [{
+              accessTokenURL: 'https://<DOMAIN_NAME>/token',
+            }],
+            apiPermissionPrefix: 'api.',
+          },
+        }),
+      });
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({
@@ -386,33 +421,18 @@ describe('AnonymousAuthStrategy', () => {
       });
 
       await strategy.getToken();
-      await strategy.cleanup();
+      strategy.clearTokenCache();
 
-      // After cleanup, should fetch new token
-      // Mock metadata fetch (second call after cleanup)
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({
-          authenticationDetails: {
-            oAuthAnonymousCustomer: [{
-              accessTokenURL: 'https://<DOMAIN_NAME>/token',
-            }],
-            apiPermissionPrefix: 'api.',
-          },
-        }),
-      });
-      
-      // Mock token fetch (second call after cleanup)
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          access_token: 'new-token-after-cleanup',
+          access_token: 'new-token-after-clear',
           expires_in: 3600,
         }),
       });
 
       const token = await strategy.getToken();
-      expect(token).toBe('new-token-after-cleanup');
+      expect(token).toBe('new-token-after-clear');
     });
   });
 

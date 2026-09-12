@@ -89,12 +89,20 @@ describe('PortalInitializer', () => {
   // ── Flow A: portal → profile → initialized ────────────────────────────
 
   describe('Flow A (specific agent)', () => {
-    it('should pass agentDetails.languageCode to getMyPortals', async () => {
+    it('should call getMyPortals without per-call language (uses apiHelper default)', async () => {
+      const initializer = new PortalInitializer(defaultDeps);
+      await initializer.start();
+      expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
+        expect.not.objectContaining({ language: expect.anything() })
+      );
+    });
+
+    it('should not pass agentDetails.languageCode to getMyPortals', async () => {
       const deps = { ...defaultDeps, agentDetails: { languageCode: 'da-dk' } };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
-        expect.objectContaining({ language: 'da-dk' })
+        expect.not.objectContaining({ language: expect.anything() })
       );
     });
 
@@ -107,7 +115,10 @@ describe('PortalInitializer', () => {
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
-        expect.objectContaining({ shortUrlTemplate: 'ombre', language: 'en-us' })
+        expect.objectContaining({ shortUrlTemplate: 'ombre' })
+      );
+      expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
+        expect.not.objectContaining({ language: expect.anything() })
       );
     });
 
@@ -1313,7 +1324,7 @@ describe('PortalInitializer', () => {
       await initializer.start();
 
       expect(mockApiHelper.getPortals).toHaveBeenCalledWith(
-        expect.objectContaining({ language: 'en-us' })
+        expect.not.objectContaining({ language: expect.anything() })
       );
       expect(mockApiHelper.getMyPortals).not.toHaveBeenCalled();
       await vi.waitFor(() => {

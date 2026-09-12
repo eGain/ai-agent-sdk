@@ -33,21 +33,14 @@ build({
     'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
   },
   banner: {
-    js: `/* @eGainDev/ai-agent-sdk Browser Bundle - Exposes window.eGain and window.msal */`
+    js: `/* @eGainDev/ai-agent-sdk Browser Bundle - Exposes window.eGain */`
   },
   footer: {
-    js: `if (typeof window !== 'undefined') { 
-      window.eGain = eGain; 
-      // Ensure MSAL is available on window if it was bundled
-      // The UMD module should have set it, but we verify and set it if needed
-      if (typeof globalThis !== 'undefined' && globalThis.msal && !window.msal) {
-        window.msal = globalThis.msal;
-      }
-    }`
+    js: `if (typeof window !== 'undefined') { window.eGain = eGain; }`
   }
 }).then(() => {
   console.log('✅ Browser bundle built successfully: dist/browser.js');
-  console.log('   MSAL library included - window.msal will be available for PKCE authentication');
+  console.log('   MSAL library included via msal-loader for PKCE authentication');
 }).catch((error) => {
   console.error('❌ Browser build failed:', error);
   process.exit(1);

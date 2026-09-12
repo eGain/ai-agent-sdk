@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3-beta.7](../README.md) / MessageData
+[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / MessageData
 
 # Interface: MessageData
 

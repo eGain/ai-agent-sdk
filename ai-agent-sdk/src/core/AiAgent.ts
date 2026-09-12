@@ -1281,14 +1281,9 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     }
   }
 
-  /**
-   * Fetch agent details from API
-   * @param accessToken - The access token to use for authentication
-   * @returns The agent details
-   */
   private async fetchAgentDetails(accessToken: any): Promise<any> {
     if (this.agentDetails) {
-      this.backfillAgentDetailsId(this.agentDetails);
+      this.applyAgentDetails(this.agentDetails);
       return this.agentDetails;
     }
     accessToken = accessToken ?? await this.authService.getToken() ?? null;
@@ -1302,7 +1297,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       agentId: this.config.id,
       authToken: accessToken,
     });
-    this.backfillAgentDetailsId(this.agentDetails);
+    this.applyAgentDetails(this.agentDetails);
     this.logger.debug('Agent details retrieved', { agentId: this.config.id });
     return this.agentDetails;
   }
@@ -1313,12 +1308,18 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @param details - The agent details to backfill the agentId for
    * @returns The agent details with the agentId backfilled
    */
-  private backfillAgentDetailsId(details: any): void {
+  private applyAgentDetails(details: any): void {
     if (!details) return;
     const knownId = this.resolvedAgentId ?? this.config.id;
     if (knownId == null) return;
     if (details.agentId == null || details.agentId === '') {
       details.agentId = knownId;
+    }
+
+    // Set the language code for the apiHelper from agent details
+    const code = details?.languageCode;
+    if (typeof code === 'string' && code.trim()) {
+      this.apiHelper?.setLanguage(code.trim());
     }
   }
 

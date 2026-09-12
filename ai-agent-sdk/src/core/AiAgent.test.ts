@@ -73,6 +73,7 @@ describe('AiAgent', () => {
       getUserProfiles: vi.fn().mockResolvedValue([]),
       selectUserProfile: vi.fn().mockResolvedValue(undefined),
       invalidateCache: vi.fn(),
+      setLanguage: vi.fn(),
     };
 
     // Reset auth service mock (constructor returns authServiceMock via vi.hoisted)
@@ -2357,6 +2358,103 @@ describe('AiAgent', () => {
     });
   });
 
+  describe('fetchAgentDetails language sync', () => {
+    it('syncs cached agentDetails.languageCode onto apiHelper', async () => {
+      const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+      (agent as any).apiHelper = { ...mockApiHelper, setLanguage: vi.fn() };
+      (agent as any).agentDetails = { languageCode: '  da-dk  ', name: 'Test Agent' };
+
+      await (agent as any).fetchAgentDetails('mock-token');
+
+      expect((agent as any).apiHelper.setLanguage).toHaveBeenCalledWith('da-dk');
+      expect(mockApiHelper.getAiAgentDetails).not.toHaveBeenCalled();
+    });
+
+    it('syncs language from getAiAgentDetails response', async () => {
+      const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+      const setLanguage = vi.fn();
+      const getAiAgentDetails = vi.fn().mockResolvedValue({
+        languageCode: 'fr-fr',
+        name: 'Test Agent',
+      });
+      (agent as any).apiHelper = { ...mockApiHelper, setLanguage, getAiAgentDetails };
+
+      await (agent as any).fetchAgentDetails('mock-token');
+
+      expect(getAiAgentDetails).toHaveBeenCalledWith({
+        agentId: mockAgentId,
+        authToken: 'mock-token',
+      });
+      expect(setLanguage).toHaveBeenCalledWith('fr-fr');
+    });
+
+    it('does not call setLanguage when languageCode is missing or blank', async () => {
+      const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+      const setLanguage = vi.fn();
+      (agent as any).apiHelper = { ...mockApiHelper, setLanguage };
+      (agent as any).agentDetails = { name: 'Test Agent', languageCode: '   ' };
+
+      await (agent as any).fetchAgentDetails('mock-token');
+
+      expect(setLanguage).not.toHaveBeenCalled();
+    });
+
+    it('syncs agent language onto apiHelper before portal list APIs run during initialize', async () => {
+      const mockPortal: Portal = {
+        id: 1,
+        name: 'Portal A',
+        description: 'Desc A',
+        department: { id: 100, name: 'Dept' },
+      };
+      const mockPortalDetails = { id: 1, name: 'Portal A', departmentId: 100 };
+      const mockProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
+      const setLanguage = vi.fn();
+      const getMyPortals = vi.fn().mockResolvedValue([mockPortal]);
+      const getAiAgentDetails = vi.fn().mockResolvedValue({
+        name: 'Test Agent',
+        agentType: 'contact-center',
+        isAuthenticated: false,
+        languageCode: 'da-dk',
+        portals: [{ id: 1 }],
+      });
+      const ccApiHelper = {
+        ...mockApiHelper,
+        setLanguage,
+        getAiAgentDetails,
+        getMyPortals,
+        getPortalDetails: vi.fn().mockResolvedValue(mockPortalDetails),
+        getUserProfiles: vi.fn().mockResolvedValue([mockProfile]),
+        selectUserProfile: vi.fn().mockResolvedValue(undefined),
+      };
+
+      vi.spyOn(ApiHelper, 'getDeploymentInfo').mockResolvedValue({
+        aiAgentDomain: 'test.example.com',
+        apiDomain: 'api.test.example.com',
+      });
+
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        initParams: {},
+      });
+      (agent as any).apiHelper = ccApiHelper;
+      vi.spyOn((agent as any).authService, 'getToken').mockResolvedValue('mock-token');
+      vi.spyOn(agent as any, 'createConnection').mockResolvedValue(undefined);
+
+      const initDone = waitForEvent(agent, 'initialized');
+      await agent.initialize();
+      await initDone;
+
+      expect(setLanguage).toHaveBeenCalledWith('da-dk');
+      expect(getMyPortals).toHaveBeenCalledWith(
+        expect.not.objectContaining({ language: expect.anything() })
+      );
+      expect(setLanguage.mock.invocationCallOrder[0]).toBeLessThan(
+        getMyPortals.mock.invocationCallOrder[0]
+      );
+    });
+  });
+
   describe('sessionId resolution', () => {
     // Regression coverage: an unresolved sessionId used to be interpolated into the
     // chat WebSocket URL as the literal text "undefined", which the connect
@@ -2374,6 +2472,15 @@ describe('AiAgent', () => {
 
       expect((agent as any).getWsEndpoint('session-123')).toBe(
         'https://chat.test.example.com/?sessionId=session-123'
+      );
+    });
+
+    it('should put conversationId on the WebSocket endpoint as externalCallId when present', () => {
+      const agent = withDeployment(newAgent());
+      (agent as any).conversationId = 'conv-456';
+
+      expect((agent as any).getWsEndpoint('session-123')).toBe(
+        'https://chat.test.example.com/?sessionId=session-123&externalCallId=conv-456'
       );
     });
 

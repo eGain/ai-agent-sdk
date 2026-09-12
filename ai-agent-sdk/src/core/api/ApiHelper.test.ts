@@ -41,6 +41,29 @@ describe('ApiHelper', () => {
       });
       expect(helper).toBeInstanceOf(ApiHelper);
     });
+
+    it('should update language via setLanguage', async () => {
+      const helper = new ApiHelper({
+        apiDomain: 'api.example.com',
+      });
+
+      helper.setLanguage('da-dk');
+
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ portal: [{ id: 'p1' }] }),
+      });
+
+      await helper.getPortalDetails({
+        portalId: 'test-portal-id',
+        authToken: 'test-token',
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('$lang=da-dk'),
+        expect.any(Object)
+      );
+    });
   });
 
   describe('getAiAgentDetails', () => {
@@ -474,6 +497,103 @@ describe('ApiHelper', () => {
     });
   });
 
+  describe('language propagation', () => {
+    const portalListBody = { portal: [{ id: 1, name: 'Portal A' }] };
+    const portalDetailsBody = {
+      portal: [{ id: 'portal-1', name: 'Portal A' }],
+    };
+
+    const expectUrlLangParam = (url: string, lang: string) => {
+      expect(new URL(url).searchParams.get('$lang')).toBe(lang);
+    };
+
+    const mockPortalListFetch = () => {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => portalListBody,
+      });
+    };
+
+    const mockPortalDetailsFetch = () => {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => portalDetailsBody,
+      });
+    };
+
+    it.each([
+      { input: 'en-US', expectedLang: 'en-us', expectedHeader: 'en-us' },
+      { input: 'en-GB', expectedLang: 'en-gb', expectedHeader: 'en-us' },
+      { input: 'nl-NL', expectedLang: 'nl-nl', expectedHeader: 'nl-nl' },
+    ])(
+      'getMyPortals sends setLanguage($input) as $lang and Accept-Language',
+      async ({ input, expectedLang, expectedHeader }) => {
+        const helper = new ApiHelper({ apiDomain: mockApiDomain });
+        helper.setLanguage(input);
+        mockPortalListFetch();
+
+        await helper.getMyPortals({ authToken: 'test-token' });
+
+        const [url, opts] = (global.fetch as any).mock.calls[0];
+        expectUrlLangParam(url, expectedLang);
+        expect(opts.headers['Accept-Language']).toBe(expectedHeader);
+      }
+    );
+
+    it.each([
+      { input: 'en-US', expectedLang: 'en-us', expectedHeader: 'en-us' },
+      { input: 'en-GB', expectedLang: 'en-gb', expectedHeader: 'en-us' },
+      { input: 'nl-NL', expectedLang: 'nl-nl', expectedHeader: 'nl-nl' },
+    ])(
+      'getPortals sends setLanguage($input) as $lang and Accept-Language',
+      async ({ input, expectedLang, expectedHeader }) => {
+        const helper = new ApiHelper({ apiDomain: mockApiDomain });
+        helper.setLanguage(input);
+        mockPortalListFetch();
+
+        await helper.getPortals({ authToken: 'test-token' });
+
+        const [url, opts] = (global.fetch as any).mock.calls[0];
+        expectUrlLangParam(url, expectedLang);
+        expect(opts.headers['Accept-Language']).toBe(expectedHeader);
+      }
+    );
+
+    it.each([
+      { input: 'en-US', expectedLang: 'en-us', expectedHeader: 'en-us' },
+      { input: 'en-GB', expectedLang: 'en-gb', expectedHeader: 'en-us' },
+      { input: 'nl-NL', expectedLang: 'nl-nl', expectedHeader: 'nl-nl' },
+    ])(
+      'getPortalDetails sends setLanguage($input) as $lang and Accept-Language',
+      async ({ input, expectedLang, expectedHeader }) => {
+        const helper = new ApiHelper({ apiDomain: mockApiDomain });
+        helper.setLanguage(input);
+        mockPortalDetailsFetch();
+
+        await helper.getPortalDetails({
+          portalId: 'portal-1',
+          authToken: 'test-token',
+        });
+
+        const [url, opts] = (global.fetch as any).mock.calls[0];
+        expectUrlLangParam(url, expectedLang);
+        expect(opts.headers['Accept-Language']).toBe(expectedHeader);
+      }
+    );
+
+    it('trims whitespace from setLanguage before sending to the API', async () => {
+      const helper = new ApiHelper({ apiDomain: mockApiDomain });
+      helper.setLanguage('  nl-NL  ');
+      mockPortalListFetch();
+
+      await helper.getMyPortals({ authToken: 'test-token' });
+
+      const [url, opts] = (global.fetch as any).mock.calls[0];
+      expectUrlLangParam(url, 'nl-nl');
+      expect(opts.headers['Accept-Language']).toBe('nl-nl');
+    });
+  });
+
   // ── New cc-widget API methods (R2) ─────────────────────────────────────────
 
   describe('getMyPortals', () => {
@@ -535,6 +655,30 @@ describe('ApiHelper', () => {
 
     it('should throw when auth token is missing and no getToken is configured', async () => {
       await expect(apiHelper.getMyPortals({})).rejects.toThrow(/Authentication token is required/);
+    });
+
+    it('should use language from setLanguage in request headers', async () => {
+      const helper = new ApiHelper({
+        apiDomain: mockApiDomain,
+      });
+
+      helper.setLanguage('da-dk');
+
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ portal: [{ id: 1, name: 'Portal A' }] }),
+      });
+
+      await helper.getMyPortals({ authToken: 'test-token' });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/knowledge\/portalmgr\/v3\/myportals(\?|$)/),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Accept-Language': 'da-dk',
+          }),
+        })
+      );
     });
 
     it('should return empty array when myportals returns no portals', async () => {
@@ -646,6 +790,30 @@ describe('ApiHelper', () => {
       await expect(apiHelper.getPortals({})).rejects.toThrow(/Authentication token is required/);
     });
 
+    it('should use language from setLanguage in request headers', async () => {
+      const helper = new ApiHelper({
+        apiDomain: mockApiDomain,
+      });
+
+      helper.setLanguage('da-dk');
+
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ portal: [{ id: 1, name: 'Portal A' }] }),
+      });
+
+      await helper.getPortals({ authToken: 'test-token' });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/knowledge\/portalmgr\/v3\/portals(\?|$)/),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Accept-Language': 'da-dk',
+          }),
+        })
+      );
+    });
+
     it('should return empty array when portals endpoint returns no portals', async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
@@ -673,7 +841,27 @@ describe('ApiHelper', () => {
       ).rejects.toThrow('Failed to fetch portals: 401 Unauthorized');
     });
 
-    it('should not cache responses (always fetches from API)', async () => {
+    it('should cache successful responses', async () => {
+      const mockResponse = { portal: [{ id: 1, name: 'Portal A' }] };
+
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      });
+
+      const helperWithCache = new ApiHelper({
+        apiDomain: mockApiDomain,
+        cache: { enabled: true, storageType: 'memory' },
+      });
+
+      const result1 = await helperWithCache.getPortals({ authToken: 'test-token' });
+      const result2 = await helperWithCache.getPortals({ authToken: 'test-token' });
+
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(result1).toEqual(result2);
+    });
+
+    it('should not reuse cache across different departmentIds', async () => {
       const mockResponse = { portal: [{ id: 1, name: 'Portal A' }] };
 
       (global.fetch as any)
@@ -691,8 +879,8 @@ describe('ApiHelper', () => {
         cache: { enabled: true, storageType: 'memory' },
       });
 
-      await helperWithCache.getPortals({ authToken: 'test-token' });
-      await helperWithCache.getPortals({ authToken: 'test-token' });
+      await helperWithCache.getPortals({ authToken: 'test-token', departmentId: 1 });
+      await helperWithCache.getPortals({ authToken: 'test-token', departmentId: 2 });
 
       expect(global.fetch).toHaveBeenCalledTimes(2);
     });
