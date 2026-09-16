@@ -1,8 +1,12 @@
-import { jwtDecode } from 'jwt-decode';
-import { AuthStrategy, PostAuthenticationCallback, AuthStrategyInitializeOptions } from './AuthStrategy.js';
-import { Logger } from '../logging/Logger.js';
-import { PublicClientApplication } from './msal-loader.js';
-import { AuthError } from '../errors/SDKError.js';
+import { jwtDecode } from "jwt-decode";
+import {
+  AuthStrategy,
+  PostAuthenticationCallback,
+  AuthStrategyInitializeOptions
+} from "./AuthStrategy.js";
+import { Logger } from "../logging/Logger.js";
+import { PublicClientApplication } from "./msal-loader.js";
+import { AuthError } from "../errors/SDKError.js";
 
 /**
  * Configuration for PKCE authentication strategy
@@ -34,16 +38,16 @@ export interface PKCEAuthConfig {
   scopes?: string[];
 
   /**
-   * Authentication scheme: 'popup' or 'redirect'
+   * Authentication scheme: 'popup' or 'redirect'. Login and logout use the same scheme.
    * @default 'redirect'
    */
-  authScheme?: 'popup' | 'redirect';
+  authScheme?: "popup" | "redirect";
 
   /**
    * Cache location: 'localStorage' or 'sessionStorage'
    * @default 'sessionStorage'
    */
-  cacheLocation?: 'localStorage' | 'sessionStorage';
+  cacheLocation?: "localStorage" | "sessionStorage";
 
   /**
    * Known authorities
@@ -56,7 +60,9 @@ export interface PKCEAuthConfig {
   authorityMetadata?: string;
 
   /**
-   * Next route to navigate to after authentication (used as state parameter)
+   * Return URL after redirect login or logout (OAuth `state`). Hash is stripped
+   * before it is sent. Popup omits `state` so `auth-redirect.html` does not bounce
+   * the popup to the app. Redirect logout uses this, else `window.location.href`.
    */
   nextRoute?: string;
 
@@ -90,7 +96,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
     endpoint: string,
     scopes: string[],
     logger?: Logger,
-    authScheme?: 'popup' | 'redirect',
+    authScheme?: "popup" | "redirect",
     egClientId?: string,
     localLogin?: boolean
   ): Promise<PKCEAuthConfig> {
@@ -102,28 +108,46 @@ export class PKCEAuthStrategy implements AuthStrategy {
 
     // Determine metadata URL based on user type and client IDs
     let metaDataUrl = "";
-    if ((userType === "agent" && intClientId) ||
-      (userType === "customer" && extClientId)) {
-      metaDataUrl = deploymentInfo.apiDomain + "/core/authmgr/v3/metadata/tenant/" + tenantId;
+    if (
+      (userType === "agent" && intClientId) ||
+      (userType === "customer" && extClientId)
+    ) {
+      metaDataUrl =
+        deploymentInfo.apiDomain +
+        "/core/authmgr/v3/metadata/tenant/" +
+        tenantId;
     } else {
-      metaDataUrl = deploymentInfo.apiDomain + "/core/authmgr/v3/metadata/deployment";
+      metaDataUrl =
+        deploymentInfo.apiDomain + "/core/authmgr/v3/metadata/deployment";
     }
 
     // Ensure HTTPS protocol
-    metaDataUrl = metaDataUrl && metaDataUrl.startsWith("https://") ? metaDataUrl : "https://" + metaDataUrl;
-    
+    metaDataUrl =
+      metaDataUrl && metaDataUrl.startsWith("https://")
+        ? metaDataUrl
+        : "https://" + metaDataUrl;
+
     // Fetch metadata
     let metaData;
     try {
       const metaDataResponse = await fetch(metaDataUrl);
       if (!metaDataResponse.ok) {
-        throw new Error(`Failed to fetch metadata: ${metaDataResponse.status} ${metaDataResponse.statusText}`);
+        throw new Error(
+          `Failed to fetch metadata: ${metaDataResponse.status} ${metaDataResponse.statusText}`
+        );
       }
       metaData = await metaDataResponse.json();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      logger?.error('Failed to fetch authentication metadata', error instanceof Error ? error : new Error(errorMessage), { metaDataUrl });
-      throw new Error(`Failed to fetch authentication metadata from ${metaDataUrl}: ${errorMessage}`);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      logger?.error(
+        "Failed to fetch authentication metadata",
+        error instanceof Error ? error : new Error(errorMessage),
+        { metaDataUrl }
+      );
+      throw new Error(
+        `Failed to fetch authentication metadata from ${metaDataUrl}: ${errorMessage}`
+      );
     }
 
     let loginDomainName = "";
@@ -141,43 +165,115 @@ export class PKCEAuthStrategy implements AuthStrategy {
         loginDomainName = authURLObject.hostname;
         idpGatewayId = authURLObject.pathname.split("/")[1];
         // Remove query parameters from the URL as domain hints come in authURL for deployment metadata
-        authorityMetadata.authorization_endpoint = authURLObject.origin + authURLObject.pathname;
+        authorityMetadata.authorization_endpoint =
+          authURLObject.origin + authURLObject.pathname;
       }
 
-      authorityMetadata.token_endpoint = metaData?.authenticationDetails?.oAuthUser[0]?.accessTokenURL;
-      authorityMetadata.issuer = ["https://" + loginDomainName, "tfp", idpGatewayId, policy, "v2.0/"].join("/");
-      authorityMetadata.jwks_uri = ["https://" + loginDomainName, idpGatewayId, policy, "discovery/v2.0/keys"].join("/");
+      authorityMetadata.token_endpoint =
+        metaData?.authenticationDetails?.oAuthUser[0]?.accessTokenURL;
+      authorityMetadata.issuer = [
+        "https://" + loginDomainName,
+        "tfp",
+        idpGatewayId,
+        policy,
+        "v2.0/"
+      ].join("/");
+      authorityMetadata.jwks_uri = [
+        "https://" + loginDomainName,
+        idpGatewayId,
+        policy,
+        "discovery/v2.0/keys"
+      ].join("/");
     } else if (userType === "customer") {
       policy = metaData?.idpPolicies?.customerSigninPolicy;
-      const authURL = metaData?.authenticationDetails?.oAuthCustomer[0]?.authURL;
+      const authURL =
+        metaData?.authenticationDetails?.oAuthCustomer[0]?.authURL;
       if (authURL) {
         const authURLObject = new URL(authURL);
         loginDomainName = authURLObject.hostname;
         idpGatewayId = authURLObject.pathname.split("/")[1];
         // Remove query parameters from the URL as domain hints come in authURL for deployment metadata
-        authorityMetadata.authorization_endpoint = authURLObject.origin + authURLObject.pathname;
+        authorityMetadata.authorization_endpoint =
+          authURLObject.origin + authURLObject.pathname;
       }
 
-      authorityMetadata.token_endpoint = metaData?.authenticationDetails?.oAuthCustomer[0]?.accessTokenURL;
-      authorityMetadata.issuer = ["https://" + loginDomainName, "tfp", idpGatewayId, policy, "v2.0/"].join("/");
-      authorityMetadata.jwks_uri = ["https://" + loginDomainName, idpGatewayId, policy, "discovery/v2.0/keys"].join("/");
+      authorityMetadata.token_endpoint =
+        metaData?.authenticationDetails?.oAuthCustomer[0]?.accessTokenURL;
+      authorityMetadata.issuer = [
+        "https://" + loginDomainName,
+        "tfp",
+        idpGatewayId,
+        policy,
+        "v2.0/"
+      ].join("/");
+      authorityMetadata.jwks_uri = [
+        "https://" + loginDomainName,
+        idpGatewayId,
+        policy,
+        "discovery/v2.0/keys"
+      ].join("/");
     } else {
-      throw new Error(`Invalid userType: ${userType}. Expected 'agent' or 'customer'.`);
+      throw new Error(
+        `Invalid userType: ${userType}. Expected 'agent' or 'customer'.`
+      );
     }
 
+    const oAuthData =
+      userType === "customer"
+        ? metaData?.authenticationDetails?.oAuthCustomer[0]
+        : metaData?.authenticationDetails?.oAuthUser[0];
+
+    let oAuthMetadata: any;
+    const oAuthMetadataUrl = oAuthData?.metadataURL;
+    if (oAuthMetadataUrl) {
+      try {
+        const oAuthMetadataFetch = await fetch(oAuthMetadataUrl);
+        if (!oAuthMetadataFetch.ok) {
+          logger?.warn(
+            `Failed to fetch OAuth metadata: ${oAuthMetadataFetch.status} ${oAuthMetadataFetch.statusText}. Continuing with construction.`,
+            { oAuthMetadataUrl }
+          );
+        }
+        oAuthMetadata = await oAuthMetadataFetch.json();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        logger?.warn(
+          `Failed to fetch OAuth metadata: ${errorMessage}. Continuing with construction.`,
+          { oAuthMetadataUrl }
+        );
+      }
+    }
+
+    authorityMetadata.end_session_endpoint =
+      oAuthMetadata?.end_session_endpoint ||
+      [
+        "https://" + loginDomainName,
+        idpGatewayId,
+        policy,
+        "oauth2/v2.0/logout"
+      ].join("/");
+
     // Build authorization URL (authority)
-    const authorizationUrl = ["https://" + loginDomainName, idpGatewayId, policy].join("/");
+    const authorizationUrl = [
+      "https://" + loginDomainName,
+      idpGatewayId,
+      policy
+    ].join("/");
 
     // Add permission prefixes to scopes
     const apiPermissionPrefix =
       userType === "agent" && metaData?.apiMetadata?.CORE?.iApiPermissionPrefix
         ? metaData.apiMetadata.CORE.iApiPermissionPrefix
-        : userType === "customer" && metaData?.apiMetadata?.CORE?.eApiPermissionPrefix
+        : userType === "customer" &&
+            metaData?.apiMetadata?.CORE?.eApiPermissionPrefix
           ? metaData.apiMetadata.CORE.eApiPermissionPrefix
           : metaData?.apiMetadata?.CORE?.apiPermissionPrefix || "";
 
     if (apiPermissionPrefix && Array.isArray(prefixedScopes)) {
-      prefixedScopes = prefixedScopes.map((scope: string) => apiPermissionPrefix + scope);
+      prefixedScopes = prefixedScopes.map(
+        (scope: string) => apiPermissionPrefix + scope
+      );
     }
 
     // Select appropriate client ID (egClientId from initParams takes priority)
@@ -192,11 +288,15 @@ export class PKCEAuthStrategy implements AuthStrategy {
 
     // Build redirect URI from domainHint
     const domainHint = deploymentInfo.domainHint;
-    const redirectUri = "https://" + domainHint + "/system/templates/selfservice/auth-redirect.html";
-    
+    const redirectUri =
+      "https://" +
+      domainHint +
+      "/system/templates/selfservice/auth-redirect.html";
+
     // Use the current page URL so auth-redirect.html navigates back to the app after login
-    let nextRoute = typeof window !== 'undefined' ? window.location.href : endpoint;
-    
+    let nextRoute =
+      typeof window !== "undefined" ? window.location.href : endpoint;
+
     // Build and return PKCE config
     return {
       clientId: selectedClientId,
@@ -205,29 +305,31 @@ export class PKCEAuthStrategy implements AuthStrategy {
       knownAuthorities: [loginDomainName],
       authorityMetadata: JSON.stringify(authorityMetadata),
       scopes: prefixedScopes,
-      authScheme: authScheme ?? 'popup',
+      authScheme: authScheme ?? "popup",
       cacheLocation: "sessionStorage",
-      ...(authScheme === 'redirect' && nextRoute && { nextRoute }),
-      ...(localLogin != null && { localLogin }),
+      ...(authScheme === "redirect" && nextRoute && { nextRoute }),
+      ...(localLogin != null && { localLogin })
     };
   }
   private postAuthentication?: PostAuthenticationCallback;
   private isAuthenticatedFlag: boolean = false;
   private deploymentInfo?: any;
   private msalInstance: any;
-  private authScheme: 'popup' | 'redirect' = 'redirect';
+  private authScheme: "popup" | "redirect" = "redirect";
   private accessToken: string | null = null;
   private account: any = null;
   private isInitialized: boolean = false;
 
   constructor(private readonly config: PKCEAuthConfig) {
     // Validate browser environment
-    if (typeof window === 'undefined') {
-      throw new Error('PKCEAuthStrategy can only be used in browser environments');
+    if (typeof window === "undefined") {
+      throw new Error(
+        "PKCEAuthStrategy can only be used in browser environments"
+      );
     }
 
     // Note: MSAL check is deferred to initialize() to allow lazy loading
-    this.authScheme = config.authScheme || 'redirect';
+    this.authScheme = config.authScheme || "redirect";
   }
 
   /**
@@ -249,7 +351,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
     }
 
     if (!PublicClientApplication) {
-      throw new Error('MSAL PublicClientApplication not available.');
+      throw new Error("MSAL PublicClientApplication not available.");
     }
 
     this.deploymentInfo = options?.deploymentInfo;
@@ -282,16 +384,16 @@ export class PKCEAuthStrategy implements AuthStrategy {
         redirectUri: this.config.redirectUri,
         authority: this.config.authorizationUrl,
         knownAuthorities: this.config.knownAuthorities,
-        authorityMetadata: this.config.authorityMetadata,
+        authorityMetadata: this.config.authorityMetadata
       },
       cache: {
-        cacheLocation: this.config.cacheLocation || 'sessionStorage',
+        cacheLocation: this.config.cacheLocation || "sessionStorage",
         storeAuthStateInCookie: false,
-        claimsBasedCachingEnabled: true,
+        claimsBasedCachingEnabled: true
       },
       system: {
-        allowRedirectInIframe: true,
-      },
+        allowRedirectInIframe: true
+      }
     };
 
     // Add OIDC options if tenantAlias or tenantId is present (similar to egAuthentication.js)
@@ -310,7 +412,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
     await this.msalInstance.initialize();
 
     // Handle redirect callback if using redirect flow
-    if (this.authScheme === 'redirect') {
+    if (this.authScheme === "redirect") {
       await this.handleRedirectPromise();
     }
 
@@ -358,10 +460,13 @@ export class PKCEAuthStrategy implements AuthStrategy {
         this.isAuthenticatedFlag = true;
       }
     } catch (error) {
-      console.error('Error handling redirect promise:', error);
+      console.error("Error handling redirect promise:", error);
 
-      if ((error as Error)?.message?.includes('hash_empty_error')) {
-        throw new AuthError('Authentication failed due to browser compatibility issue. Please try refreshing the page.', error as Error);
+      if ((error as Error)?.message?.includes("hash_empty_error")) {
+        throw new AuthError(
+          "Authentication failed due to browser compatibility issue. Please try refreshing the page.",
+          error as Error
+        );
       }
 
       throw error;
@@ -377,13 +482,13 @@ export class PKCEAuthStrategy implements AuthStrategy {
     }
 
     const loginRequest: any = {
-      scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
+      scopes: this.config.scopes || ["openid", "profile", "offline_access"]
     };
 
     // Add state parameter from nextRoute if available and if the scheme is redirect(similar to egAuthentication.js)
-    if (this.authScheme === 'redirect' && this.config.nextRoute) {
+    if (this.authScheme === "redirect" && this.config.nextRoute) {
       // Remove hash from URL if present (similar to #removeHashFromURL in egAuthentication.js)
-      const relayState = this.config.nextRoute.split('#')[0];
+      const relayState = this.config.nextRoute.split("#")[0];
       loginRequest.state = relayState;
     }
 
@@ -393,7 +498,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
       extraQueryParameters.domain_hint = this.deploymentInfo.domainHint;
     }
     if (this.config.localLogin) {
-      extraQueryParameters.localLogin = 'true';
+      extraQueryParameters.localLogin = "true";
     }
     if (Object.keys(extraQueryParameters).length > 0) {
       loginRequest.extraQueryParameters = extraQueryParameters;
@@ -402,7 +507,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
     try {
       let response: any;
 
-      if (this.authScheme === 'popup') {
+      if (this.authScheme === "popup") {
         // Use popup flow
         response = await this.msalInstance.loginPopup(loginRequest);
       } else {
@@ -426,7 +531,7 @@ export class PKCEAuthStrategy implements AuthStrategy {
         }
       }
     } catch (error: any) {
-      console.error('Authentication error:', error);
+      console.error("Authentication error:", error);
       throw error;
     }
   }
@@ -453,23 +558,26 @@ export class PKCEAuthStrategy implements AuthStrategy {
     // If we have a cached token and account, try to get it silently
     if (this.account) {
       const silentRequest = {
-        scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
-        account: this.account,
+        scopes: this.config.scopes || ["openid", "profile", "offline_access"],
+        account: this.account
       };
 
       try {
-        const response = await this.msalInstance.acquireTokenSilent(silentRequest);
+        const response =
+          await this.msalInstance.acquireTokenSilent(silentRequest);
         this.accessToken = response.accessToken;
         return response.accessToken;
       } catch (error: any) {
         const isInteractionRequired =
-          error?.name === 'InteractionRequiredAuthError' ||
-          error?.errorCode === 'interaction_required';
+          error?.name === "InteractionRequiredAuthError" ||
+          error?.errorCode === "interaction_required";
 
         if (isInteractionRequired) {
-          if (this.authScheme === 'redirect') {
+          if (this.authScheme === "redirect") {
             this.msalInstance.acquireTokenRedirect(silentRequest);
-            throw new Error('Redirect initiated for token acquisition - response will be handled on page reload');
+            throw new Error(
+              "Redirect initiated for token acquisition - response will be handled on page reload"
+            );
           }
           await this.authenticate();
           if (!this.accessToken) {
@@ -478,14 +586,18 @@ export class PKCEAuthStrategy implements AuthStrategy {
           return this.accessToken;
         }
 
-        if (error?.message?.includes('monitor_window_timeout')) {
-          const popupResponse = await this.msalInstance.acquireTokenPopup(silentRequest);
+        if (error?.message?.includes("monitor_window_timeout")) {
+          const popupResponse =
+            await this.msalInstance.acquireTokenPopup(silentRequest);
           this.accessToken = popupResponse.accessToken;
           return popupResponse.accessToken;
         }
 
-        if ((error as Error)?.message?.includes('hash_empty_error')) {
-          throw new AuthError('Authentication failed due to browser compatibility issue. Please try refreshing the page.', error as Error);
+        if ((error as Error)?.message?.includes("hash_empty_error")) {
+          throw new AuthError(
+            "Authentication failed due to browser compatibility issue. Please try refreshing the page.",
+            error as Error
+          );
         }
 
         throw error;
@@ -494,7 +606,9 @@ export class PKCEAuthStrategy implements AuthStrategy {
 
     // No account, need to authenticate
     if (!this.accessToken) {
-      throw new Error('No access token available. Please call authenticate() first.');
+      throw new Error(
+        "No access token available. Please call authenticate() first."
+      );
     }
 
     return this.accessToken;
@@ -519,32 +633,120 @@ export class PKCEAuthStrategy implements AuthStrategy {
   }
 
   /**
+   * Log out via MSAL using the same scheme as login.
+   * Popup omits `state` and uses `redirectUri?logout=true`. Redirect passes
+   * hash-stripped `nextRoute` as `state` so `auth-redirect.html` can bounce back.
+   * MSAL clears its own cache — do not call `clearCache` / `removeAccount` here.
+   * If MSAL throws, navigate to the JWT `logout` claim, else `end_session_endpoint`.
+   */
+  async logout(): Promise<void> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const account =
+      this.msalInstance.getActiveAccount() ??
+      this.msalInstance.getAllAccounts()[0] ??
+      this.account;
+
+    let jwtLogoutUrl: string | undefined;
+    if (this.accessToken) {
+      try {
+        jwtLogoutUrl = jwtDecode<{ logout?: string }>(this.accessToken).logout;
+      } catch {
+        // Access token may not be a JWT (tests, anonymous). Continue without a claim URL.
+      }
+    }
+
+    let endSessionEndpoint: string | undefined;
+    try {
+      endSessionEndpoint = JSON.parse(this.config.authorityMetadata ?? "{}")
+        .end_session_endpoint;
+    } catch {
+      // Authority metadata missing or invalid. Continue without it.
+    }
+
+    const logoutUrl = jwtLogoutUrl ?? endSessionEndpoint;
+
+    const postLogoutRedirectUri =
+      this.authScheme === "popup"
+        ? `${this.config.redirectUri}?logout=true`
+        : this.config.redirectUri;
+
+    const logoutRequest: Record<string, unknown> = {
+      account,
+      postLogoutRedirectUri,
+      idTokenHint: account?.idToken
+    };
+
+    if (this.authScheme === "redirect") {
+      logoutRequest.state = (
+        this.config.nextRoute ?? window.location.href
+      ).split("#")[0];
+    }
+
+    this.accessToken = null;
+    this.account = null;
+    this.isAuthenticatedFlag = false;
+
+    try {
+      if (this.authScheme === "popup") {
+        await this.msalInstance.logoutPopup(logoutRequest);
+        return;
+      }
+
+      await this.msalInstance.logoutRedirect(logoutRequest);
+      return new Promise<void>(() => {});
+    } catch (error) {
+      if (!logoutUrl) {
+        throw error;
+      }
+
+      const fallbackUrl = new URL(logoutUrl);
+      fallbackUrl.searchParams.set(
+        "post_logout_redirect_uri",
+        postLogoutRedirectUri
+      );
+      if (account?.idToken) {
+        fallbackUrl.searchParams.set("id_token_hint", account.idToken);
+      }
+      if (logoutRequest.state) {
+        fallbackUrl.searchParams.set("state", String(logoutRequest.state));
+      }
+      window.location.href = fallbackUrl.toString();
+    }
+  }
+
+  /**
    * Refresh the access token using refresh token
    */
   async refreshToken(): Promise<string> {
     if (!this.account) {
-      throw new Error('No account available for token refresh');
+      throw new Error("No account available for token refresh");
     }
 
     const silentRequest = {
-      scopes: this.config.scopes || ['openid', 'profile', 'offline_access'],
+      scopes: this.config.scopes || ["openid", "profile", "offline_access"],
       account: this.account,
-      forceRefresh: true,
+      forceRefresh: true
     };
 
     try {
-      const response = await this.msalInstance.acquireTokenSilent(silentRequest);
+      const response =
+        await this.msalInstance.acquireTokenSilent(silentRequest);
       this.accessToken = response.accessToken;
       return response.accessToken;
     } catch (error: any) {
       const isInteractionRequired =
-        error?.name === 'InteractionRequiredAuthError' ||
-        error?.errorCode === 'interaction_required';
+        error?.name === "InteractionRequiredAuthError" ||
+        error?.errorCode === "interaction_required";
 
       if (isInteractionRequired) {
-        if (this.authScheme === 'redirect') {
+        if (this.authScheme === "redirect") {
           this.msalInstance.acquireTokenRedirect(silentRequest);
-          throw new Error('Redirect initiated for token acquisition - response will be handled on page reload');
+          throw new Error(
+            "Redirect initiated for token acquisition - response will be handled on page reload"
+          );
         }
         await this.authenticate();
         if (!this.accessToken) {
@@ -553,14 +755,18 @@ export class PKCEAuthStrategy implements AuthStrategy {
         return this.accessToken;
       }
 
-      if (error?.message?.includes('monitor_window_timeout')) {
-        const popupResponse = await this.msalInstance.acquireTokenPopup(silentRequest);
+      if (error?.message?.includes("monitor_window_timeout")) {
+        const popupResponse =
+          await this.msalInstance.acquireTokenPopup(silentRequest);
         this.accessToken = popupResponse.accessToken;
         return popupResponse.accessToken;
       }
 
-      if ((error as Error)?.message?.includes('hash_empty_error')) {
-        throw new AuthError('Authentication failed due to browser compatibility issue. Please try refreshing the page.', error as Error);
+      if ((error as Error)?.message?.includes("hash_empty_error")) {
+        throw new AuthError(
+          "Authentication failed due to browser compatibility issue. Please try refreshing the page.",
+          error as Error
+        );
       }
 
       if (this.accessToken) {
@@ -581,4 +787,3 @@ export class PKCEAuthStrategy implements AuthStrategy {
     // MSAL handles its own cleanup, but we can clear our references
   }
 }
-

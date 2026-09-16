@@ -7,6 +7,9 @@ export class PublicClientApplication {
   handleRedirectPromise(): Promise<unknown>;
   loginPopup(request: unknown): Promise<unknown>;
   loginRedirect(request: unknown): Promise<void>;
+  logoutPopup(request: unknown): Promise<void>;
+  logoutRedirect(request: unknown): Promise<void>;
+  getActiveAccount(): unknown;
   acquireTokenSilent(request: unknown): Promise<unknown>;
   acquireTokenPopup(request: unknown): Promise<unknown>;
   acquireTokenRedirect(request: unknown): void;

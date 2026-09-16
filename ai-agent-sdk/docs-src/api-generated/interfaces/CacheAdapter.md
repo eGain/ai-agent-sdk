@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / CacheAdapter
+[@egain/ai-agent-sdk API Reference - v0.2.4](../README.md) / CacheAdapter
 
 # Interface: CacheAdapter
 

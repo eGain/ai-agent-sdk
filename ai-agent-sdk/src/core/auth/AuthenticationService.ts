@@ -406,6 +406,18 @@ export class AuthenticationService implements AuthStrategy {
   }
 
   /**
+   * Log out via the underlying strategy when it supports it (PKCE/MSAL).
+   * Always clears the cached access token. No-op on the IdP when the strategy
+   * has no `logout()` (anonymous, pre-auth, client-credentials).
+   */
+  async logout(): Promise<void> {
+    if (this.strategy.logout) {
+      await this.strategy.logout();
+    }
+    this.cachedAccessToken = null;
+  }
+
+  /**
    * Cleanup resources from the selected strategy
    */
   async cleanup(): Promise<void> {

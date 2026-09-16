@@ -453,6 +453,87 @@ describe('PortalInitializer', () => {
       expect(event.payload).toEqual(expect.objectContaining({ profile: lastUsedProfile }));
     });
 
+    function stubSessionStorage() {
+      const sessionStore: Record<string, string> = {};
+      const setItem = vi.fn((k: string, v: string) => { sessionStore[k] = v; });
+      vi.stubGlobal('window', {
+        sessionStorage: {
+          getItem: (k: string) => sessionStore[k] ?? null,
+          setItem,
+          removeItem: (k: string) => { delete sessionStore[k]; },
+        },
+      });
+      return setItem;
+    }
+
+    it('persists selected profile to session storage on auto-select', async () => {
+      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
+      const otherProfile: UserProfile = { id: 20, name: 'Profile Q', isLastUsedInPortal: false };
+      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, otherProfile]);
+      const setItem = stubSessionStorage();
+      const deps = { ...defaultDeps, deploymentInfo: { tenant_identifier: 'c5hs' } };
+
+      try {
+        const initializer = new PortalInitializer(deps);
+        await initializer.start();
+        await vi.waitFor(() => {
+          expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        });
+        initializer.onPortalSelected(portalA);
+        await vi.waitFor(() => {
+          expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        });
+
+        expect(setItem).toHaveBeenCalledWith(
+          'v2_c5hs_selectedProfile-1',
+          JSON.stringify({
+            name: lastUsedProfile.name,
+            isLastUsedInPortal: true,
+            id: lastUsedProfile.id,
+            portalId: String(portalA.id),
+          })
+        );
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
+    it('persists selected profile to session storage on manual select', async () => {
+      const profile1: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: false };
+      const profile2: UserProfile = { id: 20, name: 'Profile Q', isLastUsedInPortal: false };
+      mockApiHelper.getUserProfiles.mockResolvedValue([profile1, profile2]);
+      const setItem = stubSessionStorage();
+      const deps = { ...defaultDeps, deploymentInfo: { tenant_identifier: 'c5hs' } };
+
+      try {
+        const initializer = new PortalInitializer(deps);
+        await initializer.start();
+        await vi.waitFor(() => {
+          expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        });
+        initializer.onPortalSelected(portalA);
+        await vi.waitFor(() => {
+          expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        });
+        initializer.onProfileSelected(profile2);
+        await vi.waitFor(() => {
+          expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        });
+
+        expect(setItem).toHaveBeenCalledWith(
+          'v2_c5hs_selectedProfile-1',
+          JSON.stringify({
+            name: profile2.name,
+            isLastUsedInPortal: false,
+            id: profile2.id,
+            portalId: String(portalA.id),
+          })
+        );
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
     it('should auto-select default profile when no last-used profile exists', async () => {
       const profile1: UserProfile = { id: 10, name: 'Profile 1', isLastUsedInPortal: false };
       const profile2: UserProfile = { id: 20, name: 'Profile 2', isLastUsedInPortal: false };
@@ -644,6 +725,71 @@ describe('PortalInitializer', () => {
       expect(event.payload).toEqual(
         expect.objectContaining({ portal: portalA, profile: profileQ })
       );
+    });
+
+    it('prefers session-stored profile over last-used and context', async () => {
+      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
+      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, profileQ]);
+      const sessionStore: Record<string, string> = {
+        'v2_c5hs_selectedProfile-1': JSON.stringify({ id: profileQ.id, name: profileQ.name }),
+      };
+      vi.stubGlobal('window', {
+        sessionStorage: {
+          getItem: (k: string) => sessionStore[k] ?? null,
+          setItem: (k: string, v: string) => { sessionStore[k] = v; },
+          removeItem: (k: string) => { delete sessionStore[k]; },
+        },
+      });
+      const deps = {
+        ...defaultDeps,
+        deploymentInfo: { tenant_identifier: 'c5hs' },
+        initialContext: {
+          egain_portal_id: { value: String(portalA.id) },
+          egain_personalization_profile_id: { value: String(lastUsedProfile.id) },
+        },
+      };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+
+      await vi.waitFor(() => {
+        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+      });
+      const event = getEmittedEvent('initialized');
+      expect(event.payload).toEqual(
+        expect.objectContaining({ portal: portalA, profile: profileQ })
+      );
+      vi.unstubAllGlobals();
+    });
+
+    it('uses endpoint path segment as rigel prefix when tenant_identifier is absent', async () => {
+      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
+      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, profileQ]);
+      const sessionStore: Record<string, string> = {
+        'v2_c5hs_selectedProfile-1': JSON.stringify({ id: profileQ.id, name: profileQ.name }),
+      };
+      vi.stubGlobal('window', {
+        sessionStorage: {
+          getItem: (k: string) => sessionStore[k] ?? null,
+          setItem: (k: string, v: string) => { sessionStore[k] = v; },
+          removeItem: (k: string) => { delete sessionStore[k]; },
+        },
+      });
+      const deps = {
+        ...defaultDeps,
+        endpoint: 'https://aidev.egain.cloud/c5hs',
+        initialContext: { egain_portal_id: { value: String(portalA.id) } },
+      };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+
+      await vi.waitFor(() => {
+        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+      });
+      const event = getEmittedEvent('initialized');
+      expect(event.payload).toEqual(
+        expect.objectContaining({ portal: portalA, profile: profileQ })
+      );
+      vi.unstubAllGlobals();
     });
   });
 

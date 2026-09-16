@@ -212,8 +212,8 @@ export interface AiAgentConfig {
   connector?: AiAgentConnectorConfig;
 
   /**
-   * Authentication scheme for the PKCE flow.
-   * - 'popup': Opens a popup window for login (default)
+   * Authentication scheme for the PKCE flow (login and logout).
+   * - 'popup': Opens a popup window for login / logout (default)
    * - 'redirect': Redirects the current page to the identity provider
    *
    * Only applies when the SDK auto-builds PKCE config from deployment info.
@@ -1167,6 +1167,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       isAgentSelectionMode: this.isAgentSelectionMode,
       agentDetails: this.agentDetails,
       initialContext: this.initialContext,
+      deploymentInfo: this.deploymentInfo,
+      endpoint: this.config.endpoint,
       pipelineCache: this.config.cache?.enabled !== false
         ? {
             adapter: this.contextCacheAdapter,
@@ -2851,6 +2853,24 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       this.logger.error('Failed to get access token', err, { agentId: this.resolvedAgentId });
       throw error;
     }
+  }
+
+  /**
+   * Log out of the identity provider.
+   *
+   * Disconnects chat (errors ignored), then delegates to {@link AuthenticationService.logout}.
+   * PKCE matches login `authScheme` (`logoutPopup` / `logoutRedirect`). Takes no options —
+   * post-logout URI, `idTokenHint`, and redirect `state` are built inside PKCE.
+   * Strategies without `logout()` (anonymous, pre-auth) no-op after the disconnect.
+   *
+   * @example
+   * ```typescript
+   * await agent.logout();
+   * ```
+   */
+  async logout(): Promise<void> {
+    await this.disconnect({ skipGracefulDisconnect: true }).catch(() => undefined);
+    await this.authService.logout();
   }
 
   /**

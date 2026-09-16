@@ -25,6 +25,7 @@ const authServiceMock = vi.hoisted(() => ({
   setTokenExpiringCallback: vi.fn(),
   switchStrategyTo: vi.fn().mockResolvedValue(true),
   cleanup: vi.fn().mockResolvedValue(undefined),
+  logout: vi.fn().mockResolvedValue(undefined),
 }));
 
 // Mock dependencies
@@ -87,6 +88,7 @@ describe('AiAgent', () => {
     authServiceMock.setTokenExpiringCallback.mockReset();
     authServiceMock.switchStrategyTo.mockResolvedValue(true);
     authServiceMock.cleanup.mockResolvedValue(undefined);
+    authServiceMock.logout.mockResolvedValue(undefined);
 
     // Setup module mocks
     vi.doMock('./connection/Connection.js', () => ({
@@ -1855,6 +1857,21 @@ describe('AiAgent', () => {
 
       await expect(agent.getAccessToken()).rejects.toThrow('Failed to get token');
       expect(getTokenSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('logout', () => {
+    it('should disconnect and call auth service logout', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+      });
+      const disconnectSpy = vi.spyOn(agent, 'disconnect').mockResolvedValue(undefined);
+
+      await agent.logout();
+
+      expect(disconnectSpy).toHaveBeenCalledWith({ skipGracefulDisconnect: true });
+      expect(authServiceMock.logout).toHaveBeenCalled();
     });
   });
 

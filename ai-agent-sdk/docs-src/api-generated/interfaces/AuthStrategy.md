@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / AuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.2.4](../README.md) / AuthStrategy
 
 # Interface: AuthStrategy
 
@@ -27,6 +27,7 @@ All authentication strategies must implement this interface
 - [initialize](AuthStrategy.md#initialize)
 - [authenticate](AuthStrategy.md#authenticate)
 - [isAuthenticated](AuthStrategy.md#isauthenticated)
+- [logout](AuthStrategy.md#logout)
 - [cleanup](AuthStrategy.md#cleanup)
 - [getDomain](AuthStrategy.md#getdomain)
 
@@ -112,6 +113,23 @@ Whether the strategy currently has an authenticated session
 
 ___
 
+### logout
+
+▸ **logout**(): `Promise`\<`void`\>
+
+Log out of the identity provider. Optional; PKCE implements this via MSAL
+using the same popup/redirect scheme as login. Takes no options.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Defined in
+
+[core/auth/AuthStrategy.ts:83](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L83)
+
+___
+
 ### cleanup
 
 ▸ **cleanup**(): `Promise`\<`void`\>
@@ -124,7 +142,7 @@ Cleanup resources when the strategy is no longer needed
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:82](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L82)
+[core/auth/AuthStrategy.ts:88](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L88)
 
 ___
 
@@ -140,4 +158,4 @@ Get the domain for authentication
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:87](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L87)
+[core/auth/AuthStrategy.ts:93](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L93)

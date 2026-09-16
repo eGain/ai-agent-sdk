@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / AiAgentConfig
+[@egain/ai-agent-sdk API Reference - v0.2.4](../README.md) / AiAgentConfig
 
 # Interface: AiAgentConfig
 
@@ -384,8 +384,8 @@ ___
 
 • `Optional` **authScheme**: ``"popup"`` \| ``"redirect"``
 
-Authentication scheme for the PKCE flow.
-- 'popup': Opens a popup window for login (default)
+Authentication scheme for the PKCE flow (login and logout).
+- 'popup': Opens a popup window for login / logout (default)
 - 'redirect': Redirects the current page to the identity provider
 
 Only applies when the SDK auto-builds PKCE config from deployment info.

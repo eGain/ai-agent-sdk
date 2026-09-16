@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2026-09-XX
+
+### Added
+
+- **PKCE MSAL logout** — `AiAgent.logout()` disconnects chat, then `AuthenticationService.logout()` / `PKCEAuthStrategy.logout()`. No caller `LogoutOptions`: the strategy matches login `authScheme` (`logoutPopup` / `logoutRedirect`). Popup omits OAuth `state` and sets `postLogoutRedirectUri` to `redirectUri?logout=true` so `auth-redirect.html` can close the window. Redirect passes hash-stripped `nextRoute` (else `window.location.href`) as `state` and uses `redirectUri` as-is. `idTokenHint` comes from the active account. `end_session_endpoint` is read from the OAuth metadata URL at PKCE config build and constructed only when absent. If MSAL throws, logout falls back to the access-token JWT `logout` claim, then that endpoint. MSAL clears its own cache; the strategy does not call `clearCache` / `removeAccount`. Anonymous and other strategies without `logout()` no-op at `AuthenticationService` (cached token is dropped). Host UI state is not cleared.
+- **Session-stored profile selection** — `PortalInitializer` reads `v2_{rigelPrefix}selectedProfile-{portalId}` from `sessionStorage` as the first auto-select rule when multiple profiles are available (cc-widget parity). Rigel prefix comes from `deploymentInfo.tenant_identifier`, with fallback to the first path segment of `AiAgent`’s `endpoint` URL.
+- **Session profile persistence** — after auto-select or `selectUserProfile()`, the SDK writes the selected profile to the same session key (`name`, `id`, `isLastUsedInPortal`, `portalId`).
+
+### Changed
+
+- **Profile auto-select priority** (multiple profiles) — session storage → `egain_personalization_profile_id` → `isLastUsedInPortal` → portal default → `profilesAvailable`
+
+### Documentation
+
+- Authentication guide: PKCE IdP logout (`AiAgent.logout()`), popup vs redirect, fallbacks, and host-owned UI teardown
+
 ## [0.2.3] - 2026-09-11
 
 ### Added

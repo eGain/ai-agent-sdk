@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.3](../README.md) / PKCEAuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.2.4](../README.md) / PKCEAuthStrategy
 
 # Class: PKCEAuthStrategy
 
@@ -24,6 +24,7 @@ Implements OAuth 2.0 PKCE flow for secure browser-based authentication using MSA
 - [getToken](PKCEAuthStrategy.md#gettoken)
 - [startAuthorizationFlow](PKCEAuthStrategy.md#startauthorizationflow)
 - [handleCallback](PKCEAuthStrategy.md#handlecallback)
+- [logout](PKCEAuthStrategy.md#logout)
 - [refreshToken](PKCEAuthStrategy.md#refreshtoken)
 - [cleanup](PKCEAuthStrategy.md#cleanup)
 
@@ -45,7 +46,7 @@ Implements OAuth 2.0 PKCE flow for secure browser-based authentication using MSA
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:223](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L223)
+[core/auth/PKCEAuthStrategy.ts:323](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L323)
 
 ## Methods
 
@@ -77,7 +78,7 @@ Promise resolving to PKCEAuthConfig
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:87](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L87)
+[core/auth/PKCEAuthStrategy.ts:93](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L93)
 
 ___
 
@@ -103,7 +104,7 @@ Initialize the PKCE authentication strategy
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:236](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L236)
+[core/auth/PKCEAuthStrategy.ts:338](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L338)
 
 ___
 
@@ -123,7 +124,7 @@ Authenticate using PKCE flow
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:374](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L374)
+[core/auth/PKCEAuthStrategy.ts:479](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L479)
 
 ___
 
@@ -143,7 +144,7 @@ Check if the user is currently authenticated
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:437](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L437)
+[core/auth/PKCEAuthStrategy.ts:542](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L542)
 
 ___
 
@@ -163,7 +164,7 @@ Get authentication token using PKCE flow
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:444](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L444)
+[core/auth/PKCEAuthStrategy.ts:549](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L549)
 
 ___
 
@@ -180,7 +181,7 @@ Redirects user to authorization server
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:507](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L507)
+[core/auth/PKCEAuthStrategy.ts:621](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L621)
 
 ___
 
@@ -204,7 +205,31 @@ This is handled automatically by MSAL's handleRedirectPromise
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:515](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L515)
+[core/auth/PKCEAuthStrategy.ts:629](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L629)
+
+___
+
+### logout
+
+▸ **logout**(): `Promise`\<`void`\>
+
+Log out via MSAL using the same scheme as login.
+Popup omits `state` and uses `redirectUri?logout=true`. Redirect passes
+hash-stripped `nextRoute` as `state` so `auth-redirect.html` can bounce back.
+MSAL clears its own cache — do not call `clearCache` / `removeAccount` here.
+If MSAL throws, navigate to the JWT `logout` claim, else `end_session_endpoint`.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Implementation of
+
+[AuthStrategy](../interfaces/AuthStrategy.md).[logout](../interfaces/AuthStrategy.md#logout)
+
+#### Defined in
+
+[core/auth/PKCEAuthStrategy.ts:642](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L642)
 
 ___
 
@@ -220,7 +245,7 @@ Refresh the access token using refresh token
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:524](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L524)
+[core/auth/PKCEAuthStrategy.ts:723](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L723)
 
 ___
 
@@ -240,4 +265,4 @@ Cleanup resources
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:576](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L576)
+[core/auth/PKCEAuthStrategy.ts:782](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L782)

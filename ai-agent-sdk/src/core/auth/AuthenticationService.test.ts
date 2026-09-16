@@ -238,6 +238,24 @@ describe('AuthenticationService', () => {
     });
   });
 
+  describe('logout', () => {
+    it('should call strategy logout when present', async () => {
+      const mockStrategy = {
+        initialize: vi.fn().mockResolvedValue(undefined),
+        authenticate: vi.fn().mockResolvedValue(undefined),
+        getToken: vi.fn().mockResolvedValue('token'),
+        cleanup: vi.fn().mockResolvedValue(undefined),
+        logout: vi.fn().mockResolvedValue(undefined),
+      };
+      (AnonymousAuthStrategy as any).mockImplementation(() => mockStrategy);
+
+      const service = new AuthenticationService();
+      await service.logout();
+
+      expect(mockStrategy.logout).toHaveBeenCalled();
+    });
+  });
+
   describe('isAnonymousStrategy', () => {
     it('should return true for anonymous strategy', () => {
       const service = new AuthenticationService();

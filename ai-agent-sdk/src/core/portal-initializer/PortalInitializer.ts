@@ -106,6 +106,10 @@ export interface PortalInitializerConfig {
   hookContract?: HookContract;
   /** Host context at initialize(); used to auto-select portal/profile when ids match. */
   initialContext?: Record<string, unknown>;
+  /** Deployment info (rigel prefix via tenant_identifier for session profile key). */
+  deploymentInfo?: { tenant_identifier?: string };
+  /** AiAgent endpoint URL; first path segment is rigel prefix fallback. */
+  endpoint?: string;
 }
 
 /** Comma-separated portal IDs (cc-widget `portalIds` shortcut). */
@@ -801,7 +805,7 @@ export class PortalInitializer {
    * Returns `{ profile }` when one can be auto-selected (including `undefined`
    * for the zero-profiles case), or `null` when the consumer must choose.
    *
-   * Priority: no profiles → single → context (in list) → lastUsed → portalDefault → null (emit)
+   * Priority: no profiles → single → sessionStorage → context (in list) → lastUsed → portalDefault → null (emit)
    */
   private resolveAutoProfile(): { profile: UserProfile | undefined } | null {
     const profiles = this.profiles;
@@ -825,6 +829,9 @@ export class PortalInitializer {
       return { profile: profiles[0] };
     }
 
+    const fromSession = this.getProfileFromSessionStorage();
+    if (fromSession) return { profile: fromSession };
+
     const preferredProfileId = extractContextAttribute(
       this.deps.initialContext,
       ["egain_personalization_profile_id"]
@@ -846,6 +853,70 @@ export class PortalInitializer {
     }
 
     return null;
+  }
+
+  private getRigelPrefix(): string {
+    const fromDeployment = this.deps.deploymentInfo?.tenant_identifier?.trim();
+    if (fromDeployment) {
+      this.deps.logger.debug("Rigel prefix", { rigelPrefix: fromDeployment });
+      return fromDeployment;
+    }
+
+    const endpoint = this.deps.endpoint?.trim();
+    if (!endpoint) {
+      this.deps.logger.debug("No endpoint/base url found");
+      return "";
+    }
+
+    try {
+      const first = new URL(endpoint).pathname.split("/").filter(Boolean)[0];
+      this.deps.logger.debug("Rigel prefix", { rigelPrefix: first });
+      return first && first !== "system" ? first : "";
+    } catch {
+      this.deps.logger.debug("Error parsing endpoint/base url", { endpoint });
+      return "";
+    }
+  }
+
+  private getSelectedProfileSessionKey(): string | null {
+    if (!this.selectedPortal) return null;
+    let rigelPrefix = this.getRigelPrefix();
+    if (rigelPrefix) rigelPrefix += "_";
+    return `v2_${rigelPrefix}selectedProfile-${this.selectedPortal.id}`.replace(
+      /[^a-zA-Z0-9-_]/g,
+      ""
+    );
+  }
+
+  /** cc-widget parity: v2_{rigelPrefix}selectedProfile-{portalId} in sessionStorage. */
+  private getProfileFromSessionStorage(): UserProfile | null {
+    if (typeof window === "undefined" || !this.selectedPortal) return null;
+
+    const key = this.getSelectedProfileSessionKey();
+    if (!key) return null;
+    const raw = window.sessionStorage.getItem(key);
+    if (!raw || raw === "undefined") return null;
+
+    try {
+      const stored = JSON.parse(raw) as { id?: string | number };
+      if (stored?.id == null) return null;
+      return this.profiles.find((p) => sameId(p.id, stored.id)) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  private persistProfileToSessionStorage(profile: UserProfile): void {
+    if (typeof window === "undefined" || !this.selectedPortal) return;
+    const key = this.getSelectedProfileSessionKey();
+    if (!key) return;
+    const payload = {
+      name: profile.name,
+      isLastUsedInPortal: profile.isLastUsedInPortal ?? true,
+      id: profile.id,
+      portalId: String(this.selectedPortal.id)
+    };
+    window.sessionStorage.setItem(key, JSON.stringify(payload));
   }
 
   /** Extract the default profile ID from the two possible portal details shapes. */
@@ -900,6 +971,7 @@ export class PortalInitializer {
           );
         }
       }
+      this.persistProfileToSessionStorage(selectedProfile);
     }
 
     // Build the payload for the initialized event

@@ -1,19 +1,19 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { PKCEAuthStrategy } from './PKCEAuthStrategy.js';
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { PKCEAuthStrategy } from "./PKCEAuthStrategy.js";
 
 let msalAvailable = true;
 
 const {
   createDefaultMsalInstance,
   InteractionRequiredAuthError,
-  PublicClientApplication,
+  PublicClientApplication
 } = vi.hoisted(() => {
   class InteractionRequiredAuthError extends Error {
     errorCode: string;
-    constructor(message = 'interaction_required') {
+    constructor(message = "interaction_required") {
       super(message);
-      this.name = 'InteractionRequiredAuthError';
-      this.errorCode = 'interaction_required';
+      this.name = "InteractionRequiredAuthError";
+      this.errorCode = "interaction_required";
     }
   }
 
@@ -22,84 +22,103 @@ const {
       initialize: vi.fn().mockResolvedValue(undefined),
       getAllAccounts: vi.fn().mockReturnValue([]),
       loginPopup: vi.fn().mockResolvedValue({
-        account: { username: 'test@example.com' },
-        accessToken: 'pkce-token-123',
+        account: { username: "test@example.com" },
+        accessToken: "pkce-token-123"
       }),
       loginRedirect: vi.fn(),
+      logoutPopup: vi.fn().mockResolvedValue(undefined),
+      logoutRedirect: vi.fn().mockResolvedValue(undefined),
+      getActiveAccount: vi.fn().mockReturnValue(null),
+      clearCache: vi.fn(),
+      removeAccount: vi.fn(),
       handleRedirectPromise: vi.fn().mockResolvedValue(null),
       setActiveAccount: vi.fn(),
       acquireTokenSilent: vi.fn().mockResolvedValue({
-        accessToken: 'silent-token-123',
+        accessToken: "silent-token-123"
       }),
       acquireTokenPopup: vi.fn().mockResolvedValue({
-        account: { username: 'test@example.com' },
-        accessToken: 'popup-token-123',
+        account: { username: "test@example.com" },
+        accessToken: "popup-token-123"
       }),
       acquireTokenRedirect: vi.fn(),
-      ...overrides,
+      ...overrides
     };
   }
 
-  const PublicClientApplication = vi.fn().mockImplementation(() => createDefaultMsalInstance());
+  const PublicClientApplication = vi
+    .fn()
+    .mockImplementation(() => createDefaultMsalInstance());
 
   return {
     createDefaultMsalInstance,
     InteractionRequiredAuthError,
-    PublicClientApplication,
+    PublicClientApplication
   };
 });
 
-vi.mock('./msal-loader.js', () => ({
+vi.mock("./msal-loader.js", () => ({
   get PublicClientApplication() {
     return msalAvailable ? PublicClientApplication : undefined;
   },
-  InteractionRequiredAuthError,
+  InteractionRequiredAuthError
 }));
 
 // Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-describe('PKCEAuthStrategy', () => {
-  describe('buildConfigFromDeploymentInfo', () => {
+describe("PKCEAuthStrategy", () => {
+  describe("buildConfigFromDeploymentInfo", () => {
     const mockDeploymentInfo = {
-      apiDomain: 'https://api.example.com',
-      intClientId: 'int-client-id',
-      extClientId: 'ext-client-id',
-      tenantId: 'tenant-123',
-      clientId: 'default-client-id',
-      domainHint: 'example.com',
+      apiDomain: "https://api.example.com",
+      intClientId: "int-client-id",
+      extClientId: "ext-client-id",
+      tenantId: "tenant-123",
+      clientId: "default-client-id",
+      domainHint: "example.com"
     };
 
     const mockMetadata = {
       idpPolicies: {
-        userSigninPolicy: 'B2C_1A_User_SignIn',
-        customerSigninPolicy: 'B2C_1A_Customer_SignIn',
+        userSigninPolicy: "B2C_1A_User_SignIn",
+        customerSigninPolicy: "B2C_1A_Customer_SignIn"
       },
       authenticationDetails: {
-        oAuthUser: [{
-          authURL: 'https://login.example.com/tenant-123/B2C_1A_User_SignIn/oauth2/v2.0/authorize',
-          accessTokenURL: 'https://login.example.com/tenant-123/B2C_1A_User_SignIn/oauth2/v2.0/token',
-        }],
-        oAuthCustomer: [{
-          authURL: 'https://login.example.com/tenant-123/B2C_1A_Customer_SignIn/oauth2/v2.0/authorize',
-          accessTokenURL: 'https://login.example.com/tenant-123/B2C_1A_Customer_SignIn/oauth2/v2.0/token',
-        }],
+        oAuthUser: [
+          {
+            authURL:
+              "https://login.example.com/tenant-123/B2C_1A_User_SignIn/oauth2/v2.0/authorize",
+            accessTokenURL:
+              "https://login.example.com/tenant-123/B2C_1A_User_SignIn/oauth2/v2.0/token",
+            metadataURL:
+              "https://login.example.com/tenant-123/v2.0/.well-known/openid-configuration"
+          }
+        ],
+        oAuthCustomer: [
+          {
+            authURL:
+              "https://login.example.com/tenant-123/B2C_1A_Customer_SignIn/oauth2/v2.0/authorize",
+            accessTokenURL:
+              "https://login.example.com/tenant-123/B2C_1A_Customer_SignIn/oauth2/v2.0/token",
+            metadataURL:
+              "https://login.example.com/tenant-123/v2.0/.well-known/openid-configuration"
+          }
+        ]
       },
       apiMetadata: {
         CORE: {
-          iApiPermissionPrefix: 'api://internal/',
-          eApiPermissionPrefix: 'api://external/',
-          apiPermissionPrefix: 'api://default/',
-        },
-      },
+          iApiPermissionPrefix: "api://internal/",
+          eApiPermissionPrefix: "api://external/",
+          apiPermissionPrefix: "api://default/"
+        }
+      }
     };
 
     beforeEach(() => {
       vi.clearAllMocks();
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockMetadata),
+        json: () => Promise.resolve(mockMetadata)
       });
     });
 
@@ -107,295 +126,339 @@ describe('PKCEAuthStrategy', () => {
       vi.restoreAllMocks();
     });
 
-    it('should pass scopes to config and apply prefix for agent userType', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['knowledge.portalmgr.manage', 'core.aiservices.read'];
+    it("should pass scopes to config and apply prefix for agent userType", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["knowledge.portalmgr.manage", "core.aiservices.read"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
       // Scopes should have the internal API permission prefix applied
       expect(config.scopes).toEqual([
-        'api://internal/knowledge.portalmgr.manage',
-        'api://internal/core.aiservices.read',
+        "api://internal/knowledge.portalmgr.manage",
+        "api://internal/core.aiservices.read"
       ]);
     });
 
-    it('should pass scopes to config and apply prefix for customer userType', async () => {
-      const agentDetails = { userType: 'customer' };
-      const scopes = ['knowledge.portalmgr.manage', 'core.aiservices.read', 'core.customermgr.read'];
+    it("should pass scopes to config and apply prefix for customer userType", async () => {
+      const agentDetails = { userType: "customer" };
+      const scopes = [
+        "knowledge.portalmgr.manage",
+        "core.aiservices.read",
+        "core.customermgr.read"
+      ];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
       // Scopes should have the external API permission prefix applied
       expect(config.scopes).toEqual([
-        'api://external/knowledge.portalmgr.manage',
-        'api://external/core.aiservices.read',
-        'api://external/core.customermgr.read',
+        "api://external/knowledge.portalmgr.manage",
+        "api://external/core.aiservices.read",
+        "api://external/core.customermgr.read"
       ]);
     });
 
-    it('should use default prefix when user-specific prefix not available', async () => {
+    it("should use default prefix when user-specific prefix not available", async () => {
       const metadataWithoutUserPrefix = {
         ...mockMetadata,
         apiMetadata: {
           CORE: {
-            apiPermissionPrefix: 'api://default/',
-          },
-        },
+            apiPermissionPrefix: "api://default/"
+          }
+        }
       };
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(metadataWithoutUserPrefix),
+        json: () => Promise.resolve(metadataWithoutUserPrefix)
       });
 
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1', 'scope2'];
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1", "scope2"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
       expect(config.scopes).toEqual([
-        'api://default/scope1',
-        'api://default/scope2',
+        "api://default/scope1",
+        "api://default/scope2"
       ]);
     });
 
-    it('should not modify scopes when no prefix available', async () => {
+    it("should not modify scopes when no prefix available", async () => {
       const metadataWithoutPrefix = {
         ...mockMetadata,
         apiMetadata: {
-          CORE: {},
-        },
+          CORE: {}
+        }
       };
       mockFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(metadataWithoutPrefix),
+        json: () => Promise.resolve(metadataWithoutPrefix)
       });
 
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1', 'scope2'];
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1", "scope2"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
-      expect(config.scopes).toEqual(['scope1', 'scope2']);
+      expect(config.scopes).toEqual(["scope1", "scope2"]);
     });
 
-    it('should handle empty scopes array', async () => {
-      const agentDetails = { userType: 'agent' };
+    it("should handle empty scopes array", async () => {
+      const agentDetails = { userType: "agent" };
       const scopes: string[] = [];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
       expect(config.scopes).toEqual([]);
     });
 
-    it('should use intClientId for agent userType', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should use intClientId for agent userType", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
-      expect(config.clientId).toBe('int-client-id');
+      expect(config.clientId).toBe("int-client-id");
     });
 
-    it('should use extClientId for customer userType', async () => {
-      const agentDetails = { userType: 'customer' };
-      const scopes = ['scope1'];
+    it("should use extClientId for customer userType", async () => {
+      const agentDetails = { userType: "customer" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
-      expect(config.clientId).toBe('ext-client-id');
+      expect(config.clientId).toBe("ext-client-id");
     });
 
-    it('should throw error for invalid userType', async () => {
-      const agentDetails = { userType: 'invalid' };
-      const scopes = ['scope1'];
+    it("should throw error for invalid userType", async () => {
+      const agentDetails = { userType: "invalid" };
+      const scopes = ["scope1"];
 
       await expect(
         PKCEAuthStrategy.buildConfigFromDeploymentInfo(
           mockDeploymentInfo,
           agentDetails,
-          'https://endpoint.example.com',
+          "https://endpoint.example.com",
           scopes
         )
-      ).rejects.toThrow("Invalid userType: invalid. Expected 'agent' or 'customer'.");
+      ).rejects.toThrow(
+        "Invalid userType: invalid. Expected 'agent' or 'customer'."
+      );
     });
 
-    it('should throw error when metadata fetch fails', async () => {
+    it("should throw error when metadata fetch fails", async () => {
       mockFetch.mockResolvedValue({
         ok: false,
         status: 500,
-        statusText: 'Internal Server Error',
+        statusText: "Internal Server Error"
       });
 
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       await expect(
         PKCEAuthStrategy.buildConfigFromDeploymentInfo(
           mockDeploymentInfo,
           agentDetails,
-          'https://endpoint.example.com',
+          "https://endpoint.example.com",
           scopes
         )
-      ).rejects.toThrow('Failed to fetch metadata');
+      ).rejects.toThrow("Failed to fetch metadata");
     });
 
-    it('should build correct authorization URL', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should build correct authorization URL", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
-      expect(config.authorizationUrl).toBe('https://login.example.com/tenant-123/B2C_1A_User_SignIn');
-      expect(config.knownAuthorities).toEqual(['login.example.com']);
+      expect(config.authorizationUrl).toBe(
+        "https://login.example.com/tenant-123/B2C_1A_User_SignIn"
+      );
+      expect(config.knownAuthorities).toEqual(["login.example.com"]);
     });
 
-    it('should include authority metadata in config', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should include authority metadata in config", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
       expect(config.authorityMetadata).toBeDefined();
       const metadata = JSON.parse(config.authorityMetadata!);
-      expect(metadata.authorization_endpoint).toContain('authorize');
-      expect(metadata.token_endpoint).toContain('token');
+      expect(metadata.authorization_endpoint).toContain("authorize");
+      expect(metadata.token_endpoint).toContain("token");
+      expect(metadata.end_session_endpoint).toBe(
+        "https://login.example.com/tenant-123/B2C_1A_User_SignIn/oauth2/v2.0/logout"
+      );
     });
 
-    it('should default authScheme to popup when not provided', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should use end_session_endpoint from OAuth metadata URL when present", async () => {
+      const oidcMetadataUrl =
+        "https://login.example.com/tenant-123/v2.0/.well-known/openid-configuration";
+      mockFetch.mockImplementation((url: string) => {
+        if (url === oidcMetadataUrl) {
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                end_session_endpoint:
+                  "https://login.example.com/custom/oauth2/v2.0/logout"
+              })
+          });
+        }
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockMetadata)
+        });
+      });
+
+      const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
+        mockDeploymentInfo,
+        { userType: "agent" },
+        "https://endpoint.example.com",
+        ["scope1"]
+      );
+
+      const metadata = JSON.parse(config.authorityMetadata!);
+      expect(metadata.end_session_endpoint).toBe(
+        "https://login.example.com/custom/oauth2/v2.0/logout"
+      );
+    });
+
+    it("should default authScheme to popup when not provided", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
-      expect(config.authScheme).toBe('popup');
+      expect(config.authScheme).toBe("popup");
     });
 
-    it('should use the provided authScheme value', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should use the provided authScheme value", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes,
         undefined,
-        'redirect'
+        "redirect"
       );
 
-      expect(config.authScheme).toBe('redirect');
+      expect(config.authScheme).toBe("redirect");
     });
 
-    it('should use egClientId when provided, overriding intClientId for agent', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should use egClientId when provided, overriding intClientId for agent", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
-        scopes,
-        undefined,
-        undefined,
-        'custom-eg-client-id'
-      );
-
-      expect(config.clientId).toBe('custom-eg-client-id');
-    });
-
-    it('should use egClientId when provided, overriding extClientId for customer', async () => {
-      const agentDetails = { userType: 'customer' };
-      const scopes = ['scope1'];
-
-      const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
-        mockDeploymentInfo,
-        agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes,
         undefined,
         undefined,
-        'custom-eg-client-id'
+        "custom-eg-client-id"
       );
 
-      expect(config.clientId).toBe('custom-eg-client-id');
+      expect(config.clientId).toBe("custom-eg-client-id");
     });
 
-    it('should fall back to intClientId/extClientId when egClientId is undefined', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should use egClientId when provided, overriding extClientId for customer", async () => {
+      const agentDetails = { userType: "customer" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
+        scopes,
+        undefined,
+        undefined,
+        "custom-eg-client-id"
+      );
+
+      expect(config.clientId).toBe("custom-eg-client-id");
+    });
+
+    it("should fall back to intClientId/extClientId when egClientId is undefined", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
+
+      const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
+        mockDeploymentInfo,
+        agentDetails,
+        "https://endpoint.example.com",
         scopes,
         undefined,
         undefined,
         undefined
       );
 
-      expect(config.clientId).toBe('int-client-id');
+      expect(config.clientId).toBe("int-client-id");
     });
 
-    it('should set localLogin when passed as parameter', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should set localLogin when passed as parameter", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes,
         undefined,
         undefined,
@@ -406,14 +469,14 @@ describe('PKCEAuthStrategy', () => {
       expect(config.localLogin).toBe(true);
     });
 
-    it('should not include localLogin when not passed', async () => {
-      const agentDetails = { userType: 'agent' };
-      const scopes = ['scope1'];
+    it("should not include localLogin when not passed", async () => {
+      const agentDetails = { userType: "agent" };
+      const scopes = ["scope1"];
 
       const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
         mockDeploymentInfo,
         agentDetails,
-        'https://endpoint.example.com',
+        "https://endpoint.example.com",
         scopes
       );
 
@@ -421,7 +484,7 @@ describe('PKCEAuthStrategy', () => {
     });
   });
 
-  describe('instance methods', () => {
+  describe("instance methods", () => {
     let mockMsalInstance: any;
     let strategy: PKCEAuthStrategy;
 
@@ -434,16 +497,16 @@ describe('PKCEAuthStrategy', () => {
       });
 
       (global as any).window = {
-        location: { href: 'https://app.example.com/' },
+        location: { href: "https://app.example.com/" }
       };
 
       strategy = new PKCEAuthStrategy({
-        authorizationUrl: 'https://auth.example.com/authorize',
-        tokenUrl: 'https://auth.example.com/token',
-        clientId: 'test-client-id',
-        redirectUri: 'https://app.example.com/callback',
-        knownAuthorities: ['auth.example.com'],
-        authScheme: 'popup', // Use popup flow for tests
+        authorizationUrl: "https://auth.example.com/authorize",
+        tokenUrl: "https://auth.example.com/token",
+        clientId: "test-client-id",
+        redirectUri: "https://app.example.com/callback",
+        knownAuthorities: ["auth.example.com"],
+        authScheme: "popup" // Use popup flow for tests
       });
     });
 
@@ -452,62 +515,62 @@ describe('PKCEAuthStrategy', () => {
       delete (global as any).window;
     });
 
-    describe('initialize', () => {
-      it('should initialize PKCE strategy', async () => {
+    describe("initialize", () => {
+      it("should initialize PKCE strategy", async () => {
         await strategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
-          scopes: ['scope1', 'scope2'],
+          deploymentInfo: { apiDomain: "test.example.com" },
+          scopes: ["scope1", "scope2"]
         });
 
         expect(mockMsalInstance.initialize).toHaveBeenCalled();
       });
 
-      it('should store postAuthentication callback', async () => {
+      it("should store postAuthentication callback", async () => {
         const postAuthCallback = vi.fn();
         await strategy.initialize({
-          postAuthentication: postAuthCallback,
+          postAuthentication: postAuthCallback
         });
 
         expect(strategy).toBeDefined();
       });
 
-      it('should update postAuthentication callback if already initialized', async () => {
+      it("should update postAuthentication callback if already initialized", async () => {
         const postAuthCallback1 = vi.fn();
         const postAuthCallback2 = vi.fn();
 
         await strategy.initialize({
-          postAuthentication: postAuthCallback1,
+          postAuthentication: postAuthCallback1
         });
 
         await strategy.initialize({
-          postAuthentication: postAuthCallback2,
+          postAuthentication: postAuthCallback2
         });
 
         expect(strategy).toBeDefined();
       });
 
-      it('should throw error if MSAL is not available', async () => {
+      it("should throw error if MSAL is not available", async () => {
         msalAvailable = false;
 
         await expect(
           strategy.initialize({
-            deploymentInfo: { apiDomain: 'test.example.com' },
+            deploymentInfo: { apiDomain: "test.example.com" }
           })
-        ).rejects.toThrow('MSAL PublicClientApplication not available');
+        ).rejects.toThrow("MSAL PublicClientApplication not available");
       });
 
-      it('should set navigateToLoginRequestUrl to true in MSAL config', async () => {
+      it("should set navigateToLoginRequestUrl to true in MSAL config", async () => {
         await strategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
 
         const msalConfigArg = PublicClientApplication.mock.calls[0][0];
         expect(msalConfigArg.auth.navigateToLoginRequestUrl).toBe(true);
       });
 
-      it('should set system.allowRedirectInIframe to true in MSAL config', async () => {
+      it("should set system.allowRedirectInIframe to true in MSAL config", async () => {
         await strategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
 
         const msalConfigArg = PublicClientApplication.mock.calls[0][0];
@@ -516,75 +579,80 @@ describe('PKCEAuthStrategy', () => {
       });
     });
 
-    describe('authenticate', () => {
-      it('should authenticate using popup flow', async () => {
+    describe("authenticate", () => {
+      it("should authenticate using popup flow", async () => {
         await strategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
 
         const postAuthCallback = vi.fn();
         await strategy.initialize({
-          postAuthentication: postAuthCallback,
+          postAuthentication: postAuthCallback
         });
 
         await strategy.authenticate();
 
         expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
-        expect(postAuthCallback).toHaveBeenCalledWith('pkce-token-123');
+        expect(postAuthCallback).toHaveBeenCalledWith("pkce-token-123");
       });
 
-      it('should call postAuthentication callback after popup authentication', async () => {
+      it("should call postAuthentication callback after popup authentication", async () => {
         const postAuthCallback = vi.fn();
         await strategy.initialize({
-          postAuthentication: postAuthCallback,
+          postAuthentication: postAuthCallback
         });
 
         await strategy.authenticate();
 
-        expect(postAuthCallback).toHaveBeenCalledWith('pkce-token-123');
+        expect(postAuthCallback).toHaveBeenCalledWith("pkce-token-123");
       });
 
-      it('should not call postAuthentication if not set', async () => {
+      it("should not call postAuthentication if not set", async () => {
         await strategy.initialize();
         await strategy.authenticate();
 
         expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
       });
 
-      it('should always run interactive login even if already authenticated', async () => {
+      it("should always run interactive login even if already authenticated", async () => {
         (strategy as any).isAuthenticatedFlag = true;
-        (strategy as any).accessToken = 'existing-token-123';
+        (strategy as any).accessToken = "existing-token-123";
 
         const postAuthCallback = vi.fn();
         await strategy.initialize({
-          postAuthentication: postAuthCallback,
+          postAuthentication: postAuthCallback
         });
 
         await strategy.authenticate();
 
         expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
-        expect(postAuthCallback).toHaveBeenCalledWith('pkce-token-123');
+        expect(postAuthCallback).toHaveBeenCalledWith("pkce-token-123");
       });
 
-      it('should include domain_hint in extraQueryParameters when deploymentInfo has domainHint', async () => {
+      it("should include domain_hint in extraQueryParameters when deploymentInfo has domainHint", async () => {
         await strategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com', domainHint: 'example.com' },
+          deploymentInfo: {
+            apiDomain: "test.example.com",
+            domainHint: "example.com"
+          }
         });
         await strategy.authenticate();
 
         const loginRequest = mockMsalInstance.loginPopup.mock.calls[0][0];
         expect(loginRequest.extraQueryParameters).toBeDefined();
-        expect(loginRequest.extraQueryParameters.domain_hint).toBe('example.com');
+        expect(loginRequest.extraQueryParameters.domain_hint).toBe(
+          "example.com"
+        );
       });
 
-      it('should include localLogin in extraQueryParameters when configured', async () => {
+      it("should include localLogin in extraQueryParameters when configured", async () => {
         const strategyWithLocal = new PKCEAuthStrategy({
-          authorizationUrl: 'https://auth.example.com/authorize',
-          clientId: 'test-client-id',
-          redirectUri: 'https://app.example.com/callback',
-          knownAuthorities: ['auth.example.com'],
-          authScheme: 'popup',
-          localLogin: true,
+          authorizationUrl: "https://auth.example.com/authorize",
+          clientId: "test-client-id",
+          redirectUri: "https://app.example.com/callback",
+          knownAuthorities: ["auth.example.com"],
+          authScheme: "popup",
+          localLogin: true
         });
 
         await strategyWithLocal.initialize();
@@ -592,12 +660,12 @@ describe('PKCEAuthStrategy', () => {
 
         const loginRequest = mockMsalInstance.loginPopup.mock.calls[0][0];
         expect(loginRequest.extraQueryParameters).toBeDefined();
-        expect(loginRequest.extraQueryParameters.localLogin).toBe('true');
+        expect(loginRequest.extraQueryParameters.localLogin).toBe("true");
       });
 
-      it('should omit extraQueryParameters when neither domainHint nor localLogin is set', async () => {
+      it("should omit extraQueryParameters when neither domainHint nor localLogin is set", async () => {
         await strategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
         await strategy.authenticate();
 
@@ -606,27 +674,27 @@ describe('PKCEAuthStrategy', () => {
       });
     });
 
-    describe('getToken', () => {
-      it('should return token after authentication', async () => {
+    describe("getToken", () => {
+      it("should return token after authentication", async () => {
         await strategy.initialize();
         await strategy.authenticate();
 
         // After authenticate(), getToken() will use silent acquisition
         // Make sure acquireTokenSilent returns the same token
         mockMsalInstance.acquireTokenSilent.mockResolvedValue({
-          accessToken: 'pkce-token-123',
+          accessToken: "pkce-token-123"
         });
 
         const token = await strategy.getToken();
-        expect(token).toBe('pkce-token-123');
+        expect(token).toBe("pkce-token-123");
       });
 
-      it('should use silent token acquisition if account exists', async () => {
-        const mockAccount = { username: 'test@example.com' };
+      it("should use silent token acquisition if account exists", async () => {
+        const mockAccount = { username: "test@example.com" };
         mockMsalInstance.getAllAccounts.mockReturnValue([mockAccount]);
-        
+
         await strategy.initialize();
-        
+
         // Set the account on the strategy so getToken() can use it for silent acquisition
         (strategy as any).account = mockAccount;
         // Also set isInitialized flag
@@ -635,24 +703,26 @@ describe('PKCEAuthStrategy', () => {
         const token = await strategy.getToken();
 
         expect(mockMsalInstance.acquireTokenSilent).toHaveBeenCalled();
-        expect(token).toBe('silent-token-123');
+        expect(token).toBe("silent-token-123");
       });
 
-      it('should throw error if no token available', async () => {
+      it("should throw error if no token available", async () => {
         (strategy as any).accessToken = null;
         mockMsalInstance.getAllAccounts.mockReturnValue([]);
 
         await strategy.initialize();
 
-        await expect(strategy.getToken()).rejects.toThrow('No access token available');
+        await expect(strategy.getToken()).rejects.toThrow(
+          "No access token available"
+        );
       });
 
-      it('should return stored token when cached JWT is still valid', async () => {
+      it("should return stored token when cached JWT is still valid", async () => {
         const exp = Math.floor(Date.now() / 1000) + 3600;
         const payload = btoa(JSON.stringify({ exp }))
-          .replace(/\+/g, '-')
-          .replace(/\//g, '_')
-          .replace(/=+$/, '');
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
         const validToken = `header.${payload}.signature`;
 
         (strategy as any).accessToken = validToken;
@@ -664,98 +734,108 @@ describe('PKCEAuthStrategy', () => {
         expect(mockMsalInstance.acquireTokenSilent).not.toHaveBeenCalled();
       });
 
-      it('should fall back to acquireTokenPopup on monitor_window_timeout', async () => {
-        const mockAccount = { username: 'test@example.com' };
+      it("should fall back to acquireTokenPopup on monitor_window_timeout", async () => {
+        const mockAccount = { username: "test@example.com" };
         await strategy.initialize();
         (strategy as any).account = mockAccount;
         mockMsalInstance.acquireTokenSilent.mockRejectedValue(
-          new Error('monitor_window_timeout: Token acquisition in iframe failed due to timeout.')
+          new Error(
+            "monitor_window_timeout: Token acquisition in iframe failed due to timeout."
+          )
         );
 
         const token = await strategy.getToken();
 
         expect(mockMsalInstance.acquireTokenPopup).toHaveBeenCalled();
-        expect(token).toBe('popup-token-123');
+        expect(token).toBe("popup-token-123");
       });
 
-      it('should fall back to authenticate() when interaction is required in popup scheme', async () => {
-        const mockAccount = { username: 'test@example.com' };
+      it("should fall back to authenticate() when interaction is required in popup scheme", async () => {
+        const mockAccount = { username: "test@example.com" };
         await strategy.initialize();
         (strategy as any).account = mockAccount;
         (strategy as any).isAuthenticatedFlag = true;
-        mockMsalInstance.acquireTokenSilent.mockRejectedValue(new InteractionRequiredAuthError());
+        mockMsalInstance.acquireTokenSilent.mockRejectedValue(
+          new InteractionRequiredAuthError()
+        );
 
         const token = await strategy.getToken();
 
         expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
-        expect(token).toBe('pkce-token-123');
+        expect(token).toBe("pkce-token-123");
       });
 
-      it('should use acquireTokenRedirect when interaction is required in redirect scheme', async () => {
-        const mockAccount = { username: 'test@example.com' };
+      it("should use acquireTokenRedirect when interaction is required in redirect scheme", async () => {
+        const mockAccount = { username: "test@example.com" };
         PublicClientApplication.mockImplementation(() => {
           mockMsalInstance = createDefaultMsalInstance({
             getAllAccounts: vi.fn().mockReturnValue([mockAccount]),
-            acquireTokenSilent: vi.fn().mockRejectedValue(new InteractionRequiredAuthError()),
+            acquireTokenSilent: vi
+              .fn()
+              .mockRejectedValue(new InteractionRequiredAuthError())
           });
           return mockMsalInstance;
         });
 
         const redirectStrategy = new PKCEAuthStrategy({
-          authorizationUrl: 'https://auth.example.com/authorize',
-          tokenUrl: 'https://auth.example.com/token',
-          clientId: 'test-client-id',
-          redirectUri: 'https://app.example.com/callback',
-          knownAuthorities: ['auth.example.com'],
-          authScheme: 'redirect',
+          authorizationUrl: "https://auth.example.com/authorize",
+          tokenUrl: "https://auth.example.com/token",
+          clientId: "test-client-id",
+          redirectUri: "https://app.example.com/callback",
+          knownAuthorities: ["auth.example.com"],
+          authScheme: "redirect"
         });
 
         await redirectStrategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
 
         await expect(redirectStrategy.getToken()).rejects.toThrow(
-          'Redirect initiated for token acquisition - response will be handled on page reload'
+          "Redirect initiated for token acquisition - response will be handled on page reload"
         );
         expect(mockMsalInstance.acquireTokenRedirect).toHaveBeenCalled();
         expect(mockMsalInstance.acquireTokenPopup).not.toHaveBeenCalled();
       });
     });
 
-    describe('refreshToken', () => {
-      it('should fall back to acquireTokenPopup on monitor_window_timeout', async () => {
-        const mockAccount = { username: 'test@example.com' };
+    describe("refreshToken", () => {
+      it("should fall back to acquireTokenPopup on monitor_window_timeout", async () => {
+        const mockAccount = { username: "test@example.com" };
         await strategy.initialize();
         (strategy as any).account = mockAccount;
         mockMsalInstance.acquireTokenSilent.mockRejectedValue(
-          new Error('monitor_window_timeout: Token acquisition in iframe failed due to timeout.')
+          new Error(
+            "monitor_window_timeout: Token acquisition in iframe failed due to timeout."
+          )
         );
 
         const token = await strategy.refreshToken();
 
         expect(mockMsalInstance.acquireTokenPopup).toHaveBeenCalled();
-        expect(token).toBe('popup-token-123');
+        expect(token).toBe("popup-token-123");
       });
 
-      it('should fall back to authenticate() when interaction is required in popup scheme', async () => {
-        const mockAccount = { username: 'test@example.com' };
+      it("should fall back to authenticate() when interaction is required in popup scheme", async () => {
+        const mockAccount = { username: "test@example.com" };
         await strategy.initialize();
         (strategy as any).account = mockAccount;
-        mockMsalInstance.acquireTokenSilent.mockRejectedValue(new InteractionRequiredAuthError());
+        mockMsalInstance.acquireTokenSilent.mockRejectedValue(
+          new InteractionRequiredAuthError()
+        );
 
         const token = await strategy.refreshToken();
 
         expect(mockMsalInstance.loginPopup).toHaveBeenCalled();
-        expect(token).toBe('pkce-token-123');
+        expect(token).toBe("pkce-token-123");
       });
     });
 
-    describe('isAuthenticated', () => {
-      it('should return false initially', () => {
+    describe("isAuthenticated", () => {
+      it("should return false initially", () => {
         expect(strategy.isAuthenticated()).toBe(false);
       });
 
-      it('should return true after authentication', async () => {
+      it("should return true after authentication", async () => {
         await strategy.initialize();
         await strategy.authenticate();
 
@@ -763,8 +843,8 @@ describe('PKCEAuthStrategy', () => {
       });
     });
 
-    describe('cleanup', () => {
-      it('should cleanup resources', async () => {
+    describe("cleanup", () => {
+      it("should cleanup resources", async () => {
         await strategy.initialize();
         await strategy.authenticate();
         await strategy.cleanup();
@@ -773,53 +853,200 @@ describe('PKCEAuthStrategy', () => {
       });
     });
 
-    describe('redirect flow', () => {
+    describe("logout", () => {
+      const mockAccount = { username: "test@example.com", idToken: "id-token" };
+
+      it("should logout with popup and omit state", async () => {
+        await strategy.initialize();
+        mockMsalInstance.getActiveAccount.mockReturnValue(mockAccount);
+        await strategy.logout();
+
+        expect(mockMsalInstance.logoutPopup).toHaveBeenCalledTimes(1);
+        const request = mockMsalInstance.logoutPopup.mock.calls[0][0];
+        expect(request.account).toEqual(mockAccount);
+        expect(request.idTokenHint).toBe("id-token");
+        expect(request.postLogoutRedirectUri).toBe(
+          "https://app.example.com/callback?logout=true"
+        );
+        expect(request.state).toBeUndefined();
+        expect(mockMsalInstance.logoutRedirect).not.toHaveBeenCalled();
+        expect(mockMsalInstance.clearCache).not.toHaveBeenCalled();
+        expect(mockMsalInstance.removeAccount).not.toHaveBeenCalled();
+      });
+
+      it("should prefer JWT logout claim over login end_session_endpoint when MSAL logout fails", async () => {
+        const jwtLogoutUrl = "https://idp.example.com/oauth2/v2.0/logout";
+        const accessToken = [
+          Buffer.from(JSON.stringify({ alg: "none", typ: "JWT" })).toString(
+            "base64url"
+          ),
+          Buffer.from(JSON.stringify({ logout: jwtLogoutUrl })).toString(
+            "base64url"
+          ),
+          ""
+        ].join(".");
+
+        const claimStrategy = new PKCEAuthStrategy({
+          authorizationUrl: "https://auth.example.com/authorize",
+          tokenUrl: "https://auth.example.com/token",
+          clientId: "test-client-id",
+          redirectUri: "https://app.example.com/callback",
+          knownAuthorities: ["auth.example.com"],
+          authScheme: "popup",
+          authorityMetadata: JSON.stringify({
+            end_session_endpoint:
+              "https://login.example.com/oauth2/v2.0/logout"
+          })
+        });
+
+        await claimStrategy.initialize();
+        (claimStrategy as any).accessToken = accessToken;
+        mockMsalInstance.getActiveAccount.mockReturnValue(mockAccount);
+        mockMsalInstance.logoutPopup.mockRejectedValue(
+          new Error("popup blocked")
+        );
+
+        await claimStrategy.logout();
+
+        const fallbackUrl = new URL((global as any).window.location.href);
+        expect(fallbackUrl.origin + fallbackUrl.pathname).toBe(jwtLogoutUrl);
+        expect(fallbackUrl.searchParams.get("post_logout_redirect_uri")).toBe(
+          "https://app.example.com/callback?logout=true"
+        );
+        expect(fallbackUrl.searchParams.get("id_token_hint")).toBe("id-token");
+        expect(fallbackUrl.searchParams.get("state")).toBeNull();
+      });
+
+      it("should fall back to login end_session_endpoint when MSAL logout fails and there is no JWT logout claim", async () => {
+        const endSessionEndpoint =
+          "https://login.example.com/oauth2/v2.0/logout";
+
+        const endpointStrategy = new PKCEAuthStrategy({
+          authorizationUrl: "https://auth.example.com/authorize",
+          tokenUrl: "https://auth.example.com/token",
+          clientId: "test-client-id",
+          redirectUri: "https://app.example.com/callback",
+          knownAuthorities: ["auth.example.com"],
+          authScheme: "popup",
+          authorityMetadata: JSON.stringify({
+            end_session_endpoint: endSessionEndpoint
+          })
+        });
+
+        await endpointStrategy.initialize();
+        mockMsalInstance.getActiveAccount.mockReturnValue(mockAccount);
+        mockMsalInstance.logoutPopup.mockRejectedValue(
+          new Error("popup blocked")
+        );
+
+        await endpointStrategy.logout();
+
+        const fallbackUrl = new URL((global as any).window.location.href);
+        expect(fallbackUrl.origin + fallbackUrl.pathname).toBe(
+          endSessionEndpoint
+        );
+        expect(fallbackUrl.searchParams.get("post_logout_redirect_uri")).toBe(
+          "https://app.example.com/callback?logout=true"
+        );
+      });
+
+      it("should rethrow when MSAL logout fails and neither JWT logout claim nor end_session_endpoint is available", async () => {
+        await strategy.initialize();
+        mockMsalInstance.getActiveAccount.mockReturnValue(mockAccount);
+        mockMsalInstance.logoutPopup.mockRejectedValue(
+          new Error("popup blocked")
+        );
+
+        await expect(strategy.logout()).rejects.toThrow("popup blocked");
+        expect((global as any).window.location.href).toBe(
+          "https://app.example.com/"
+        );
+      });
+
+      it("should logout with redirect, pass state, and not clear MSAL cache", async () => {
+        PublicClientApplication.mockImplementation(() => {
+          mockMsalInstance = createDefaultMsalInstance({
+            getActiveAccount: vi.fn().mockReturnValue(mockAccount)
+          });
+          return mockMsalInstance;
+        });
+
+        const redirectStrategy = new PKCEAuthStrategy({
+          authorizationUrl: "https://auth.example.com/authorize",
+          tokenUrl: "https://auth.example.com/token",
+          clientId: "test-client-id",
+          redirectUri: "https://app.example.com/callback",
+          knownAuthorities: ["auth.example.com"],
+          authScheme: "redirect",
+          nextRoute: "https://app.example.com/widget?flavor=cc#hash"
+        });
+
+        await redirectStrategy.initialize();
+        redirectStrategy.logout();
+
+        await vi.waitFor(() => {
+          expect(mockMsalInstance.logoutRedirect).toHaveBeenCalledTimes(1);
+        });
+        const request = mockMsalInstance.logoutRedirect.mock.calls[0][0];
+        expect(request.account).toEqual(mockAccount);
+        expect(request.idTokenHint).toBe("id-token");
+        expect(request.postLogoutRedirectUri).toBe(
+          "https://app.example.com/callback"
+        );
+        expect(request.state).toBe("https://app.example.com/widget?flavor=cc");
+        expect(mockMsalInstance.logoutPopup).not.toHaveBeenCalled();
+        expect(mockMsalInstance.clearCache).not.toHaveBeenCalled();
+        expect(mockMsalInstance.removeAccount).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("redirect flow", () => {
       const redirectConfig = {
-        authorizationUrl: 'https://auth.example.com/authorize',
-        tokenUrl: 'https://auth.example.com/token',
-        clientId: 'test-client-id',
-        redirectUri: 'https://app.example.com/callback',
-        knownAuthorities: ['auth.example.com'],
-        authScheme: 'redirect' as const,
+        authorizationUrl: "https://auth.example.com/authorize",
+        tokenUrl: "https://auth.example.com/token",
+        clientId: "test-client-id",
+        redirectUri: "https://app.example.com/callback",
+        knownAuthorities: ["auth.example.com"],
+        authScheme: "redirect" as const
       };
 
       function mockMsalWithRedirectResponse(response: any) {
         PublicClientApplication.mockImplementation(() => {
           mockMsalInstance = createDefaultMsalInstance({
-            handleRedirectPromise: vi.fn().mockResolvedValue(response),
+            handleRedirectPromise: vi.fn().mockResolvedValue(response)
           });
           return mockMsalInstance;
         });
       }
 
-      it('should not call postAuthentication during initialize when redirect response is handled', async () => {
+      it("should not call postAuthentication during initialize when redirect response is handled", async () => {
         mockMsalWithRedirectResponse({
-          account: { username: 'test@example.com' },
-          accessToken: 'redirect-token-123',
+          account: { username: "test@example.com" },
+          accessToken: "redirect-token-123"
         });
 
         const redirectStrategy = new PKCEAuthStrategy(redirectConfig);
         const postAuthCallback = vi.fn();
 
         await redirectStrategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
-          postAuthentication: postAuthCallback,
+          deploymentInfo: { apiDomain: "test.example.com" },
+          postAuthentication: postAuthCallback
         });
 
         expect(mockMsalInstance.handleRedirectPromise).toHaveBeenCalled();
         expect(postAuthCallback).not.toHaveBeenCalled();
       });
 
-      it('should still start loginRedirect from authenticate after redirect return', async () => {
+      it("should still start loginRedirect from authenticate after redirect return", async () => {
         mockMsalWithRedirectResponse({
-          account: { username: 'test@example.com' },
-          accessToken: 'redirect-token-123',
+          account: { username: "test@example.com" },
+          accessToken: "redirect-token-123"
         });
 
         const redirectStrategy = new PKCEAuthStrategy(redirectConfig);
 
         await redirectStrategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
 
         expect(redirectStrategy.isAuthenticated()).toBe(true);
@@ -832,13 +1059,13 @@ describe('PKCEAuthStrategy', () => {
         });
       });
 
-      it('should call loginRedirect when no prior redirect response exists', async () => {
+      it("should call loginRedirect when no prior redirect response exists", async () => {
         mockMsalWithRedirectResponse(null);
 
         const redirectStrategy = new PKCEAuthStrategy(redirectConfig);
 
         await redirectStrategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
 
         // Don't await — redirect flow returns a never-resolving promise
@@ -851,8 +1078,8 @@ describe('PKCEAuthStrategy', () => {
         expect(mockMsalInstance.loginPopup).not.toHaveBeenCalled();
       });
 
-      it('should acquire token silently via getToken when account exists after redirect', async () => {
-        const mockAccount = { username: 'test@example.com' };
+      it("should acquire token silently via getToken when account exists after redirect", async () => {
+        const mockAccount = { username: "test@example.com" };
 
         // Simulate post-redirect: handleRedirectPromise returns null,
         // but MSAL has an account in session storage from auth-redirect.html
@@ -860,8 +1087,8 @@ describe('PKCEAuthStrategy', () => {
           mockMsalInstance = createDefaultMsalInstance({
             getAllAccounts: vi.fn().mockReturnValue([mockAccount]),
             acquireTokenSilent: vi.fn().mockResolvedValue({
-              accessToken: 'silent-redirect-token-123',
-            }),
+              accessToken: "silent-redirect-token-123"
+            })
           });
           return mockMsalInstance;
         });
@@ -869,16 +1096,16 @@ describe('PKCEAuthStrategy', () => {
         const redirectStrategy = new PKCEAuthStrategy(redirectConfig);
 
         await redirectStrategy.initialize({
-          deploymentInfo: { apiDomain: 'test.example.com' },
+          deploymentInfo: { apiDomain: "test.example.com" }
         });
 
         const token = await redirectStrategy.getToken();
 
         expect(mockMsalInstance.acquireTokenSilent).toHaveBeenCalledWith({
-          scopes: ['openid', 'profile', 'offline_access'],
-          account: mockAccount,
+          scopes: ["openid", "profile", "offline_access"],
+          account: mockAccount
         });
-        expect(token).toBe('silent-redirect-token-123');
+        expect(token).toBe("silent-redirect-token-123");
         expect(mockMsalInstance.loginRedirect).not.toHaveBeenCalled();
       });
     });

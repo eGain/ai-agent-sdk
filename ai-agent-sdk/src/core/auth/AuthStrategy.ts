@@ -77,6 +77,12 @@ export interface AuthStrategy extends AuthProvider {
     isAuthenticated?(): boolean;
 
     /**
+     * Log out of the identity provider. Optional; PKCE implements this via MSAL
+     * using the same popup/redirect scheme as login. Takes no options.
+     */
+    logout?(): Promise<void>;
+
+    /**
      * Cleanup resources when the strategy is no longer needed
      */
     cleanup?(): Promise<void>;

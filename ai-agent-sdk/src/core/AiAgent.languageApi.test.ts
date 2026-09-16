@@ -16,6 +16,7 @@ const authServiceMock = vi.hoisted(() => ({
   setTokenExpiringCallback: vi.fn(),
   switchStrategyTo: vi.fn().mockResolvedValue(true),
   cleanup: vi.fn().mockResolvedValue(undefined),
+  logout: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('./connection/Connection.js');

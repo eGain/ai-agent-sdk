@@ -166,7 +166,7 @@ When you do **not** pass a full `PKCEAuthConfig` and the SDK builds PKCE setting
 
 | Option | Description |
 |--------|-------------|
-| `authScheme` | `'popup'` (default) opens a login popup; `'redirect'` sends the full page to the IdP |
+| `authScheme` | `'popup'` (default) opens a login popup; `'redirect'` sends the full page to the IdP. Logout uses the same scheme. |
 | `scopes` | Custom OAuth **resource** scopes; defaults add customer scope when the user is a customer |
 | `initParams.scopes` | Comma-separated scopes; when non-empty after parsing, **overrides** `config.scopes` and defaults |
 
@@ -177,6 +177,7 @@ When you supply `auth: { type: 'pkce', config: { ... } }`, you can also use:
 | Field | Description |
 |-------|-------------|
 | `localLogin` | When `true`, adds `localLogin: 'true'` to MSAL extra query parameters to force local login vs federated SSO |
+| `nextRoute` | Redirect-only return URL sent as OAuth `state` (hash stripped). Used after login and logout so `auth-redirect.html` can bounce back to the app. Popup omits `state`. |
 
 ### Custom client id from init params
 
@@ -185,6 +186,30 @@ Host apps can pass **`egclientid`** (and related variants supported by the SDK) 
 ### Domain hint
 
 When deployment info includes a **domain hint**, the SDK passes it as MSAL **`domain_hint`** to steer the IdP login experience.
+
+## Logout
+
+`AiAgent.logout()` signs the user out of the identity provider for PKCE. It takes **no options** — the SDK uses the same `authScheme` as login.
+
+```typescript
+await agent.logout();
+```
+
+1. Disconnects the chat WebSocket (`skipGracefulDisconnect`; errors ignored).
+2. Calls `AuthenticationService.logout()`, which delegates to the strategy when it implements `logout()`, then drops the cached access token.
+
+| Scheme | What PKCE does |
+|--------|----------------|
+| `popup` | `logoutPopup`. Omits OAuth `state`. `postLogoutRedirectUri` is `redirectUri?logout=true` so `auth-redirect.html` can close the popup. The promise resolves when the popup finishes. |
+| `redirect` | `logoutRedirect`. `state` is hash-stripped `nextRoute` (else `window.location.href`) so `auth-redirect.html` can bounce back to the app. `postLogoutRedirectUri` is `redirectUri` as-is. The page navigates away; the promise does not settle. |
+
+`idTokenHint` is taken from the active MSAL account. `end_session_endpoint` is stored on authority metadata when PKCE config is built (OIDC discovery, or `{authority}/oauth2/v2.0/logout` when the metadata omits it). If MSAL throws, logout falls back to the access-token JWT `logout` claim, then that endpoint.
+
+MSAL clears its own cache. Do not call `clearCache` / `removeAccount` before `logout()` — popup logout still needs the account and id token.
+
+Anonymous, pre-auth, and client-credentials strategies have no IdP logout. `AuthenticationService.logout()` still clears the cached token and returns.
+
+Host UI state (Pinia/Vuex, `localStorage isAuthenticated`, eGain session `DELETE`) is **not** part of `AiAgent.logout()`. Clear those yourself: **before** `logout()` on redirect (the page is leaving), **after** it returns on popup.
 
 ## Client Credentials (Server-to-Server)
 
@@ -262,6 +287,9 @@ class CustomAuthStrategy implements AuthStrategy {
     // Cleanup resources
     this.token = null;
   }
+
+  // Optional on AuthStrategy. PKCE implements IdP logout via MSAL; omit if you have no IdP session.
+  async logout(): Promise<void> {}
 }
 ```
 
