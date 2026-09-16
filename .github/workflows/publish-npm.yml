@@ -50,12 +50,8 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.is_beta == true }}
         run: npm publish --provenance --access public --tag beta
         working-directory: ai-agent-sdk
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish stable to npm
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.is_beta != true }}
         run: npm publish --provenance --access public
         working-directory: ai-agent-sdk
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
