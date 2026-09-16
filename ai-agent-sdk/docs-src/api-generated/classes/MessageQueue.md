@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.4](../README.md) / MessageQueue
+[@egain/ai-agent-sdk API Reference - v0.2.5-beta.0](../README.md) / MessageQueue
 
 # Class: MessageQueue
 

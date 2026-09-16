@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.4](../README.md) / GetAiAgentSessionOptions
+[@egain/ai-agent-sdk API Reference - v0.2.5-beta.0](../README.md) / GetAiAgentSessionOptions
 
 # Interface: GetAiAgentSessionOptions
 
