@@ -1,10 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MemoryCacheAdapter } from '../api/CacheAdapter.js';
-import { PortalInitializer } from './PortalInitializer.js';
-import { InitializationPipelineError } from '../errors/SDKError.js';
-import type { Portal, UserProfile, AgentListItem } from '../types/PortalTypes.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { MemoryCacheAdapter } from "../api/CacheAdapter.js";
+import { PortalInitializer } from "./PortalInitializer.js";
+import { InitializationPipelineError } from "../errors/SDKError.js";
+import type {
+  Portal,
+  UserProfile,
+  AgentListItem
+} from "../types/PortalTypes.js";
 
-describe('PortalInitializer', () => {
+describe("PortalInitializer", () => {
   let mockApiHelper: any;
   let mockLogger: any;
   let mockAuthService: any;
@@ -12,31 +16,64 @@ describe('PortalInitializer', () => {
   let mockCreateAgentEventResponse: ReturnType<typeof vi.fn>;
   let defaultDeps: any;
 
-  const portalA: Portal = { id: 1, name: 'Portal A', description: 'Desc A', department: { id: 100, name: 'Dept A' } };
-  const portalB: Portal = { id: 2, name: 'Portal B', description: 'Desc B', department: { id: 200, name: 'Dept B' } };
-  const portalC: Portal = { id: 3, name: 'Portal C', description: 'Desc C', department: { id: 300, name: 'Dept C' } };
+  const portalA: Portal = {
+    id: 1,
+    name: "Portal A",
+    description: "Desc A",
+    department: { id: 100, name: "Dept A" }
+  };
+  const portalB: Portal = {
+    id: 2,
+    name: "Portal B",
+    description: "Desc B",
+    department: { id: 200, name: "Dept B" }
+  };
+  const portalC: Portal = {
+    id: 3,
+    name: "Portal C",
+    description: "Desc C",
+    department: { id: 300, name: "Dept C" }
+  };
   /** Same department as portalA — Flow B tests that need multiple portals after department filter. */
-  const portalBSameDept: Portal = { ...portalB, department: { id: 100, name: 'Dept B' } };
-  const flowBDepsBase = { isAgentSelectionMode: true as const, agentDetails: { departmentId: 100 as const } };
-  const agentX: AgentListItem = { agentId: 'agent-x', name: 'Agent X', description: 'Agent X desc' };
-  const agentY: AgentListItem = { agentId: 'agent-y', name: 'Agent Y' };
-  const profileP: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: false };
-  const profileQ: UserProfile = { id: 20, name: 'Profile Q', isLastUsedInPortal: false };
+  const portalBSameDept: Portal = {
+    ...portalB,
+    department: { id: 100, name: "Dept B" }
+  };
+  const flowBDepsBase = {
+    isAgentSelectionMode: true as const,
+    agentDetails: { departmentId: 100 as const }
+  };
+  const agentX: AgentListItem = {
+    agentId: "agent-x",
+    name: "Agent X",
+    description: "Agent X desc"
+  };
+  const agentY: AgentListItem = { agentId: "agent-y", name: "Agent Y" };
+  const profileP: UserProfile = {
+    id: 10,
+    name: "Profile P",
+    isLastUsedInPortal: false
+  };
+  const profileQ: UserProfile = {
+    id: 20,
+    name: "Profile Q",
+    isLastUsedInPortal: false
+  };
 
-  const portalDetailsA = { id: 1, name: 'Portal A', departmentId: 100 };
+  const portalDetailsA = { id: 1, name: "Portal A", departmentId: 100 };
 
   beforeEach(() => {
     mockApiHelper = {
       getMyPortals: vi.fn().mockResolvedValue([portalA, portalB]),
       getPortals: vi.fn().mockResolvedValue([
-        { id: 'p1', name: 'Portal P1' },
-        { id: 'p2', name: 'Portal P2' },
-        { id: 'extra', name: 'Extra Portal' },
+        { id: "p1", name: "Portal P1" },
+        { id: "p2", name: "Portal P2" },
+        { id: "extra", name: "Extra Portal" }
       ]),
       getPortalDetails: vi.fn().mockResolvedValue(portalDetailsA),
       getAgentsByPortal: vi.fn().mockResolvedValue([agentX, agentY]),
       getUserProfiles: vi.fn().mockResolvedValue([profileP, profileQ]),
-      selectUserProfile: vi.fn().mockResolvedValue({ success: true }),
+      selectUserProfile: vi.fn().mockResolvedValue({ success: true })
     };
 
     mockLogger = {
@@ -44,22 +81,22 @@ describe('PortalInitializer', () => {
       info: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
-      createChild: vi.fn().mockReturnThis(),
+      createChild: vi.fn().mockReturnThis()
     };
 
     mockAuthService = {
-      getToken: vi.fn().mockResolvedValue('mock-token'),
+      getToken: vi.fn().mockResolvedValue("mock-token")
     };
 
     mockEmit = vi.fn();
     mockCreateAgentEventResponse = vi.fn((type, payload) => ({
       type,
       timestamp: Date.now(),
-      payload,
+      payload
     }));
 
     defaultDeps = {
-      agentId: 'test-agent',
+      agentId: "test-agent",
       apiHelper: mockApiHelper,
       logger: mockLogger,
       authService: mockAuthService,
@@ -67,7 +104,7 @@ describe('PortalInitializer', () => {
       emit: mockEmit,
       createAgentEventResponse: mockCreateAgentEventResponse,
       isAgentSelectionMode: false,
-      agentDetails: undefined,
+      agentDetails: undefined
     };
   });
 
@@ -82,14 +119,14 @@ describe('PortalInitializer', () => {
   ) {
     await expect(Promise.resolve().then(run)).rejects.toMatchObject({
       pipelineCode,
-      name: 'InitializationPipelineError',
+      name: "InitializationPipelineError"
     });
   }
 
   // ── Flow A: portal → profile → initialized ────────────────────────────
 
-  describe('Flow A (specific agent)', () => {
-    it('should call getMyPortals without per-call language (uses apiHelper default)', async () => {
+  describe("Flow A (specific agent)", () => {
+    it("should call getMyPortals without per-call language (uses apiHelper default)", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
@@ -97,8 +134,8 @@ describe('PortalInitializer', () => {
       );
     });
 
-    it('should not pass agentDetails.languageCode to getMyPortals', async () => {
-      const deps = { ...defaultDeps, agentDetails: { languageCode: 'da-dk' } };
+    it("should not pass agentDetails.languageCode to getMyPortals", async () => {
+      const deps = { ...defaultDeps, agentDetails: { languageCode: "da-dk" } };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
@@ -106,54 +143,54 @@ describe('PortalInitializer', () => {
       );
     });
 
-    it('should pass initParams.egtemplate as shortUrlTemplate to getMyPortals', async () => {
+    it("should pass initParams.egtemplate as shortUrlTemplate to getMyPortals", async () => {
       const deps = {
         ...defaultDeps,
-        initParams: { egtemplate: 'ombre' },
-        agentDetails: { languageCode: 'en-us' },
+        initParams: { egtemplate: "ombre" },
+        agentDetails: { languageCode: "en-us" }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
-        expect.objectContaining({ shortUrlTemplate: 'ombre' })
+        expect.objectContaining({ shortUrlTemplate: "ombre" })
       );
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
         expect.not.objectContaining({ language: expect.anything() })
       );
     });
 
-    it('should prefer templateName over shortUrlTemplate and egtemplate for getMyPortals', async () => {
+    it("should prefer templateName over shortUrlTemplate and egtemplate for getMyPortals", async () => {
       const deps = {
         ...defaultDeps,
         initParams: {
-          templateName: 'mirage',
-          shortUrlTemplate: 'ombre',
-          egtemplate: 'legacy',
-        },
+          templateName: "mirage",
+          shortUrlTemplate: "ombre",
+          egtemplate: "legacy"
+        }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
-        expect.objectContaining({ shortUrlTemplate: 'mirage' })
+        expect.objectContaining({ shortUrlTemplate: "mirage" })
       );
     });
 
-    it('should prefer shortUrlTemplate over egtemplate when templateName is absent', async () => {
+    it("should prefer shortUrlTemplate over egtemplate when templateName is absent", async () => {
       const deps = {
         ...defaultDeps,
-        initParams: { shortUrlTemplate: 'ombre', egtemplate: 'legacy' },
+        initParams: { shortUrlTemplate: "ombre", egtemplate: "legacy" }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).toHaveBeenCalledWith(
-        expect.objectContaining({ shortUrlTemplate: 'ombre' })
+        expect.objectContaining({ shortUrlTemplate: "ombre" })
       );
     });
 
-    it('should omit shortUrlTemplate from getMyPortals when theme template initParams are empty', async () => {
+    it("should omit shortUrlTemplate from getMyPortals when theme template initParams are empty", async () => {
       const deps = {
         ...defaultDeps,
-        initParams: { egtemplate: '   ' },
+        initParams: { egtemplate: "   " }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
@@ -162,27 +199,27 @@ describe('PortalInitializer', () => {
       );
     });
 
-    it('should use portalIds from initParams without calling getMyPortals', async () => {
-      const deps = { ...defaultDeps, initParams: { portalIds: '7,8' } };
+    it("should use portalIds from initParams without calling getMyPortals", async () => {
+      const deps = { ...defaultDeps, initParams: { portalIds: "7,8" } };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       expect(mockApiHelper.getMyPortals).not.toHaveBeenCalled();
       await vi.waitFor(() => {
-        const ev = getEmittedEvent('portalsAvailable');
-        expect(ev.payload.portals).toEqual([{ id: '7' }, { id: '8' }]);
+        const ev = getEmittedEvent("portalsAvailable");
+        expect(ev.payload.portals).toEqual([{ id: "7" }, { id: "8" }]);
       });
     });
 
-    it('should run to completion: portal event → profile event → initialized', async () => {
+    it("should run to completion: portal event → profile event → initialized", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
         expect(mockEmit).toHaveBeenCalledWith(
-          'portalsAvailable',
+          "portalsAvailable",
           expect.objectContaining({
-            type: 'portalsAvailable',
-            payload: { portals: [portalA, portalB] },
+            type: "portalsAvailable",
+            payload: { portals: [portalA, portalB] }
           })
         );
       });
@@ -191,10 +228,10 @@ describe('PortalInitializer', () => {
 
       await vi.waitFor(() => {
         expect(mockEmit).toHaveBeenCalledWith(
-          'profilesAvailable',
+          "profilesAvailable",
           expect.objectContaining({
-            type: 'profilesAvailable',
-            payload: { profiles: [profileP, profileQ], selectedPortal: portalA },
+            type: "profilesAvailable",
+            payload: { profiles: [profileP, profileQ], selectedPortal: portalA }
           })
         );
       });
@@ -202,145 +239,201 @@ describe('PortalInitializer', () => {
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({
-        portal: portalA,
-        profile: profileP,
-      }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          profile: profileP
+        })
+      );
     });
 
-    it('should NOT emit agentsAvailable in Flow A', async () => {
+    it("should NOT emit agentsAvailable in Flow A", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
 
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
 
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const agentCalls = mockEmit.mock.calls.filter(([type]) => type === 'agentsAvailable');
+      const agentCalls = mockEmit.mock.calls.filter(
+        ([type]) => type === "agentsAvailable"
+      );
       expect(agentCalls).toHaveLength(0);
     });
 
-    it('should filter portals to agent-associated only when agentDetails.portals is set', async () => {
+    it("should filter portals to agent-associated only when agentDetails.portals is set", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalB, portalC]);
-      const deps = { ...defaultDeps, initParams: { agentid: 'agent-1' }, agentDetails: { portals: [1] } };
+      const deps = {
+        ...defaultDeps,
+        initParams: { agentid: "agent-1" },
+        agentDetails: { portals: [1] }
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
-      expect(mockEmit).not.toHaveBeenCalledWith('portalsAvailable', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "portalsAvailable",
+        expect.anything()
+      );
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({
-        portal: portalA,
-        profile: profileP,
-      }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          profile: profileP
+        })
+      );
     });
 
-    it('should filter portals using deps.agentId when initParams.agentid is not set', async () => {
+    it("should filter portals using deps.agentId when initParams.agentid is not set", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalB, portalC]);
-      const deps = { ...defaultDeps, agentId: 'my-agent', agentDetails: { portals: [1] } };
+      const deps = {
+        ...defaultDeps,
+        agentId: "my-agent",
+        agentDetails: { portals: [1] }
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
-      expect(mockEmit).not.toHaveBeenCalledWith('portalsAvailable', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "portalsAvailable",
+        expect.anything()
+      );
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({
-        portal: portalA,
-        profile: profileP,
-      }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          profile: profileP
+        })
+      );
     });
   });
 
   // ── Flow B: portal → agent → profile → initialized ────────────────────
 
-  describe('Flow B (agent selection mode)', () => {
-    it('should run full pipeline: portal → agent → profile → initialized', async () => {
+  describe("Flow B (agent selection mode)", () => {
+    it("should run full pipeline: portal → agent → profile → initialized", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('agentsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "agentsAvailable",
+          expect.anything()
+        );
       });
       initializer.onAgentSelected(agentX);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({
-        portal: portalA,
-        agent: agentX,
-        profile: profileP,
-      }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          agent: agentX,
+          profile: profileP
+        })
+      );
     });
 
-    it('rejects with InitializationPipelineError when departmentId is missing in Flow B', async () => {
-      const deps = { ...defaultDeps, isAgentSelectionMode: true, initParams: {}, agentDetails: undefined };
+    it("rejects with InitializationPipelineError when departmentId is missing in Flow B", async () => {
+      const deps = {
+        ...defaultDeps,
+        isAgentSelectionMode: true,
+        initParams: {},
+        agentDetails: undefined
+      };
       const initializer = new PortalInitializer(deps);
-      await expectPipelineRejection(() => initializer.start(), 'DEPARTMENT_ID_REQUIRED');
+      await expectPipelineRejection(
+        () => initializer.start(),
+        "DEPARTMENT_ID_REQUIRED"
+      );
     });
 
-    it('should accept initParams.departmentId when agentDetails.departmentId is absent (fallback)', async () => {
+    it("should accept initParams.departmentId when agentDetails.departmentId is absent (fallback)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
       const deps = {
         ...defaultDeps,
         isAgentSelectionMode: true,
         agentDetails: undefined,
-        initParams: { departmentId: '100' },
+        initParams: { departmentId: "100" }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
     });
 
-    it('rejects with InitializationPipelineError when no agents are available for the portal', async () => {
+    it("rejects with InitializationPipelineError when no agents are available for the portal", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
       mockApiHelper.getAgentsByPortal.mockResolvedValue([]);
       const deps = { ...defaultDeps, ...flowBDepsBase };
@@ -348,21 +441,32 @@ describe('PortalInitializer', () => {
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
 
-      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject({
-        pipelineCode: 'NO_AGENTS_FOR_PORTAL',
-      });
-      expect(mockEmit).not.toHaveBeenCalledWith('agentsAvailable', expect.anything());
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject(
+        {
+          pipelineCode: "NO_AGENTS_FOR_PORTAL"
+        }
+      );
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "agentsAvailable",
+        expect.anything()
+      );
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
     });
   });
 
   // ── Auto-select ──────────────────────────────────────────────────────────
 
-  describe('auto-select', () => {
-    it('should auto-select portal when only one is available', async () => {
+  describe("auto-select", () => {
+    it("should auto-select portal when only one is available", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getUserProfiles.mockResolvedValue([profileP]);
 
@@ -370,20 +474,24 @@ describe('PortalInitializer', () => {
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const portalCalls = mockEmit.mock.calls.filter(([type]) => type === 'portalsAvailable');
+      const portalCalls = mockEmit.mock.calls.filter(
+        ([type]) => type === "portalsAvailable"
+      );
       expect(portalCalls).toHaveLength(0);
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({
-        portal: portalA,
-        profile: profileP,
-      }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          profile: profileP
+        })
+      );
     });
 
-    it('should auto-select agent when only one is available (Flow B)', async () => {
+    it("should auto-select agent when only one is available (Flow B)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getAgentsByPortal.mockResolvedValue([agentX]);
       mockApiHelper.getUserProfiles.mockResolvedValue([profileP]);
@@ -393,104 +501,157 @@ describe('PortalInitializer', () => {
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const agentCalls = mockEmit.mock.calls.filter(([type]) => type === 'agentsAvailable');
+      const agentCalls = mockEmit.mock.calls.filter(
+        ([type]) => type === "agentsAvailable"
+      );
       expect(agentCalls).toHaveLength(0);
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({
-        portal: portalA,
-        agent: agentX,
-        profile: profileP,
-      }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          agent: agentX,
+          profile: profileP
+        })
+      );
     });
 
-    it('should auto-select profile when only one is available', async () => {
+    it("should auto-select profile when only one is available", async () => {
       mockApiHelper.getUserProfiles.mockResolvedValue([profileP]);
 
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const profileCalls = mockEmit.mock.calls.filter(([type]) => type === 'profilesAvailable');
+      const profileCalls = mockEmit.mock.calls.filter(
+        ([type]) => type === "profilesAvailable"
+      );
       expect(profileCalls).toHaveLength(0);
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ profile: profileP }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ profile: profileP })
+      );
     });
 
-    it('should auto-select last-used profile when multiple profiles exist', async () => {
-      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
-      const otherProfile: UserProfile = { id: 20, name: 'Profile Q', isLastUsedInPortal: false };
-      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, otherProfile]);
+    it("should auto-select last-used profile when multiple profiles exist", async () => {
+      const lastUsedProfile: UserProfile = {
+        id: 10,
+        name: "Profile P",
+        isLastUsedInPortal: true
+      };
+      const otherProfile: UserProfile = {
+        id: 20,
+        name: "Profile Q",
+        isLastUsedInPortal: false
+      };
+      mockApiHelper.getUserProfiles.mockResolvedValue([
+        lastUsedProfile,
+        otherProfile
+      ]);
 
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const profileCalls = mockEmit.mock.calls.filter(([type]) => type === 'profilesAvailable');
+      const profileCalls = mockEmit.mock.calls.filter(
+        ([type]) => type === "profilesAvailable"
+      );
       expect(profileCalls).toHaveLength(0);
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ profile: lastUsedProfile }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ profile: lastUsedProfile })
+      );
     });
 
     function stubSessionStorage() {
       const sessionStore: Record<string, string> = {};
-      const setItem = vi.fn((k: string, v: string) => { sessionStore[k] = v; });
-      vi.stubGlobal('window', {
+      const setItem = vi.fn((k: string, v: string) => {
+        sessionStore[k] = v;
+      });
+      vi.stubGlobal("window", {
         sessionStorage: {
           getItem: (k: string) => sessionStore[k] ?? null,
           setItem,
-          removeItem: (k: string) => { delete sessionStore[k]; },
-        },
+          removeItem: (k: string) => {
+            delete sessionStore[k];
+          }
+        }
       });
       return setItem;
     }
 
-    it('persists selected profile to session storage on auto-select', async () => {
-      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
-      const otherProfile: UserProfile = { id: 20, name: 'Profile Q', isLastUsedInPortal: false };
-      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, otherProfile]);
+    it("persists selected profile to session storage on auto-select", async () => {
+      const lastUsedProfile: UserProfile = {
+        id: 10,
+        name: "Profile P",
+        isLastUsedInPortal: true
+      };
+      const otherProfile: UserProfile = {
+        id: 20,
+        name: "Profile Q",
+        isLastUsedInPortal: false
+      };
+      mockApiHelper.getUserProfiles.mockResolvedValue([
+        lastUsedProfile,
+        otherProfile
+      ]);
       const setItem = stubSessionStorage();
-      const deps = { ...defaultDeps, deploymentInfo: { tenant_identifier: 'c5hs' } };
+      const deps = {
+        ...defaultDeps,
+        deploymentInfo: { tenant_identifier: "c5hs" }
+      };
 
       try {
         const initializer = new PortalInitializer(deps);
         await initializer.start();
         await vi.waitFor(() => {
-          expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+          expect(mockEmit).toHaveBeenCalledWith(
+            "portalsAvailable",
+            expect.anything()
+          );
         });
         initializer.onPortalSelected(portalA);
         await vi.waitFor(() => {
-          expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+          expect(mockEmit).toHaveBeenCalledWith(
+            "initialized",
+            expect.anything()
+          );
         });
 
         expect(setItem).toHaveBeenCalledWith(
-          'v2_c5hs_selectedProfile-1',
+          "v2_c5hs_selectedProfile-1",
           JSON.stringify({
             name: lastUsedProfile.name,
             isLastUsedInPortal: true,
             id: lastUsedProfile.id,
-            portalId: String(portalA.id),
+            portalId: String(portalA.id)
           })
         );
       } finally {
@@ -498,35 +659,55 @@ describe('PortalInitializer', () => {
       }
     });
 
-    it('persists selected profile to session storage on manual select', async () => {
-      const profile1: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: false };
-      const profile2: UserProfile = { id: 20, name: 'Profile Q', isLastUsedInPortal: false };
+    it("persists selected profile to session storage on manual select", async () => {
+      const profile1: UserProfile = {
+        id: 10,
+        name: "Profile P",
+        isLastUsedInPortal: false
+      };
+      const profile2: UserProfile = {
+        id: 20,
+        name: "Profile Q",
+        isLastUsedInPortal: false
+      };
       mockApiHelper.getUserProfiles.mockResolvedValue([profile1, profile2]);
       const setItem = stubSessionStorage();
-      const deps = { ...defaultDeps, deploymentInfo: { tenant_identifier: 'c5hs' } };
+      const deps = {
+        ...defaultDeps,
+        deploymentInfo: { tenant_identifier: "c5hs" }
+      };
 
       try {
         const initializer = new PortalInitializer(deps);
         await initializer.start();
         await vi.waitFor(() => {
-          expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+          expect(mockEmit).toHaveBeenCalledWith(
+            "portalsAvailable",
+            expect.anything()
+          );
         });
         initializer.onPortalSelected(portalA);
         await vi.waitFor(() => {
-          expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+          expect(mockEmit).toHaveBeenCalledWith(
+            "profilesAvailable",
+            expect.anything()
+          );
         });
         initializer.onProfileSelected(profile2);
         await vi.waitFor(() => {
-          expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+          expect(mockEmit).toHaveBeenCalledWith(
+            "initialized",
+            expect.anything()
+          );
         });
 
         expect(setItem).toHaveBeenCalledWith(
-          'v2_c5hs_selectedProfile-1',
+          "v2_c5hs_selectedProfile-1",
           JSON.stringify({
             name: profile2.name,
             isLastUsedInPortal: false,
             id: profile2.id,
-            portalId: String(portalA.id),
+            portalId: String(portalA.id)
           })
         );
       } finally {
@@ -534,258 +715,378 @@ describe('PortalInitializer', () => {
       }
     });
 
-    it('should auto-select default profile when no last-used profile exists', async () => {
-      const profile1: UserProfile = { id: 10, name: 'Profile 1', isLastUsedInPortal: false };
-      const profile2: UserProfile = { id: 20, name: 'Profile 2', isLastUsedInPortal: false };
+    it("should auto-select default profile when no last-used profile exists", async () => {
+      const profile1: UserProfile = {
+        id: 10,
+        name: "Profile 1",
+        isLastUsedInPortal: false
+      };
+      const profile2: UserProfile = {
+        id: 20,
+        name: "Profile 2",
+        isLastUsedInPortal: false
+      };
       mockApiHelper.getUserProfiles.mockResolvedValue([profile1, profile2]);
       mockApiHelper.getPortalDetails.mockResolvedValue({
-        id: 1, name: 'Portal A', departmentId: 100,
-        portalSettings: { defaultUserProfile: { id: 20 } },
+        id: 1,
+        name: "Portal A",
+        departmentId: 100,
+        portalSettings: { defaultUserProfile: { id: 20 } }
       });
 
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const profileCalls = mockEmit.mock.calls.filter(([type]) => type === 'profilesAvailable');
+      const profileCalls = mockEmit.mock.calls.filter(
+        ([type]) => type === "profilesAvailable"
+      );
       expect(profileCalls).toHaveLength(0);
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ profile: profile2 }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ profile: profile2 })
+      );
     });
 
-    it('should prefer last-used profile over default profile', async () => {
-      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile 1', isLastUsedInPortal: true };
-      const defaultProfileObj: UserProfile = { id: 20, name: 'Profile 2', isLastUsedInPortal: false };
-      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, defaultProfileObj]);
+    it("should prefer last-used profile over default profile", async () => {
+      const lastUsedProfile: UserProfile = {
+        id: 10,
+        name: "Profile 1",
+        isLastUsedInPortal: true
+      };
+      const defaultProfileObj: UserProfile = {
+        id: 20,
+        name: "Profile 2",
+        isLastUsedInPortal: false
+      };
+      mockApiHelper.getUserProfiles.mockResolvedValue([
+        lastUsedProfile,
+        defaultProfileObj
+      ]);
       mockApiHelper.getPortalDetails.mockResolvedValue({
-        id: 1, name: 'Portal A', departmentId: 100,
-        portalSettings: { defaultUserProfile: { id: 20 } },
+        id: 1,
+        name: "Portal A",
+        departmentId: 100,
+        portalSettings: { defaultUserProfile: { id: 20 } }
       });
 
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ profile: lastUsedProfile }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ profile: lastUsedProfile })
+      );
     });
 
-    it('should emit profilesAvailable when no last-used and no default profile', async () => {
-      const profile1: UserProfile = { id: 10, name: 'Profile 1', isLastUsedInPortal: false };
-      const profile2: UserProfile = { id: 20, name: 'Profile 2', isLastUsedInPortal: false };
+    it("should emit profilesAvailable when no last-used and no default profile", async () => {
+      const profile1: UserProfile = {
+        id: 10,
+        name: "Profile 1",
+        isLastUsedInPortal: false
+      };
+      const profile2: UserProfile = {
+        id: 20,
+        name: "Profile 2",
+        isLastUsedInPortal: false
+      };
       mockApiHelper.getUserProfiles.mockResolvedValue([profile1, profile2]);
 
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
       initializer.onProfileSelected(profile1);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ profile: profile1 }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ profile: profile1 })
+      );
     });
 
-    it('should emit profilesAvailable when default profile ID does not match any profile', async () => {
-      const profile1: UserProfile = { id: 10, name: 'Profile 1', isLastUsedInPortal: false };
-      const profile2: UserProfile = { id: 20, name: 'Profile 2', isLastUsedInPortal: false };
+    it("should emit profilesAvailable when default profile ID does not match any profile", async () => {
+      const profile1: UserProfile = {
+        id: 10,
+        name: "Profile 1",
+        isLastUsedInPortal: false
+      };
+      const profile2: UserProfile = {
+        id: 20,
+        name: "Profile 2",
+        isLastUsedInPortal: false
+      };
       mockApiHelper.getUserProfiles.mockResolvedValue([profile1, profile2]);
       mockApiHelper.getPortalDetails.mockResolvedValue({
-        id: 1, name: 'Portal A', departmentId: 100,
-        portalSettings: { defaultUserProfile: { id: 999 } },
+        id: 1,
+        name: "Portal A",
+        departmentId: 100,
+        portalSettings: { defaultUserProfile: { id: 999 } }
       });
 
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
       initializer.onProfileSelected(profile2);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ profile: profile2 }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ profile: profile2 })
+      );
     });
   });
 
-  describe('initialization context auto-select', () => {
-    it('auto-selects portal when egain_portal_id matches one of multiple portals', async () => {
+  describe("initialization context auto-select", () => {
+    it("auto-selects portal when egain_portal_id matches one of multiple portals", async () => {
       const deps = {
         ...defaultDeps,
         initialContext: {
-          egain_portal_id: { value: String(portalB.id) },
-        },
+          egain_portal_id: { value: String(portalB.id) }
+        }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
-      expect(mockEmit).not.toHaveBeenCalledWith('portalsAvailable', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "portalsAvailable",
+        expect.anything()
+      );
 
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
-      const event = getEmittedEvent('initialized');
+      const event = getEmittedEvent("initialized");
       expect(event.payload).toEqual(
-        expect.objectContaining({ portal: expect.objectContaining({ id: portalB.id }) })
+        expect.objectContaining({
+          portal: expect.objectContaining({ id: portalB.id })
+        })
       );
     });
 
-    it('emits portalsAvailable when context portal id does not match list', async () => {
+    it("emits portalsAvailable when context portal id does not match list", async () => {
       const deps = {
         ...defaultDeps,
-        initialContext: { egain_portal_id: { value: '999' } },
+        initialContext: { egain_portal_id: { value: "999" } }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
     });
 
-    it('auto-selects profile from initialization context when multiple profiles', async () => {
+    it("auto-selects profile from initialization context when multiple profiles", async () => {
       const deps = {
         ...defaultDeps,
         initialContext: {
           egain_portal_id: { value: String(portalA.id) },
-          egain_personalization_profile_id: { value: String(profileQ.id) },
-        },
+          egain_personalization_profile_id: { value: String(profileQ.id) }
+        }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
-      expect(mockEmit).not.toHaveBeenCalledWith('profilesAvailable', expect.anything());
-      const event = getEmittedEvent('initialized');
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "profilesAvailable",
+        expect.anything()
+      );
+      const event = getEmittedEvent("initialized");
       expect(event.payload).toEqual(
         expect.objectContaining({ portal: portalA, profile: profileQ })
       );
     });
 
-    it('prefers initialization context profile over isLastUsedInPortal', async () => {
-      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
-      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, profileQ]);
+    it("prefers initialization context profile over isLastUsedInPortal", async () => {
+      const lastUsedProfile: UserProfile = {
+        id: 10,
+        name: "Profile P",
+        isLastUsedInPortal: true
+      };
+      mockApiHelper.getUserProfiles.mockResolvedValue([
+        lastUsedProfile,
+        profileQ
+      ]);
       const deps = {
         ...defaultDeps,
         initialContext: {
           egain_portal_id: { value: String(portalA.id) },
-          egain_personalization_profile_id: { value: String(profileQ.id) },
-        },
+          egain_personalization_profile_id: { value: String(profileQ.id) }
+        }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
-      const event = getEmittedEvent('initialized');
+      const event = getEmittedEvent("initialized");
       expect(event.payload).toEqual(
         expect.objectContaining({ portal: portalA, profile: profileQ })
       );
     });
 
-    it('prefers session-stored profile over last-used and context', async () => {
-      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
-      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, profileQ]);
+    it("prefers session-stored profile over last-used and context", async () => {
+      const lastUsedProfile: UserProfile = {
+        id: 10,
+        name: "Profile P",
+        isLastUsedInPortal: true
+      };
+      mockApiHelper.getUserProfiles.mockResolvedValue([
+        lastUsedProfile,
+        profileQ
+      ]);
       const sessionStore: Record<string, string> = {
-        'v2_c5hs_selectedProfile-1': JSON.stringify({ id: profileQ.id, name: profileQ.name }),
+        "v2_c5hs_selectedProfile-1": JSON.stringify({
+          id: profileQ.id,
+          name: profileQ.name
+        })
       };
-      vi.stubGlobal('window', {
+      vi.stubGlobal("window", {
         sessionStorage: {
           getItem: (k: string) => sessionStore[k] ?? null,
-          setItem: (k: string, v: string) => { sessionStore[k] = v; },
-          removeItem: (k: string) => { delete sessionStore[k]; },
-        },
+          setItem: (k: string, v: string) => {
+            sessionStore[k] = v;
+          },
+          removeItem: (k: string) => {
+            delete sessionStore[k];
+          }
+        }
       });
       const deps = {
         ...defaultDeps,
-        deploymentInfo: { tenant_identifier: 'c5hs' },
+        deploymentInfo: { tenant_identifier: "c5hs" },
         initialContext: {
           egain_portal_id: { value: String(portalA.id) },
-          egain_personalization_profile_id: { value: String(lastUsedProfile.id) },
-        },
+          egain_personalization_profile_id: {
+            value: String(lastUsedProfile.id)
+          }
+        }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
-      const event = getEmittedEvent('initialized');
+      const event = getEmittedEvent("initialized");
       expect(event.payload).toEqual(
         expect.objectContaining({ portal: portalA, profile: profileQ })
       );
       vi.unstubAllGlobals();
     });
 
-    it('uses endpoint path segment as rigel prefix when tenant_identifier is absent', async () => {
-      const lastUsedProfile: UserProfile = { id: 10, name: 'Profile P', isLastUsedInPortal: true };
-      mockApiHelper.getUserProfiles.mockResolvedValue([lastUsedProfile, profileQ]);
-      const sessionStore: Record<string, string> = {
-        'v2_c5hs_selectedProfile-1': JSON.stringify({ id: profileQ.id, name: profileQ.name }),
+    it("uses endpoint path segment as rigel prefix when tenant_identifier is absent", async () => {
+      const lastUsedProfile: UserProfile = {
+        id: 10,
+        name: "Profile P",
+        isLastUsedInPortal: true
       };
-      vi.stubGlobal('window', {
+      mockApiHelper.getUserProfiles.mockResolvedValue([
+        lastUsedProfile,
+        profileQ
+      ]);
+      const sessionStore: Record<string, string> = {
+        "v2_c5hs_selectedProfile-1": JSON.stringify({
+          id: profileQ.id,
+          name: profileQ.name
+        })
+      };
+      vi.stubGlobal("window", {
         sessionStorage: {
           getItem: (k: string) => sessionStore[k] ?? null,
-          setItem: (k: string, v: string) => { sessionStore[k] = v; },
-          removeItem: (k: string) => { delete sessionStore[k]; },
-        },
+          setItem: (k: string, v: string) => {
+            sessionStore[k] = v;
+          },
+          removeItem: (k: string) => {
+            delete sessionStore[k];
+          }
+        }
       });
       const deps = {
         ...defaultDeps,
-        endpoint: 'https://aidev.egain.cloud/c5hs',
-        initialContext: { egain_portal_id: { value: String(portalA.id) } },
+        endpoint: "https://aidev.egain.cloud/c5hs",
+        initialContext: { egain_portal_id: { value: String(portalA.id) } }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
-      const event = getEmittedEvent('initialized');
+      const event = getEmittedEvent("initialized");
       expect(event.payload).toEqual(
         expect.objectContaining({ portal: portalA, profile: profileQ })
       );
@@ -795,82 +1096,103 @@ describe('PortalInitializer', () => {
 
   // ── Error: zero items ──────────────────────────────────────────────────
 
-  describe('error on zero items', () => {
-    it('rejects with InitializationPipelineError when zero portals are returned', async () => {
+  describe("error on zero items", () => {
+    it("rejects with InitializationPipelineError when zero portals are returned", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([]);
 
       const initializer = new PortalInitializer(defaultDeps);
 
-      await expectPipelineRejection(() => initializer.start(), 'NO_PORTALS');
-      expect(mockEmit).not.toHaveBeenCalledWith("initialized", expect.anything());
+      await expectPipelineRejection(() => initializer.start(), "NO_PORTALS");
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
     });
 
-    it('should fetch user portals when agent has empty portals list (cc-widget parity)', async () => {
+    it("should fetch user portals when agent has empty portals list (cc-widget parity)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalB]);
 
       const initializer = new PortalInitializer({
         ...defaultDeps,
-        agentDetails: { portals: [] },
+        agentDetails: { portals: [] }
       });
 
       await initializer.start();
 
       expect(mockApiHelper.getMyPortals).toHaveBeenCalled();
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
     });
 
-    it('rejects when zero agents are returned on auto-select (Flow B)', async () => {
+    it("rejects when zero agents are returned on auto-select (Flow B)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getAgentsByPortal.mockResolvedValue([]);
 
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
 
-      await expectPipelineRejection(() => initializer.start(), 'NO_AGENTS_FOR_PORTAL');
-      expect(mockEmit).not.toHaveBeenCalledWith("initialized", expect.anything());
+      await expectPipelineRejection(
+        () => initializer.start(),
+        "NO_AGENTS_FOR_PORTAL"
+      );
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
     });
 
-    it('rejects when portal details lack departmentId (Flow B)', async () => {
+    it("rejects when portal details lack departmentId (Flow B)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
-      mockApiHelper.getPortalDetails.mockResolvedValue({ id: 1, name: "Portal A" });
+      mockApiHelper.getPortalDetails.mockResolvedValue({
+        id: 1,
+        name: "Portal A"
+      });
 
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
 
-      await expectPipelineRejection(() => initializer.start(), 'DEPARTMENT_ID_REQUIRED');
-      expect(mockEmit).not.toHaveBeenCalledWith("initialized", expect.anything());
+      await expectPipelineRejection(
+        () => initializer.start(),
+        "DEPARTMENT_ID_REQUIRED"
+      );
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
       expect(mockApiHelper.getAgentsByPortal).not.toHaveBeenCalled();
     });
 
-    it('should complete initialization when API returns zero profiles (no selectUserProfile)', async () => {
+    it("should complete initialization when API returns zero profiles (no selectUserProfile)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getUserProfiles.mockResolvedValue([]);
       mockApiHelper.getPortalDetails.mockResolvedValue({
         id: 1,
-        name: 'Portal A',
+        name: "Portal A",
         departmentId: 100,
-        portalSettings: { defaultUserProfile: { id: 42 } },
+        portalSettings: { defaultUserProfile: { id: 42 } }
       });
 
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Profile auto-resolved',
+        "Profile auto-resolved",
         expect.objectContaining({ portalId: portalA.id })
       );
       expect(mockApiHelper.selectUserProfile).not.toHaveBeenCalled();
-      const event = getEmittedEvent('initialized');
+      const event = getEmittedEvent("initialized");
       expect(event.payload).toEqual(
         expect.objectContaining({
           portal: portalA,
-          availableProfiles: [],
+          availableProfiles: []
         })
       );
       expect(event.payload.profile).toBeUndefined();
@@ -879,7 +1201,10 @@ describe('PortalInitializer', () => {
     it("rejects when getMyPortals fails", async () => {
       mockApiHelper.getMyPortals.mockRejectedValue(new Error("network"));
       const initializer = new PortalInitializer(defaultDeps);
-      await expectPipelineRejection(() => initializer.start(), "PORTAL_FETCH_FAILED");
+      await expectPipelineRejection(
+        () => initializer.start(),
+        "PORTAL_FETCH_FAILED"
+      );
     });
 
     it("rejects when getPortalDetails fails after portal selection", async () => {
@@ -887,11 +1212,16 @@ describe('PortalInitializer', () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
       await vi.waitFor(() =>
-        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
       );
-      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject({
-        pipelineCode: "PORTAL_DETAILS_FAILED",
-      });
+      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject(
+        {
+          pipelineCode: "PORTAL_DETAILS_FAILED"
+        }
+      );
     });
 
     it("rejects when getUserProfiles fails", async () => {
@@ -899,11 +1229,16 @@ describe('PortalInitializer', () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
       await vi.waitFor(() =>
-        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
       );
-      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject({
-        pipelineCode: "PROFILE_FETCH_FAILED",
-      });
+      await expect(initializer.onPortalSelected(portalA)).rejects.toMatchObject(
+        {
+          pipelineCode: "PROFILE_FETCH_FAILED"
+        }
+      );
     });
 
     it("rejects when selectUserProfile fails", async () => {
@@ -911,14 +1246,22 @@ describe('PortalInitializer', () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
       await vi.waitFor(() =>
-        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
       );
       await initializer.onPortalSelected(portalA);
       await vi.waitFor(() =>
-        expect(mockEmit).toHaveBeenCalledWith("profilesAvailable", expect.anything())
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
       );
-      await expect(initializer.onProfileSelected(profileP)).rejects.toMatchObject({
-        pipelineCode: "PROFILE_PERSIST_FAILED",
+      await expect(
+        initializer.onProfileSelected(profileP)
+      ).rejects.toMatchObject({
+        pipelineCode: "PROFILE_PERSIST_FAILED"
       });
     });
   });
@@ -928,151 +1271,204 @@ describe('PortalInitializer', () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
       await vi.waitFor(() =>
-        expect(mockEmit).toHaveBeenCalledWith("portalsAvailable", expect.anything())
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
       );
       await expect(
         initializer.onPortalSelected({ id: 999, name: "Unknown" })
       ).rejects.toMatchObject({
         pipelineCode: "INVALID_SELECTION",
-        stage: "portal",
+        stage: "portal"
       });
     });
   });
 
   // ── Event-driven chaining ─────────────────────────────────────────────
 
-  describe('event-driven chaining', () => {
-    it('should not emit initialized until onPortalSelected is called', async () => {
+  describe("event-driven chaining", () => {
+    it("should not emit initialized until onPortalSelected is called", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
 
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
 
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
 
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
     });
 
-    it('should not emit initialized until onAgentSelected is called (Flow B)', async () => {
+    it("should not emit initialized until onAgentSelected is called (Flow B)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('agentsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "agentsAvailable",
+          expect.anything()
+        );
       });
 
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
 
       initializer.onAgentSelected(agentX);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
     });
 
-    it('should not emit initialized until onProfileSelected is called', async () => {
+    it("should not emit initialized until onProfileSelected is called", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
 
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
       initializer.onProfileSelected(profileQ);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ profile: profileQ }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ profile: profileQ })
+      );
     });
   });
 
-  describe('selection validation', () => {
-    it('should not advance pipeline when onPortalSelected uses a portal not in the list', async () => {
+  describe("selection validation", () => {
+    it("should not advance pipeline when onPortalSelected uses a portal not in the list", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       const callsBefore = mockApiHelper.getUserProfiles.mock.calls.length;
       await expect(
-        initializer.onPortalSelected({ id: 999, name: 'Unknown' })
+        initializer.onPortalSelected({ id: 999, name: "Unknown" })
       ).rejects.toBeInstanceOf(InitializationPipelineError);
       expect(mockApiHelper.getUserProfiles.mock.calls.length).toBe(callsBefore);
     });
 
-    it('should not advance when onAgentSelected uses unknown agent (Flow B)', async () => {
+    it("should not advance when onAgentSelected uses unknown agent (Flow B)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       await initializer.onPortalSelected(portalA);
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('agentsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "agentsAvailable",
+          expect.anything()
+        );
       });
       const callsBefore = mockApiHelper.getUserProfiles.mock.calls.length;
       await expect(
-        initializer.onAgentSelected({ agentId: 'unknown', name: 'X' })
+        initializer.onAgentSelected({ agentId: "unknown", name: "X" })
       ).rejects.toBeInstanceOf(InitializationPipelineError);
       expect(mockApiHelper.getUserProfiles.mock.calls.length).toBe(callsBefore);
     });
 
-    it('should not complete when onProfileSelected uses unknown profile', async () => {
+    it("should not complete when onProfileSelected uses unknown profile", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       await initializer.onPortalSelected(portalA);
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
       await expect(
-        initializer.onProfileSelected({ id: 999, name: 'Bad' })
+        initializer.onProfileSelected({ id: 999, name: "Bad" })
       ).rejects.toBeInstanceOf(InitializationPipelineError);
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
     });
   });
 
   // ── initialized event payload ─────────────────────────────────────────
 
-  describe('initialized event payload', () => {
-    it('should include portal and profile (no agent) in Flow A', async () => {
+  describe("initialized event payload", () => {
+    it("should include portal and profile (no agent) in Flow A", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getUserProfiles.mockResolvedValue([profileP]);
 
@@ -1080,16 +1476,16 @@ describe('PortalInitializer', () => {
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
+      const event = getEmittedEvent("initialized");
       expect(event.payload.portal).toEqual(portalA);
       expect(event.payload.profile).toEqual(profileP);
       expect(event.payload.agent).toBeUndefined();
     });
 
-    it('should include portal, agent, and profile in Flow B', async () => {
+    it("should include portal, agent, and profile in Flow B", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getAgentsByPortal.mockResolvedValue([agentX]);
       mockApiHelper.getUserProfiles.mockResolvedValue([profileP]);
@@ -1099,10 +1495,10 @@ describe('PortalInitializer', () => {
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
+      const event = getEmittedEvent("initialized");
       expect(event.payload.portal).toEqual(portalA);
       expect(event.payload.agent).toEqual(agentX);
       expect(event.payload.profile).toEqual(profileP);
@@ -1111,8 +1507,8 @@ describe('PortalInitializer', () => {
 
   // ── No WebSocket interaction ──────────────────────────────────────────
 
-  describe('no WebSocket interaction', () => {
-    it('should only call apiHelper and authService — no connection/transport methods', async () => {
+  describe("no WebSocket interaction", () => {
+    it("should only call apiHelper and authService — no connection/transport methods", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA]);
       mockApiHelper.getUserProfiles.mockResolvedValue([profileP]);
 
@@ -1120,7 +1516,7 @@ describe('PortalInitializer', () => {
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
       expect(mockApiHelper.getMyPortals).toHaveBeenCalled();
@@ -1131,13 +1527,16 @@ describe('PortalInitializer', () => {
 
   // ── destroy() ──────────────────────────────────────────────────────────
 
-  describe('destroy()', () => {
-    it('should prevent onPortalSelected from advancing the pipeline', async () => {
+  describe("destroy()", () => {
+    it("should prevent onPortalSelected from advancing the pipeline", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
 
       initializer.destroy();
@@ -1145,23 +1544,35 @@ describe('PortalInitializer', () => {
 
       await new Promise((r) => setTimeout(r, 50));
 
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
-      expect(mockEmit).not.toHaveBeenCalledWith('profilesAvailable', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "profilesAvailable",
+        expect.anything()
+      );
     });
 
-    it('should prevent onAgentSelected from advancing the pipeline (Flow B)', async () => {
+    it("should prevent onAgentSelected from advancing the pipeline (Flow B)", async () => {
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
       const deps = { ...defaultDeps, ...flowBDepsBase };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('agentsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "agentsAvailable",
+          expect.anything()
+        );
       });
 
       initializer.destroy();
@@ -1169,20 +1580,29 @@ describe('PortalInitializer', () => {
 
       await new Promise((r) => setTimeout(r, 50));
 
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
     });
 
-    it('should prevent onProfileSelected from advancing the pipeline', async () => {
+    it("should prevent onProfileSelected from advancing the pipeline", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        );
       });
 
       initializer.destroy();
@@ -1190,281 +1610,476 @@ describe('PortalInitializer', () => {
 
       await new Promise((r) => setTimeout(r, 50));
 
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
     });
 
-    it('should be a no-op when called on a freshly constructed (not started) instance', () => {
+    it("should be a no-op when called on a freshly constructed (not started) instance", () => {
       const initializer = new PortalInitializer(defaultDeps);
       expect(() => initializer.destroy()).not.toThrow();
     });
 
-    it('should make onPortalSelected a no-op after destroy', async () => {
+    it("should make onPortalSelected a no-op after destroy", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        );
       });
 
       initializer.destroy();
       expect(() => initializer.onPortalSelected(portalA)).not.toThrow();
 
       await new Promise((r) => setTimeout(r, 50));
-      expect(mockEmit).not.toHaveBeenCalledWith('initialized', expect.anything());
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "initialized",
+        expect.anything()
+      );
     });
   });
 
   // ── pipelineCache (CacheAdapter) ────────────────────────────────────────
 
-  describe('pipelineCache', () => {
-    const profilesKey = (portalId: string | number) => `test_pipeline_profiles_${portalId}`;
+  describe("pipelineCache", () => {
+    const profilesKey = (portalId: string | number) =>
+      `test_pipeline_profiles_${portalId}`;
 
-    it('should always fetch portals from API (portals are not cached)', async () => {
+    it("should always fetch portals from API (portals are not cached)", async () => {
       const adapter = new MemoryCacheAdapter();
       const deps = {
         ...defaultDeps,
-        pipelineCache: { adapter, profilesKey },
+        pipelineCache: { adapter, profilesKey }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       expect(mockApiHelper.getMyPortals).toHaveBeenCalled();
 
       initializer.onPortalSelected(portalA);
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ portal: portalA, profile: profileP }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ portal: portalA, profile: profileP })
+      );
     });
 
-    it('should always fetch agents via API in Flow B (agents are not cached)', async () => {
+    it("should always fetch agents via API in Flow B (agents are not cached)", async () => {
       const adapter = new MemoryCacheAdapter();
-      adapter.set(profilesKey(portalA.id), { value: [profileP, profileQ], timestamp: Date.now() });
+      adapter.set(profilesKey(portalA.id), {
+        value: [profileP, profileQ],
+        timestamp: Date.now()
+      });
       mockApiHelper.getMyPortals.mockResolvedValue([portalA, portalBSameDept]);
       const deps = {
         ...defaultDeps,
         ...flowBDepsBase,
-        pipelineCache: { adapter, profilesKey },
+        pipelineCache: { adapter, profilesKey }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('agentsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "agentsAvailable",
+          expect.anything()
+        )
+      );
       expect(mockApiHelper.getPortalDetails).toHaveBeenCalled();
       expect(mockApiHelper.getAgentsByPortal).toHaveBeenCalled();
       initializer.onAgentSelected(agentX);
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ portal: portalA, agent: agentX, profile: profileP }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          agent: agentX,
+          profile: profileP
+        })
+      );
     });
 
-    it('should use cached profiles when provided and not call getUserProfiles; portal details are always fetched', async () => {
+    it("should use cached profiles when provided and not call getUserProfiles; portal details are always fetched", async () => {
       const adapter = new MemoryCacheAdapter();
-      adapter.set(profilesKey(portalA.id), { value: [profileP, profileQ], timestamp: Date.now() });
+      adapter.set(profilesKey(portalA.id), {
+        value: [profileP, profileQ],
+        timestamp: Date.now()
+      });
       const deps = {
         ...defaultDeps,
-        pipelineCache: { adapter, profilesKey },
+        pipelineCache: { adapter, profilesKey }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
       expect(mockApiHelper.getUserProfiles).not.toHaveBeenCalled();
       expect(mockApiHelper.getPortalDetails).toHaveBeenCalled();
 
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
 
-      const event = getEmittedEvent('initialized');
-      expect(event.payload).toEqual(expect.objectContaining({ portal: portalA, profile: profileP }));
+      const event = getEmittedEvent("initialized");
+      expect(event.payload).toEqual(
+        expect.objectContaining({ portal: portalA, profile: profileP })
+      );
     });
 
-    it('should fetch from API when pipelineCache is omitted', async () => {
+    it("should fetch from API when pipelineCache is omitted", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       expect(mockApiHelper.getMyPortals).toHaveBeenCalled();
       initializer.onPortalSelected(portalA);
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
       expect(mockApiHelper.getPortalDetails).toHaveBeenCalled();
       expect(mockApiHelper.getUserProfiles).toHaveBeenCalled();
 
       initializer.onProfileSelected(profileP);
 
       await vi.waitFor(() => {
-        expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything());
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything());
       });
     });
   });
 
   // ── PlatformComponentService integration ──────────────────────────────
 
-  describe('PlatformComponentService hooks', () => {
+  describe("PlatformComponentService hooks", () => {
     let mockPcs: any;
     let mockHookContract: any;
 
     beforeEach(() => {
       mockPcs = {};
       mockHookContract = {
-        setUserFilterTags: vi.fn(),
+        setUserFilterTags: vi.fn()
       };
     });
 
-    it('getPortalList() is called with fetched portals', async () => {
+    it("getPortalList() is called with fetched portals", async () => {
       mockPcs.getPortalList = vi.fn().mockResolvedValue([portalB, portalA]);
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       expect(mockPcs.getPortalList).toHaveBeenCalledWith([portalA, portalB]);
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
-      const event = getEmittedEvent('portalsAvailable');
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
+      const event = getEmittedEvent("portalsAvailable");
       expect(event.payload.portals).toEqual([portalB, portalA]);
     });
 
-    it('getPortalList() return value replaces the portal list', async () => {
+    it("getPortalList() return value replaces the portal list", async () => {
       mockPcs.getPortalList = vi.fn().mockResolvedValue([portalB]);
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       // Single portal should be auto-selected
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
-      expect(mockEmit).not.toHaveBeenCalledWith('portalsAvailable', expect.anything());
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "portalsAvailable",
+        expect.anything()
+      );
     });
 
-    it('getDefaultPortal() auto-selects when it returns a portal', async () => {
+    it("getDefaultPortal() auto-selects when it returns a portal", async () => {
       mockPcs.getDefaultPortal = vi.fn().mockResolvedValue(portalA);
       mockPcs.onPortalSelected = vi.fn().mockResolvedValue({});
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
       expect(mockPcs.getDefaultPortal).toHaveBeenCalledWith([portalA, portalB]);
       // Should auto-select without emitting portalsAvailable
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
-      expect(mockEmit).not.toHaveBeenCalledWith('portalsAvailable', expect.anything());
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
+      expect(mockEmit).not.toHaveBeenCalledWith(
+        "portalsAvailable",
+        expect.anything()
+      );
+
+      initializer.onProfileSelected(profileP);
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything())
+      );
+      const initialized = getEmittedEvent("initialized");
+      expect(initialized.payload).toEqual(
+        expect.objectContaining({
+          portal: portalA,
+          availablePortals: [portalA, portalB]
+        })
+      );
     });
 
-    it('getDefaultPortal() falls back to normal logic when it returns null', async () => {
+    it("getDefaultPortal() falls back to normal logic when it returns null", async () => {
       mockPcs.getDefaultPortal = vi.fn().mockResolvedValue(null);
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
     });
 
-    it('onPortalSelected() is called after portal selection', async () => {
-      mockPcs.onPortalSelected = vi.fn().mockResolvedValue({ topic: ['billing'] });
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+    it("onPortalSelected() is called after portal selection", async () => {
+      mockPcs.onPortalSelected = vi
+        .fn()
+        .mockResolvedValue({ topic: ["billing"] });
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
 
       await vi.waitFor(() => {
         expect(mockPcs.onPortalSelected).toHaveBeenCalledWith(portalA);
-        expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith({ topic: ['billing'] });
+        expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith({
+          topic: ["billing"]
+        });
       });
     });
 
-    it('onPortalSelected() stores returned filter tags via setUserFilterTags', async () => {
-      const filterTags = { category: ['support', 'sales'] };
+    it("onPortalSelected() stores returned filter tags via setUserFilterTags", async () => {
+      const filterTags = { category: ["support", "sales"] };
       mockPcs.onPortalSelected = vi.fn().mockResolvedValue(filterTags);
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
 
-      await vi.waitFor(() => expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith(filterTags));
+      await vi.waitFor(() =>
+        expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith(
+          filterTags
+        )
+      );
     });
 
-    it('onPortalSelected() defaults to {} on invalid return', async () => {
-      mockPcs.onPortalSelected = vi.fn().mockRejectedValue(new Error('hook error'));
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+    it("onPortalSelected() defaults to {} on invalid return", async () => {
+      mockPcs.onPortalSelected = vi
+        .fn()
+        .mockRejectedValue(new Error("hook error"));
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
 
-      await vi.waitFor(() => expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith({}));
+      await vi.waitFor(() =>
+        expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith({})
+      );
     });
 
-    it('onPortalSelected() is called when getDefaultPortal auto-selects', async () => {
+    it("onPortalSelected() is called when getDefaultPortal auto-selects", async () => {
       mockPcs.getDefaultPortal = vi.fn().mockResolvedValue(portalA);
-      mockPcs.onPortalSelected = vi.fn().mockResolvedValue({ topic: ['auto'] });
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+      mockPcs.onPortalSelected = vi.fn().mockResolvedValue({ topic: ["auto"] });
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockPcs.onPortalSelected).toHaveBeenCalledWith(portalA));
-      expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith({ topic: ['auto'] });
+      await vi.waitFor(() =>
+        expect(mockPcs.onPortalSelected).toHaveBeenCalledWith(portalA)
+      );
+      expect(mockHookContract.setUserFilterTags).toHaveBeenCalledWith({
+        topic: ["auto"]
+      });
     });
 
-    it('getPortalList error clears portal list then emits NO_PORTALS (cc-widget callPortalWebhook parity)', async () => {
-      mockPcs.getPortalList = vi.fn().mockRejectedValue(new Error("hook error"));
-      const deps = { ...defaultDeps, platformComponentService: mockPcs, hookContract: mockHookContract };
+    it("getPortalList error clears portal list then emits NO_PORTALS (cc-widget callPortalWebhook parity)", async () => {
+      mockPcs.getPortalList = vi
+        .fn()
+        .mockRejectedValue(new Error("hook error"));
+      const deps = {
+        ...defaultDeps,
+        platformComponentService: mockPcs,
+        hookContract: mockHookContract
+      };
       const initializer = new PortalInitializer(deps);
       await expectPipelineRejection(() => initializer.start(), "NO_PORTALS");
     });
 
-    it('pipeline works normally when platformComponentService is undefined', async () => {
+    it("pipeline works normally when platformComponentService is undefined", async () => {
       const initializer = new PortalInitializer(defaultDeps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
       initializer.onProfileSelected(profileP);
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything())
+      );
     });
   });
 
   // ── cc-widget customer parity (portal list, profiles, select PUT) ─────
 
-  describe('cc-widget customer parity', () => {
+  describe("cc-widget customer parity", () => {
     const customerAgentDetails = {
-      userType: 'customer' as const,
-      portals: ['p1', 'p2'],
+      userType: "customer" as const,
+      portals: ["p1", "p2"]
     };
 
-    it('rejects with InitializationPipelineError when getPortals fails', async () => {
-      mockApiHelper.getPortals.mockRejectedValue(new Error('504 Gateway Timeout'));
+    it("rejects with InitializationPipelineError when getPortals fails", async () => {
+      mockApiHelper.getPortals.mockRejectedValue(
+        new Error("504 Gateway Timeout")
+      );
       const deps = { ...defaultDeps, agentDetails: customerAgentDetails };
       const initializer = new PortalInitializer(deps);
-      await expectPipelineRejection(() => initializer.start(), 'PORTAL_FETCH_FAILED');
+      await expectPipelineRejection(
+        () => initializer.start(),
+        "PORTAL_FETCH_FAILED"
+      );
     });
 
-    it('fetches getPortals and intersects with bot list for customer; does not call getMyPortals', async () => {
+    it("fetches getPortals and intersects with bot list for customer; does not call getMyPortals", async () => {
       const deps = { ...defaultDeps, agentDetails: customerAgentDetails };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
@@ -1474,19 +2089,19 @@ describe('PortalInitializer', () => {
       );
       expect(mockApiHelper.getMyPortals).not.toHaveBeenCalled();
       await vi.waitFor(() => {
-        const ev = getEmittedEvent('portalsAvailable');
+        const ev = getEmittedEvent("portalsAvailable");
         expect(ev.payload.portals).toEqual([
-          { id: 'p1', name: 'Portal P1' },
-          { id: 'p2', name: 'Portal P2' },
+          { id: "p1", name: "Portal P1" },
+          { id: "p2", name: "Portal P2" }
         ]);
       });
     });
 
-    it('customer portal list uses portalIds initParam before getPortals', async () => {
+    it("customer portal list uses portalIds initParam before getPortals", async () => {
       const deps = {
         ...defaultDeps,
         agentDetails: customerAgentDetails,
-        initParams: { portalIds: '9,10' },
+        initParams: { portalIds: "9,10" }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
@@ -1494,27 +2109,29 @@ describe('PortalInitializer', () => {
       expect(mockApiHelper.getPortals).not.toHaveBeenCalled();
       expect(mockApiHelper.getMyPortals).not.toHaveBeenCalled();
       await vi.waitFor(() => {
-        const ev = getEmittedEvent('portalsAvailable');
-        expect(ev.payload.portals).toEqual([{ id: '9' }, { id: '10' }]);
+        const ev = getEmittedEvent("portalsAvailable");
+        expect(ev.payload.portals).toEqual([{ id: "9" }, { id: "10" }]);
       });
     });
 
-    it('customer throws when getPortals and bot list have no overlapping IDs', async () => {
-      mockApiHelper.getPortals.mockResolvedValue([{ id: 'other', name: 'Other' }]);
+    it("customer throws when getPortals and bot list have no overlapping IDs", async () => {
+      mockApiHelper.getPortals.mockResolvedValue([
+        { id: "other", name: "Other" }
+      ]);
       const deps = { ...defaultDeps, agentDetails: customerAgentDetails };
       const initializer = new PortalInitializer(deps);
       await expect(initializer.start()).rejects.toThrow(/no portals/i);
     });
 
-    it('customer getPortals path does not call PCS getPortalList or getDefaultPortal', async () => {
+    it("customer getPortals path does not call PCS getPortalList or getDefaultPortal", async () => {
       const mockPcs = {
         getPortalList: vi.fn().mockResolvedValue([]),
-        getDefaultPortal: vi.fn().mockResolvedValue(null),
+        getDefaultPortal: vi.fn().mockResolvedValue(null)
       };
       const deps = {
         ...defaultDeps,
         agentDetails: customerAgentDetails,
-        platformComponentService: mockPcs,
+        platformComponentService: mockPcs
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
@@ -1523,121 +2140,183 @@ describe('PortalInitializer', () => {
       expect(mockPcs.getDefaultPortal).not.toHaveBeenCalled();
     });
 
-    it('Flow B with customer: no department filter on portal list; getAgentsByPortal uses portal details departmentId', async () => {
+    it("Flow B with customer: no department filter on portal list; getAgentsByPortal uses portal details departmentId", async () => {
       mockApiHelper.getPortals.mockResolvedValue([
-        { id: 'p1', name: 'Portal P1' },
-        { id: 'p2', name: 'Portal P2' },
+        { id: "p1", name: "Portal P1" },
+        { id: "p2", name: "Portal P2" }
       ]);
       mockApiHelper.getPortalDetails.mockResolvedValue({
         departmentId: 100,
-        portal: [{ name: 'P1', portalSettings: {} }],
+        portal: [{ name: "P1", portalSettings: {} }]
       });
       const deps = {
         ...defaultDeps,
         isAgentSelectionMode: true,
         agentDetails: {
-          userType: 'customer' as const,
-          portals: ['p1', 'p2'],
-          departmentId: 100,
-        },
+          userType: "customer" as const,
+          portals: ["p1", "p2"],
+          departmentId: 100
+        }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
-      initializer.onPortalSelected({ id: 'p1', name: 'Portal P1' });
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
+      initializer.onPortalSelected({ id: "p1", name: "Portal P1" });
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('agentsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "agentsAvailable",
+          expect.anything()
+        )
+      );
       expect(mockApiHelper.getAgentsByPortal).toHaveBeenCalledWith(
-        expect.objectContaining({ departmentId: 100, portalId: 'p1' }),
+        expect.objectContaining({ departmentId: 100, portalId: "p1" })
       );
     });
 
-    it('customer: skips getUserProfiles; completes without profile when no portal default', async () => {
-      mockApiHelper.getPortals.mockResolvedValue([{ id: 'only', name: 'Only Portal' }]);
+    it("customer: skips getUserProfiles; completes without profile when no portal default", async () => {
+      mockApiHelper.getPortals.mockResolvedValue([
+        { id: "only", name: "Only Portal" }
+      ]);
       mockApiHelper.getPortalDetails.mockResolvedValue({
         departmentId: 100,
-        portal: [{ name: 'P', portalSettings: {} }],
+        portal: [{ name: "P", portalSettings: {} }]
       });
-      const deps = { ...defaultDeps, agentDetails: { userType: 'customer' as const, portals: ['only'] } };
+      const deps = {
+        ...defaultDeps,
+        agentDetails: { userType: "customer" as const, portals: ["only"] }
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything())
+      );
       expect(mockApiHelper.getUserProfiles).not.toHaveBeenCalled();
-      const ev = getEmittedEvent('initialized');
+      const ev = getEmittedEvent("initialized");
       expect(ev.payload.profile).toBeUndefined();
       expect(mockApiHelper.selectUserProfile).not.toHaveBeenCalled();
     });
 
-    it('customer: injects default profile from portal details; skips selectUserProfile', async () => {
-      const defaultProf = { id: 42, name: 'DefaultCust' };
-      mockApiHelper.getPortals.mockResolvedValue([{ id: 'only', name: 'Only Portal' }]);
+    it("customer: injects default profile from portal details; skips selectUserProfile", async () => {
+      const defaultProf = { id: 42, name: "DefaultCust" };
+      mockApiHelper.getPortals.mockResolvedValue([
+        { id: "only", name: "Only Portal" }
+      ]);
       mockApiHelper.getPortalDetails.mockResolvedValue({
         departmentId: 100,
-        portal: [{ name: 'P', portalSettings: { defaultUserProfile: defaultProf } }],
-      });
-      const deps = { ...defaultDeps, agentDetails: { userType: 'customer' as const, portals: ['only'] } };
-      const initializer = new PortalInitializer(deps);
-      await initializer.start();
-
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything()));
-      expect(mockApiHelper.getUserProfiles).not.toHaveBeenCalled();
-      expect(mockApiHelper.selectUserProfile).not.toHaveBeenCalled();
-      const ev = getEmittedEvent('initialized');
-      expect(ev.payload.profile).toEqual(defaultProf);
-    });
-
-    it('authType customer without userType still skips getUserProfiles and injects default', async () => {
-      const defaultProf = { id: 77, name: 'Def' };
-      mockApiHelper.getPortalDetails.mockResolvedValue({
-        portal: [{ portalSettings: { defaultUserProfile: defaultProf } }],
+        portal: [
+          { name: "P", portalSettings: { defaultUserProfile: defaultProf } }
+        ]
       });
       const deps = {
         ...defaultDeps,
-        initParams: { authType: 'customer' },
-        agentDetails: { portals: [1, 2] },
+        agentDetails: { userType: "customer" as const, portals: ["only"] }
       };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
-      initializer.onPortalSelected(portalA);
-
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything())
+      );
       expect(mockApiHelper.getUserProfiles).not.toHaveBeenCalled();
-      expect(getEmittedEvent('initialized').payload.profile).toEqual(defaultProf);
+      expect(mockApiHelper.selectUserProfile).not.toHaveBeenCalled();
+      const ev = getEmittedEvent("initialized");
+      expect(ev.payload.profile).toEqual(defaultProf);
     });
 
-    it('initParams authType user persists profile via selectUserProfile', async () => {
-      const deps = { ...defaultDeps, initParams: { authType: 'user' } };
+    it("authType customer without userType still skips getUserProfiles and injects default", async () => {
+      const defaultProf = { id: 77, name: "Def" };
+      mockApiHelper.getPortalDetails.mockResolvedValue({
+        portal: [{ portalSettings: { defaultUserProfile: defaultProf } }]
+      });
+      const deps = {
+        ...defaultDeps,
+        initParams: { authType: "customer" },
+        agentDetails: { portals: [1, 2] }
+      };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
-      initializer.onProfileSelected(profileP);
-
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything()));
-      expect(mockApiHelper.selectUserProfile).toHaveBeenCalledWith(
-        expect.objectContaining({ portalId: portalA.id, profileId: profileP.id }),
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything())
+      );
+      expect(mockApiHelper.getUserProfiles).not.toHaveBeenCalled();
+      expect(getEmittedEvent("initialized").payload.profile).toEqual(
+        defaultProf
       );
     });
 
-    it('initParams authType anonymous does not call selectUserProfile', async () => {
-      const deps = { ...defaultDeps, initParams: { authType: 'anonymous' } };
+    it("initParams authType user persists profile via selectUserProfile", async () => {
+      const deps = { ...defaultDeps, initParams: { authType: "user" } };
       const initializer = new PortalInitializer(deps);
       await initializer.start();
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('portalsAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
       initializer.onPortalSelected(portalA);
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('profilesAvailable', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
       initializer.onProfileSelected(profileP);
 
-      await vi.waitFor(() => expect(mockEmit).toHaveBeenCalledWith('initialized', expect.anything()));
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything())
+      );
+      expect(mockApiHelper.selectUserProfile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          portalId: portalA.id,
+          profileId: profileP.id
+        })
+      );
+    });
+
+    it("initParams authType anonymous does not call selectUserProfile", async () => {
+      const deps = { ...defaultDeps, initParams: { authType: "anonymous" } };
+      const initializer = new PortalInitializer(deps);
+      await initializer.start();
+
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "portalsAvailable",
+          expect.anything()
+        )
+      );
+      initializer.onPortalSelected(portalA);
+
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith(
+          "profilesAvailable",
+          expect.anything()
+        )
+      );
+      initializer.onProfileSelected(profileP);
+
+      await vi.waitFor(() =>
+        expect(mockEmit).toHaveBeenCalledWith("initialized", expect.anything())
+      );
       expect(mockApiHelper.selectUserProfile).not.toHaveBeenCalled();
     });
   });

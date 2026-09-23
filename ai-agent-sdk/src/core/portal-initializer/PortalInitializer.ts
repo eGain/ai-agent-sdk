@@ -362,6 +362,7 @@ export class PortalInitializer {
 
       if (filterResult.pcsAutoSelected) {
         this.selectedPortal = filterResult.pcsAutoSelected;
+        this.portals = filterResult.portals;
         await this.callOnPortalSelected(filterResult.pcsAutoSelected);
         await this.handleSelectedPortal();
         return;

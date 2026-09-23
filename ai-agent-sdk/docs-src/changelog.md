@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2026-09-23
+
+### Fixed
+
+- **`PlatformComponentService.getDefaultPortal()` and `availablePortals`** — when a connector auto-selects a portal via `getDefaultPortal`, `PortalInitializer` now stores the full PCS-processed portal list before continuing the pipeline. The `initialized` event includes `availablePortals` with every portal the user can switch to (not only the selected one). Fixes cc-widget contact-center hosts where the header portal edit control stayed disabled despite multiple portals.
+
 ## [0.2.4] - 2026-09-XX
 
 ### Added
