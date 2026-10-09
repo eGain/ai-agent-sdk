@@ -2,7 +2,7 @@
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
-**Current release:** v0.2.5
+**Current release:** v0.3.0
 
 [![npm version](https://img.shields.io/npm/v/@egain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@egain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -287,7 +287,6 @@ new AiAgent({
   transcriptConfig?: TranscriptConfig,
   cache?: CacheConfig,
   sessionId?: string | number,  // Skip session fetch if already known
-  scopes?: string[],              // OAuth resource scopes
   initParams?: Record<string, string>, // CC: portalIds, authType, platform, etc.
   context?: Record<string, unknown>,  // Optional; merged with initialize({ context })
   platformScriptUrl?: string,     // Override connector script URL

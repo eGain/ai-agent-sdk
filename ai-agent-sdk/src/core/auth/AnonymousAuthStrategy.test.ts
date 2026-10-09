@@ -475,4 +475,88 @@ describe('AnonymousAuthStrategy', () => {
       expect(strategy.isAuthenticated()).toBe(true);
     });
   });
+
+  describe('updateScopes', () => {
+    const metadataResponse = () => ({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          authenticationDetails: {
+            oAuthAnonymousCustomer: [{ accessTokenURL: 'https://<DOMAIN_NAME>/token' }],
+            apiPermissionPrefix: 'api.',
+          },
+        }),
+    });
+    const tokenResponse = (accessToken: string) => ({
+      ok: true,
+      json: () => Promise.resolve({ access_token: accessToken, expires_in: 3600 }),
+    });
+    const requestedScope = (callIndex: number): string => {
+      const body = String(mockFetch.mock.calls[callIndex][1].body);
+      return decodeURIComponent(new URLSearchParams(body).get('scope') || '');
+    };
+
+    const initialized = async () => {
+      const strategy = new AnonymousAuthStrategy({ cache: { enabled: true, storageType: 'memory' } });
+      await strategy.initialize({
+        deploymentInfo: { apiDomain: 'test.example.com', tenantId: 'tenant-123' },
+        scopes: ['scope.a'],
+      });
+      return strategy;
+    };
+
+    it('should trim and deduplicate scopes on initialize', async () => {
+      const strategy = new AnonymousAuthStrategy({ cache: { enabled: false } });
+      await strategy.initialize({
+        deploymentInfo: { apiDomain: 'test.example.com', tenantId: 'tenant-123' },
+        scopes: [' scope.a ', 'scope.a', '', '  ', 'scope.b'],
+      });
+      mockFetch.mockResolvedValueOnce(metadataResponse()).mockResolvedValueOnce(tokenResponse('token-1'));
+
+      await strategy.getToken();
+
+      expect(requestedScope(1)).toBe('api.scope.a api.scope.b');
+    });
+
+    it('should request a new token with the merged scopes after updateScopes', async () => {
+      const strategy = await initialized();
+      mockFetch.mockResolvedValueOnce(metadataResponse()).mockResolvedValueOnce(tokenResponse('token-base'));
+      expect(await strategy.getToken()).toBe('token-base');
+
+      await strategy.updateScopes(['scope.a', 'extra.scope']);
+      mockFetch.mockResolvedValueOnce(tokenResponse('token-extra'));
+
+      expect(await strategy.getToken()).toBe('token-extra');
+      // metadata + base token + extra token: metadata is cached and not re-fetched
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+      expect(requestedScope(2)).toBe('api.scope.a api.extra.scope');
+    });
+
+    it('should reuse the cached token when updateScopes keeps the same set in another order', async () => {
+      const strategy = await initialized();
+      await strategy.updateScopes(['scope.b', 'scope.a']);
+      mockFetch.mockResolvedValueOnce(metadataResponse()).mockResolvedValueOnce(tokenResponse('token-ab'));
+      expect(await strategy.getToken()).toBe('token-ab');
+
+      await strategy.updateScopes(['scope.a', 'scope.b']);
+
+      expect(await strategy.getToken()).toBe('token-ab');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('should keep the token for the earlier scope set in cache', async () => {
+      const strategy = await initialized();
+      mockFetch.mockResolvedValueOnce(metadataResponse()).mockResolvedValueOnce(tokenResponse('token-base'));
+      expect(await strategy.getToken()).toBe('token-base');
+
+      await strategy.updateScopes(['scope.a', 'extra.scope']);
+      mockFetch.mockResolvedValueOnce(tokenResponse('token-extra'));
+      expect(await strategy.getToken()).toBe('token-extra');
+
+      await strategy.updateScopes(['scope.a']);
+
+      expect(await strategy.getToken()).toBe('token-base');
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+    });
+  });
 });

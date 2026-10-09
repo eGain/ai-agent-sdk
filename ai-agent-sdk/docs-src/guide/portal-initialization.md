@@ -42,7 +42,7 @@ Pass host-driven parameters explicitly (the SDK stays URL-agnostic):
 | `portalIds` | Comma-separated IDs; skips `getMyPortals` and uses minimal portal objects |
 | `templateName` | Theme short URL template (sent as `shortUrlTemplate` to portalmgr APIs) |
 | `authType` | `"user"` or `"customer"` |
-| `scopes` | Comma-separated OAuth scopes; when non-empty after parsing, **overrides** `config.scopes` |
+| `scopes` | Comma-separated OAuth scopes, used exactly as given (no defaults, no agent `extraScopes`, no platform augmentation) |
 | `userid` | User id for portal cache keying |
 | `isDefaultAgent` | `"true"` enables **Flow B** (agent selection from a list) |
 | `platform` | Platform id for loading the connector script (e.g. `genesys`, `standalone`, `test`). Loaded when agent type is contact-center; `test` uses the standalone connector URL |
@@ -74,7 +74,6 @@ When the pipeline has a profile list and more than one row, the SDK picks in thi
 
 ### Top-level `AiAgentConfig`
 
-- **`scopes`** — Custom OAuth resource scopes (defaults differ for agent vs customer).
 - **`connector`** — `{ env?, connectorUrl? }` for platform connector script URL and `HookContract.getEnvironment()`.
 - **`authScheme`** — `'popup'` or `'redirect'` when the SDK **auto-builds** PKCE from deployment info (ignored if you pass a full `PKCEAuthConfig` in `auth`).
 - **`sessionId`** — Skip session fetch if you already have a session id.

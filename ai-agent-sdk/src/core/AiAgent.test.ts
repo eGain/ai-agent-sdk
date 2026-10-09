@@ -24,6 +24,7 @@ const authServiceMock = vi.hoisted(() => ({
   getStrategy: vi.fn().mockReturnValue({ isAuthenticated: () => false }),
   setTokenExpiringCallback: vi.fn(),
   switchStrategyTo: vi.fn().mockResolvedValue(true),
+  updateScopes: vi.fn().mockResolvedValue(undefined),
   cleanup: vi.fn().mockResolvedValue(undefined),
   logout: vi.fn().mockResolvedValue(undefined),
 }));
@@ -87,6 +88,7 @@ describe('AiAgent', () => {
     authServiceMock.authenticate.mockResolvedValue(undefined);
     authServiceMock.setTokenExpiringCallback.mockReset();
     authServiceMock.switchStrategyTo.mockResolvedValue(true);
+    authServiceMock.updateScopes.mockResolvedValue(undefined);
     authServiceMock.cleanup.mockResolvedValue(undefined);
     authServiceMock.logout.mockResolvedValue(undefined);
 
@@ -148,27 +150,6 @@ describe('AiAgent', () => {
         auth: { type: 'pre-auth', accessToken: 'test-token' },
       });
       expect(agent).toBeDefined();
-    });
-
-    it('should accept custom scopes configuration', () => {
-      const customScopes = ['custom.scope1', 'custom.scope2'];
-      const agent = new AiAgent({
-        id: mockAgentId,
-        endpoint: mockEndpoint,
-        scopes: customScopes,
-      });
-      expect(agent).toBeDefined();
-      expect((agent as any).config.scopes).toEqual(customScopes);
-    });
-
-    it('should accept empty scopes array', () => {
-      const agent = new AiAgent({
-        id: mockAgentId,
-        endpoint: mockEndpoint,
-        scopes: [],
-      });
-      expect(agent).toBeDefined();
-      expect((agent as any).config.scopes).toEqual([]);
     });
 
     it('should accept custom logger', () => {
@@ -625,11 +606,10 @@ describe('AiAgent', () => {
       expect((agent as any).isInitialized).toBe(true);
     });
 
-    it('should prefer initParams.scopes over config.scopes for PKCE and auth initialize', async () => {
+    it('should use initParams.scopes as given for PKCE and auth initialize', async () => {
       const agent = new AiAgent({
         id: mockAgentId,
         endpoint: mockEndpoint,
-        scopes: ['from.config.scope', 'ignored.when.query.set'],
         initParams: { scopes: ' query.a , query.b ' },
       });
 
@@ -690,6 +670,281 @@ describe('AiAgent', () => {
           scopes: ['query.a', 'query.b'],
         }),
       );
+    });
+
+    describe('agentDetails.extraScopes and clientAppId', () => {
+      const pkceConfig = {
+        authorizationUrl: 'https://auth.example.com/authorize',
+        tokenUrl: 'https://auth.example.com/token',
+        clientId: 'int-client-id',
+        redirectUri: 'https://app.example.com/callback',
+        knownAuthorities: ['auth.example.com'],
+      };
+
+      const setupAuthenticatedAgent = async (agent: AiAgent, agentDetails: Record<string, unknown>) => {
+        vi.spyOn(ApiHelper, 'getDeploymentInfo').mockResolvedValue({
+          aiAgentDomain: 'test.example.com',
+          apiDomain: 'api.test.example.com',
+          intClientId: 'int-client-id',
+          tenantId: 'tenant-123',
+        });
+        vi.spyOn(agent as any, 'fetchAgentDetails').mockResolvedValue({ name: 'Test Agent', ...agentDetails });
+
+        const authService = (agent as any).authService;
+        vi.spyOn(authService, 'isAnonymousStrategy').mockReturnValue(true);
+        vi.spyOn(authService, 'switchStrategyTo').mockResolvedValue(true);
+        const initializeSpy = vi.spyOn(authService, 'initialize').mockResolvedValue(undefined);
+        vi.spyOn(authService, 'getToken').mockResolvedValue('test-token');
+        vi.spyOn(authService, 'getIsInitialized').mockReturnValue(false);
+        vi.spyOn(authService, 'getAuthenticationType').mockReturnValue('anonymous');
+        vi.spyOn(authService, 'setTokenExpiringCallback').mockReturnValue(undefined);
+        vi.spyOn(authService, 'authenticate').mockImplementation(async () => {
+          const token = await authService.getToken();
+          await (agent as any).onAuthComplete(token);
+        });
+
+        const { PKCEAuthStrategy } = await import('./auth/PKCEAuthStrategy.js');
+        const buildSpy = vi.spyOn(PKCEAuthStrategy, 'buildConfigFromDeploymentInfo').mockResolvedValue(pkceConfig);
+
+        vi.spyOn(agent as any, 'getSessionId').mockResolvedValue('session-123');
+        vi.spyOn(agent as any, 'createConnection').mockResolvedValue(undefined);
+
+        return { authService, initializeSpy, buildSpy };
+      };
+
+      it('should append extraScopes (deduplicated) to the PKCE scopes and auth initialize', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+        const { initializeSpy, buildSpy } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: true,
+          userType: 'agent',
+          extraScopes: ['core.customermgr.read', ' core.aiservices.read ', 'custom.scope'],
+        });
+
+        await agent.initialize();
+
+        const expected = ['knowledge.portalmgr.manage', 'core.aiservices.read', 'core.customermgr.read', 'custom.scope'];
+        expect(buildSpy.mock.calls[0][3]).toEqual(expected);
+        expect(initializeSpy).toHaveBeenCalledWith(expect.objectContaining({ scopes: expected }));
+        expect((agent as any).buildHookContract().getAuthScopes()).toEqual(expected);
+      });
+
+      it('should not append extraScopes when initParams.scopes are supplied', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint, initParams: { scopes: 'query.a' } });
+        const { buildSpy, initializeSpy } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: true,
+          userType: 'customer',
+          extraScopes: ['custom.scope'],
+        });
+
+        await agent.initialize();
+
+        expect(buildSpy.mock.calls[0][3]).toEqual(['query.a']);
+        expect(initializeSpy).toHaveBeenCalledWith(expect.objectContaining({ scopes: ['query.a'] }));
+        expect((agent as any).buildHookContract().getAuthScopes()).toEqual(['query.a']);
+      });
+
+      it('should pass a user-supplied PKCE config through unchanged and skip extraScopes', async () => {
+        const hostConfig = { ...pkceConfig, scopes: ['api://host/from.config'] };
+        const agent = new AiAgent({
+          id: mockAgentId,
+          endpoint: mockEndpoint,
+          auth: { type: 'pkce', config: hostConfig },
+        });
+        const { authService, buildSpy } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: true,
+          userType: 'agent',
+          extraScopes: ['custom.scope'],
+        });
+
+        await agent.initialize();
+
+        expect(buildSpy).not.toHaveBeenCalled();
+        expect(authService.switchStrategyTo).toHaveBeenCalledWith(hostConfig, expect.any(Function));
+      });
+
+      it('should pass a user-supplied PKCE config without scopes through unchanged', async () => {
+        const agent = new AiAgent({
+          id: mockAgentId,
+          endpoint: mockEndpoint,
+          auth: { type: 'pkce', config: pkceConfig },
+        });
+        const { authService } = await setupAuthenticatedAgent(agent, { isAuthenticated: true, userType: 'agent' });
+
+        await agent.initialize();
+
+        expect(authService.switchStrategyTo).toHaveBeenCalledWith(pkceConfig, expect.any(Function));
+        expect((authService.switchStrategyTo as any).mock.calls[0][0].scopes).toBeUndefined();
+      });
+
+      it('should use host PKCE scopes as-is for authenticated agents and never for the anonymous flow', async () => {
+        const agent = new AiAgent({
+          id: mockAgentId,
+          endpoint: mockEndpoint,
+          initParams: { scopes: 'query.a' },
+          auth: { type: 'pkce', config: { ...pkceConfig, scopes: ['api://host/from.config'] } },
+        });
+
+        // Authenticated: the host PKCE scopes win over initParams.scopes, untouched.
+        (agent as any).agentDetails = { isAuthenticated: true, userType: 'customer', extraScopes: ['custom.scope'] };
+        expect((agent as any).getAuthScopesForFlow()).toEqual(['api://host/from.config']);
+
+        // Not authenticated: MSAL-qualified host scopes must not reach the anonymous token;
+        // initParams.scopes are next in line and are used as-is.
+        (agent as any).agentDetails = { isAuthenticated: false, userType: 'customer', extraScopes: ['custom.scope'] };
+        expect((agent as any).getAuthScopesForFlow()).toEqual(['query.a']);
+      });
+
+      it('should keep host PKCE scopes over initParams.scopes', async () => {
+        const hostConfig = { ...pkceConfig, scopes: ['from.config'] };
+        const agent = new AiAgent({
+          id: mockAgentId,
+          endpoint: mockEndpoint,
+          initParams: { scopes: 'query.a' },
+          auth: { type: 'pkce', config: hostConfig },
+        });
+        const { authService, initializeSpy } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: true,
+          userType: 'agent',
+          extraScopes: ['custom.scope'],
+        });
+
+        await agent.initialize();
+
+        expect(authService.switchStrategyTo).toHaveBeenCalledWith(hostConfig, expect.any(Function));
+        expect(initializeSpy).toHaveBeenCalledWith(expect.objectContaining({ scopes: ['from.config'] }));
+      });
+
+      it('should fill a scope-less host PKCE config from initParams.scopes, without extras', async () => {
+        const agent = new AiAgent({
+          id: mockAgentId,
+          endpoint: mockEndpoint,
+          initParams: { scopes: 'query.a, query.b' },
+          auth: { type: 'pkce', config: pkceConfig },
+        });
+        const { authService } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: true,
+          userType: 'agent',
+          extraScopes: ['custom.scope'],
+        });
+
+        await agent.initialize();
+
+        expect(authService.switchStrategyTo).toHaveBeenCalledWith(
+          { ...pkceConfig, scopes: ['query.a', 'query.b'] },
+          expect.any(Function),
+        );
+      });
+
+      it('should pass agentDetails with clientAppId through to buildConfigFromDeploymentInfo', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint, initParams: { egclientid: 'query-client-id' } });
+        const { buildSpy } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: true,
+          userType: 'agent',
+          clientAppId: 'app-client-id',
+        });
+
+        await agent.initialize();
+
+        expect(buildSpy.mock.calls[0][1]).toEqual(expect.objectContaining({ clientAppId: 'app-client-id' }));
+        expect(buildSpy.mock.calls[0][6]).toBe('query-client-id');
+      });
+
+      it('should re-scope the anonymous strategy with merged scopes before fetching the session token', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+        const { authService } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: false,
+          userType: 'customer',
+          extraScopes: ['custom.scope'],
+        });
+        const updateScopesSpy = vi.spyOn(authService, 'updateScopes').mockResolvedValue(undefined);
+        const getSessionIdSpy = (agent as any).getSessionId as ReturnType<typeof vi.fn>;
+
+        await agent.initialize();
+
+        expect(updateScopesSpy).toHaveBeenCalledTimes(1);
+        expect(updateScopesSpy).toHaveBeenCalledWith(
+          ['knowledge.portalmgr.manage', 'core.aiservices.read', 'core.customermgr.read', 'custom.scope'],
+          expect.objectContaining({ tenantId: 'tenant-123' }),
+        );
+        expect(updateScopesSpy.mock.invocationCallOrder[0]).toBeLessThan(getSessionIdSpy.mock.invocationCallOrder[0]);
+        expect(authService.switchStrategyTo).not.toHaveBeenCalled();
+      });
+
+      it('should keep the develop default scopes for an agent without extras or embed scopes', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+        const { authService } = await setupAuthenticatedAgent(agent, { isAuthenticated: false, userType: 'agent' });
+        const updateScopesSpy = vi.spyOn(authService, 'updateScopes').mockResolvedValue(undefined);
+
+        await agent.initialize();
+
+        // Same list the strategy already holds, so the scope-fingerprinted cache serves the
+        // existing token and no second token request is made (AnonymousAuthStrategy tests).
+        expect(updateScopesSpy).toHaveBeenCalledWith(
+          ['knowledge.portalmgr.manage', 'core.aiservices.read'],
+          expect.any(Object),
+        );
+      });
+
+      it('should add the customer scope to the anonymous token for customer agents', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+        const { authService } = await setupAuthenticatedAgent(agent, { isAuthenticated: false, userType: 'customer' });
+        const updateScopesSpy = vi.spyOn(authService, 'updateScopes').mockResolvedValue(undefined);
+
+        await agent.initialize();
+
+        expect(updateScopesSpy).toHaveBeenCalledWith(
+          ['knowledge.portalmgr.manage', 'core.aiservices.read', 'core.customermgr.read'],
+          expect.any(Object),
+        );
+      });
+
+      it('should not re-scope when the current strategy is not anonymous', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+        const { authService } = await setupAuthenticatedAgent(agent, {
+          isAuthenticated: false,
+          userType: 'customer',
+          extraScopes: ['custom.scope'],
+        });
+        vi.spyOn(authService, 'isAnonymousStrategy').mockReturnValue(false);
+        const updateScopesSpy = vi.spyOn(authService, 'updateScopes').mockResolvedValue(undefined);
+
+        await agent.initialize();
+
+        expect(updateScopesSpy).not.toHaveBeenCalled();
+      });
+
+      it('should append extraScopes after platform augmentation on the SDK-managed path only', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint });
+        (agent as any).agentDetails = { userType: 'agent', extraScopes: ['custom.scope'] };
+
+        expect((agent as any).getAuthScopesForFlow()).toEqual([
+          'knowledge.portalmgr.manage',
+          'core.aiservices.read',
+          'custom.scope',
+        ]);
+
+        (agent as any).platformAuthScopes = ['knowledge.portalmgr.manage', 'core.aiservices.read', 'platform.scope'];
+        expect((agent as any).getAuthScopesForFlow()).toEqual([
+          'knowledge.portalmgr.manage',
+          'core.aiservices.read',
+          'platform.scope',
+          'custom.scope',
+        ]);
+
+        // initParams.scopes are used as given: platform augmentation and extras do not apply.
+        (agent as any).initParams = { scopes: 'query.a' };
+        expect((agent as any).getAuthScopesForFlow()).toEqual(['query.a']);
+      });
+
+      it('should skip addCustomAuthScopes when the host supplied scopes', async () => {
+        const agent = new AiAgent({ id: mockAgentId, endpoint: mockEndpoint, initParams: { scopes: 'query.a' } });
+        (agent as any).agentDetails = { userType: 'agent' };
+        const addCustomAuthScopes = vi.fn(async (scopes: string[]) => [...scopes, 'platform.scope']);
+        (agent as any).platformComponentService = { addCustomAuthScopes };
+
+        expect((agent as any).hostSuppliedAuthScopes()).toEqual(['query.a']);
+        expect(addCustomAuthScopes).not.toHaveBeenCalled();
+      });
     });
 
     it('should not append core.customermgr.read when initParams.scopes overrides for customer userType', async () => {

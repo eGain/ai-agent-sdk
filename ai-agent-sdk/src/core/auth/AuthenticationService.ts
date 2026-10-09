@@ -9,6 +9,7 @@ import { ApiHelper } from '../api/ApiHelper.js';
 import { Logger } from '../logging/Logger.js';
 import { globalLogger } from '../logging/globalLogger.js';
 import { CacheStorageType } from '../api/CacheAdapter.js';
+import { buildDefaultAuthScopes } from '../types/AgentDetailsTypes.js';
 
 /**
  * Authentication types supported by the service
@@ -338,15 +339,7 @@ export class AuthenticationService implements AuthStrategy {
     this.logger.debug('Initializing AuthenticationService', { authenticationType: this.authenticationType });
     
     // Build scopes: default scopes + core.customermgr.read for customer userType
-    let scopes: string[];
-    if (options?.scopes) {
-      scopes = options.scopes;
-    } else {
-      scopes = ["knowledge.portalmgr.manage", "core.aiservices.read"];
-      if (options?.userType === 'customer') {
-        scopes.push("core.customermgr.read");
-      }
-    }
+    const scopes: string[] = options?.scopes ?? buildDefaultAuthScopes(options?.userType);
 
     const deploymentInfo = options?.deploymentInfo;
     // Use stored postAuthentication if no new one provided
@@ -507,6 +500,24 @@ export class AuthenticationService implements AuthStrategy {
       this.logger.debug('Token expiring callback set', { authenticationType: this.authenticationType });
     } else {
       this.logger.debug('Token expiring callback not supported for this authentication type', { authenticationType: this.authenticationType });
+    }
+  }
+
+  /**
+   * Replace the scopes the current strategy will use for its next token request, without
+   * re-running initialization. Used once agent details reveal per-agent `extraScopes` for an
+   * agent that stays on the anonymous strategy. Strategies that do not implement `updateScopes`
+   * (PKCE, pre-auth) are left untouched.
+   * @param scopes - Unprefixed resource scopes
+   * @param deploymentInfo - Optional refreshed deployment info
+   */
+  async updateScopes(scopes: string[], deploymentInfo?: any): Promise<void> {
+    if ('updateScopes' in this.strategy && typeof (this.strategy as any).updateScopes === 'function') {
+      await (this.strategy as any).updateScopes(scopes, deploymentInfo);
+      this.cachedAccessToken = null;
+      this.logger.debug('Auth scopes updated', { authenticationType: this.authenticationType, scopes });
+    } else {
+      this.logger.debug('Scope update not supported for this authentication type', { authenticationType: this.authenticationType });
     }
   }
 

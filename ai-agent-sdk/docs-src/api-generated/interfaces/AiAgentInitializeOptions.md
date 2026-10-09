@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.5](../README.md) / AiAgentInitializeOptions
+[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / AiAgentInitializeOptions
 
 # Interface: AiAgentInitializeOptions
 
@@ -20,4 +20,4 @@ Merged on top of [AiAgentConfig.context](AiAgentConfig.md#context) for this init
 
 #### Defined in
 
-[core/AiAgent.ts:231](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L231)
+[core/AiAgent.ts:217](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L217)

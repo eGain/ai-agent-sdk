@@ -60,6 +60,7 @@ export type {
   UserDetails,
 } from './core/AiAgent.js';
 export type { Portal, UserProfile, AgentListItem } from './core/types/PortalTypes.js';
+export type { AgentAuthDetails } from './core/types/AgentDetailsTypes.js';
 
 // Platform connector types (for connector authors, not SDK consumers)
 export type { HookContract, CallerInfo, CallTranscriptEntry } from './core/platform/HookContract.js';
@@ -71,7 +72,7 @@ export type { AuthStrategy, PostAuthenticationCallback, AuthStrategyInitializeOp
 export { AnonymousAuthStrategy } from './core/auth/AnonymousAuthStrategy.js';
 export type { AnonymousAuthConfig, AnonymousAuthCacheConfig } from './core/auth/AnonymousAuthStrategy.js';
 export { PKCEAuthStrategy } from './core/auth/PKCEAuthStrategy.js';
-export type { PKCEAuthConfig } from './core/auth/PKCEAuthStrategy.js';
+export type { PKCEAuthConfig, ClientIdSource } from './core/auth/PKCEAuthStrategy.js';
 export { ClientCredentialsAuthStrategy } from './core/auth/ClientCredentialsAuthStrategy.js';
 export type { ClientCredentialsAuthConfig } from './core/auth/ClientCredentialsAuthStrategy.js';
 export { PreAuthStrategy } from './core/auth/PreAuthStrategy.js';

@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.2.5
+# @egain/ai-agent-sdk API Reference - v0.3.0
 
 # @egain/ai-agent-sdk
 
@@ -142,6 +142,7 @@ await agent.send("Hello!");
 - [CallerInfo](interfaces/CallerInfo.md)
 - [HookContract](interfaces/HookContract.md)
 - [PlatformComponentService](interfaces/PlatformComponentService.md)
+- [AgentAuthDetails](interfaces/AgentAuthDetails.md)
 - [Portal](interfaces/Portal.md)
 - [UserProfile](interfaces/UserProfile.md)
 - [AgentListItem](interfaces/AgentListItem.md)
@@ -153,6 +154,7 @@ await agent.send("Hello!");
 - [AuthenticationType](README.md#authenticationtype)
 - [AuthenticationServiceConfig](README.md#authenticationserviceconfig)
 - [AuthenticationInput](README.md#authenticationinput)
+- [ClientIdSource](README.md#clientidsource)
 - [TokenExpiringCallback](README.md#tokenexpiringcallback)
 - [InitializationPipelineStage](README.md#initializationpipelinestage)
 - [InitializationPipelineErrorCode](README.md#initializationpipelineerrorcode-1)
@@ -215,7 +217,7 @@ Agent event type identifiers
 
 #### Defined in
 
-[core/AiAgent.ts:237](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L237)
+[core/AiAgent.ts:223](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L223)
 
 ___
 
@@ -254,7 +256,7 @@ Authentication types supported by the service
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:16](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L16)
+[core/auth/AuthenticationService.ts:17](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L17)
 
 ___
 
@@ -266,7 +268,7 @@ Union type of all authentication service configurations
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:74](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L74)
+[core/auth/AuthenticationService.ts:75](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L75)
 
 ___
 
@@ -282,7 +284,19 @@ Input types that AuthenticationService can accept
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:87](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L87)
+[core/auth/AuthenticationService.ts:88](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L88)
+
+___
+
+### ClientIdSource
+
+Ƭ **ClientIdSource**: ``"initParams.egclientid"`` \| ``"agentDetails.clientAppId"`` \| ``"deploymentInfo.intClientId"`` \| ``"deploymentInfo.extClientId"`` \| ``"deploymentInfo.clientId"``
+
+Where [PKCEAuthStrategy.resolveClientId](classes/PKCEAuthStrategy.md#resolveclientid) found the client id.
+
+#### Defined in
+
+[core/auth/PKCEAuthStrategy.ts:13](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L13)
 
 ___
 

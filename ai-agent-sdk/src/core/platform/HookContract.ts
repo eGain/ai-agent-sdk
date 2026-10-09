@@ -91,10 +91,12 @@ export interface HookContract {
   getConversationId: () => string | null;
 
   /**
-   * Returns effective OAuth resource scopes for the auth flow: after the platform connector runs,
-   * the merged list in `config.scopes` wins; otherwise non-empty `initParams.scopes` (comma-separated)
-   * overrides `config.scopes`, then defaults (including `core.customermgr.read` for customer when
-   * neither query nor config supplies scopes).
+   * Returns the OAuth scopes for the auth flow. Host-supplied scopes are used exactly as given:
+   * a host PKCE config's `scopes` (authenticated agents) first, else `initParams.scopes`
+   * (comma-separated). Otherwise the SDK-managed list: the connector's `addCustomAuthScopes`
+   * result if it ran, else the defaults for the agent's user type (including
+   * `core.customermgr.read` for customer), with the agent's `extraScopes` (from agent details)
+   * appended last, deduplicated.
    */
   getAuthScopes: () => string[];
 

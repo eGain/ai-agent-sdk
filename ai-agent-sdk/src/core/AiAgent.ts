@@ -17,6 +17,7 @@ import { createGracefulDisconnectMessage, createTokenMessage, createContextMessa
 import { Transcript, TranscriptConfig, TranscriptOptions, TranscriptEntry } from './message/Transcript.js';
 import { PortalInitializer } from './portal-initializer/PortalInitializer.js';
 import type { Portal, UserProfile, AgentListItem } from './types/PortalTypes.js';
+import { buildDefaultAuthScopes, getAgentExtraScopes, mergeAgentExtraScopes } from './types/AgentDetailsTypes.js';
 import type { HookContract, CallerInfo, CallTranscriptEntry } from './platform/HookContract.js';
 import type { PlatformComponentService } from './platform/PlatformComponentService.js';
 import { loadPlatformScript } from './platform/PlatformScriptLoader.js';
@@ -135,21 +136,6 @@ export interface AiAgentConfig {
   cache?: CacheConfig;
 
   /**
-   * Custom OAuth scopes to request during authentication (optional)
-   * If not provided, default scopes will be used:
-   * - ["knowledge.portalmgr.manage", "core.aiservices.read"] for agents
-   * - ["knowledge.portalmgr.manage", "core.aiservices.read", "core.customermgr.read"] for customers
-   * 
-   * You can provide additional scopes to extend the default ones, or replace them entirely.
-   * @example
-   * ```typescript
-   * // Add additional scopes
-   * scopes: ["knowledge.portalmgr.manage", "core.aiservices.read", "custom.scope"]
-   * ```
-   */
-  scopes?: string[];
-
-  /**
    * Pre-provided session ID (optional)
    * If provided, the SDK will skip fetching sessionId from the network during initialization.
    * Useful when you already have a session ID from a previous session or external source.
@@ -178,7 +164,7 @@ export interface AiAgentConfig {
    * - `portalIds` — comma-separated portal IDs; when set, skips `getMyPortals` and uses minimal portal objects
    * - `templateName` — alias for theme short URL template sent as `shortUrlTemplate` to portalmgr APIs
    * - `authType` — signals the authentication mode ("user" | "customer")
-   * - `scopes` — comma-separated OAuth scopes to request; when non-empty after parsing, **overrides** `config.scopes` and default scopes for PKCE / token acquisition
+   * - `scopes` — comma-separated OAuth scopes to request, used exactly as given (no defaults, no agent `extraScopes`, no platform augmentation). A host-supplied PKCE config's own `scopes` take precedence over this.
    * - `userid` — user identifier for portal cache keying
    * - `isDefaultAgent` — when "true", enables Flow B (agent selection mode)
    *
@@ -605,8 +591,11 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   private hookContract?: HookContract;
   private platformComponentService?: PlatformComponentService;
   private userDetails: UserDetails | null = null;
-  /** True after `addCustomAuthScopes` merged scopes into `config.scopes` (PKCE/hooks must use that list). */
-  private authScopesAugmentedByPlatform = false;
+  /**
+   * The list the platform connector's `addCustomAuthScopes` returned, if it ran. Only consulted
+   * on the SDK-managed path (no host-supplied scopes); see {@link getAuthScopesForFlow}.
+   */
+  private platformAuthScopes?: string[];
 
   constructor(config: AiAgentConfig) {
     super();
@@ -736,35 +725,51 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       .filter((s) => s.length > 0);
   }
 
-  /**
-   * Base OAuth resource scopes before platform augmentation: comma-separated `initParams.scopes`
-   * overrides `config.scopes` and defaults. Used to seed `addCustomAuthScopes`. For PKCE and hooks
-   * after the platform merges scopes, use {@link getAuthScopesForFlow}.
-   */
-  private resolveEffectiveAuthScopes(): string[] {
-    const fromQuery = this.parseQueryScopes();
-    if (fromQuery.length > 0) {
-      return [...fromQuery];
+  /** The PKCE config the host passed as `auth: { type: 'pkce', config }`, if any. */
+  private hostPkceConfig(): PKCEAuthConfig | undefined {
+    const auth = this.config.auth;
+    if (auth && typeof auth === 'object' && 'type' in auth && auth.type === 'pkce') {
+      return (auth as PKCEAuthServiceConfig).config;
     }
-    if (this.config.scopes && this.config.scopes.length > 0) {
-      return [...this.config.scopes];
-    }
-    const scopes = ['knowledge.portalmgr.manage', 'core.aiservices.read'];
-    if (this.agentDetails?.userType === 'customer') {
-      scopes.push('core.customermgr.read');
-    }
-    return scopes;
+    return undefined;
   }
 
   /**
-   * Scopes used for PKCE, AuthenticationService.initialize, and HookContract.getAuthScopes.
-   * After the platform connector augments scopes into `config.scopes`, that merged list wins.
+   * Scopes the host supplied explicitly, used exactly as given (no defaults, no agent
+   * `extraScopes`, no platform augmentation). First non-empty wins:
+   *
+   * 1. a host-supplied PKCE config's `scopes` — fully qualified for MSAL, so they only apply to
+   *    authenticated agents (the anonymous token prefixes scopes itself and must never see them);
+   * 2. comma-separated `initParams.scopes`.
+   *
+   * Returns `undefined` when the host supplied nothing and the SDK manages the list.
+   */
+  private hostSuppliedAuthScopes(): string[] | undefined {
+    if (this.agentDetails?.isAuthenticated) {
+      const fromPkceConfig = this.hostPkceConfig()?.scopes;
+      if (fromPkceConfig && fromPkceConfig.length > 0) {
+        return [...fromPkceConfig];
+      }
+    }
+    const fromQuery = this.parseQueryScopes();
+    return fromQuery.length > 0 ? fromQuery : undefined;
+  }
+
+  /**
+   * The one scope list used for the PKCE config (built or host-supplied),
+   * AuthenticationService.initialize, the anonymous re-scope and HookContract.getAuthScopes.
+   * Host-supplied scopes ({@link hostSuppliedAuthScopes}) pass through untouched. Otherwise the
+   * SDK manages the list: the platform connector's `addCustomAuthScopes` result if it ran, else
+   * the defaults for the agent's user type, with the agent's `extraScopes` (agent details)
+   * appended last, deduplicated.
    */
   private getAuthScopesForFlow(): string[] {
-    if (this.authScopesAugmentedByPlatform && this.config.scopes && this.config.scopes.length > 0) {
-      return [...this.config.scopes];
+    const hostSupplied = this.hostSuppliedAuthScopes();
+    if (hostSupplied) {
+      return hostSupplied;
     }
-    return this.resolveEffectiveAuthScopes();
+    const base = this.platformAuthScopes ?? buildDefaultAuthScopes(this.agentDetails?.userType);
+    return mergeAgentExtraScopes(base, this.agentDetails);
   }
 
   /**
@@ -803,7 +808,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         await this.setContext(this.initialContext);
       }
 
-      this.authScopesAugmentedByPlatform = false;
+      this.platformAuthScopes = undefined;
 
       this.logger.debug("initialize: getDeploymentInfo start");
       // Get deployment info (use cached if getAgentDetails was called first)
@@ -872,14 +877,27 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         // Otherwise keep the same strategy
         if (this.authService.isAnonymousStrategy()) {
           this.logger.debug("initialize: authService.isAnonymousStrategy true");
-          // Build PKCE config from deployment info and agent details
           let pkceConfig: PKCEAuthConfig;
+          const hostPkceConfig = this.hostPkceConfig();
 
-          // Check if PKCE config was provided in the original auth config
-          if (this.config.auth && typeof this.config.auth === 'object' && 'type' in this.config.auth && this.config.auth.type === 'pkce') {
-            pkceConfig = (this.config.auth as PKCEAuthServiceConfig).config;
-            if (this.parseQueryScopes().length > 0 || this.authScopesAugmentedByPlatform) {
-              pkceConfig = { ...pkceConfig, scopes: [...effectiveScopes] };
+          if (hostPkceConfig) {
+            // The host owns its PKCE config and it is never modified. When it carries scopes they
+            // are the ones used (they beat initParams.scopes). When it has none, initParams.scopes
+            // fill the gap; otherwise MSAL's own defaults apply. The agent's extraScopes are
+            // unprefixed resource scopes and cannot be qualified on this path, so they apply only
+            // to the built config below.
+            const queryScopes = this.parseQueryScopes();
+            if (hostPkceConfig.scopes && hostPkceConfig.scopes.length > 0) {
+              pkceConfig = hostPkceConfig;
+            } else if (queryScopes.length > 0) {
+              pkceConfig = { ...hostPkceConfig, scopes: queryScopes };
+            } else {
+              pkceConfig = hostPkceConfig;
+            }
+            if (getAgentExtraScopes(this.agentDetails).length > 0) {
+              this.logger.debug('agentDetails.extraScopes skipped for host-supplied PKCE config', {
+                agentId: this.config.id,
+              });
             }
           } else {
             // Build PKCE config from deployment info and agent details
@@ -932,9 +950,21 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
       } else {
         // Agent doesn't require authentication - use anonymous strategy
-        this.logger.debug('Agent does not require authentication, using anonymous strategy', { agentId: this.config.id });
+        const anonymousScopes = this.getAuthScopesForFlow();
+        this.logger.debug('Agent does not require authentication, using anonymous strategy', {
+          agentId: this.config.id,
+          scopes: anonymousScopes,
+        });
+        // The anonymous token used to fetch agent details was requested with the bare defaults,
+        // before userType and extraScopes were known. Re-scope the strategy so the token
+        // finishAuthentication() requests follows the same resolution as PKCE (initParams.scopes
+        // verbatim, else customer scope + platform + extras). The anonymous client is permitted
+        // every scope, so this cannot fail; when the list is unchanged the cached token is reused
+        // (scope-fingerprinted key). Pre-auth / custom strategies are left untouched.
+        if (this.authService.isAnonymousStrategy()) {
+          await this.authService.updateScopes(anonymousScopes, this.deploymentInfo);
+        }
         // Complete initialization manually (get session, create connection)
-
       }
 
       await this.finishAuthentication();
@@ -1076,12 +1106,14 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     }
 
     this.logger.debug("loadAndInitializePlatform: addCustomAuthScopes start");
-    if (this.platformComponentService.addCustomAuthScopes) {
-      const currentScopes = this.resolveEffectiveAuthScopes();
+    // Host-supplied scopes (PKCE config / initParams.scopes) are used exactly as given, so the
+    // connector only gets to augment the SDK-managed list, seeded with the defaults.
+    if (this.platformComponentService.addCustomAuthScopes && !this.hostSuppliedAuthScopes()) {
+      const currentScopes = buildDefaultAuthScopes(this.agentDetails?.userType);
       const augmentedScopes = await this.platformComponentService.addCustomAuthScopes(currentScopes);
+      this.logger.debug("augmentedScopes from addCustomAuthScopes", augmentedScopes);
       if (augmentedScopes && Array.isArray(augmentedScopes)) {
-        this.config.scopes = augmentedScopes;
-        this.authScopesAugmentedByPlatform = true;
+        this.platformAuthScopes = augmentedScopes;
       }
     }
     this.logger.debug("loadAndInitializePlatform: addCustomAuthScopes end");

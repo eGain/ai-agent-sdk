@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.5](../README.md) / PKCEAuthServiceConfig
+[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / PKCEAuthServiceConfig
 
 # Interface: PKCEAuthServiceConfig
 
@@ -19,7 +19,7 @@ PKCE authentication configuration
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:37](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L37)
+[core/auth/AuthenticationService.ts:38](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L38)
 
 ___
 
@@ -31,4 +31,4 @@ PKCE configuration options
 
 #### Defined in
 
-[core/auth/AuthenticationService.ts:41](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L41)
+[core/auth/AuthenticationService.ts:42](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthenticationService.ts#L42)

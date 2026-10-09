@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.5](../README.md) / AiAgentConnectorConfig
+[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / AiAgentConnectorConfig
 
 # Interface: AiAgentConnectorConfig
 
@@ -21,7 +21,7 @@ Deployment environment label exposed on [HookContract.getEnvironment](HookContra
 
 #### Defined in
 
-[core/AiAgent.ts:33](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L33)
+[core/AiAgent.ts:34](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L34)
 
 ___
 
@@ -33,4 +33,4 @@ Full URL of the platform connector script to load during initialize().
 
 #### Defined in
 
-[core/AiAgent.ts:35](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L35)
+[core/AiAgent.ts:36](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L36)

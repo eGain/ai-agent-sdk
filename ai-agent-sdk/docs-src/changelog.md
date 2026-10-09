@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-10-08
+
+### Removed
+
+- **`AiAgentConfig.scopes`.** Hosts that need their own scope list pass `initParams.scopes` (comma-separated) or a full `PKCEAuthConfig`; everything else is SDK-managed.
+
+### Changed
+
+- **Host-supplied scopes are used exactly as given.** A host `PKCEAuthConfig.scopes` wins over `initParams.scopes`, and the config is never modified (a scope-less host config is filled from `initParams.scopes` when present). `initParams.scopes` get no defaults, no agent `extraScopes` and no platform augmentation. `addCustomAuthScopes` is only called when the host supplied no scopes, seeded with the defaults.
+
+### Added
+
+- **Per-agent `extraScopes`** — the agent details API (`GET /core/aiservices/v4/aiagent/details/agent/{agentId}`) can return `extraScopes`, configured in the admin console under Settings → Advanced. On the SDK-managed path (no host-supplied scopes) they are appended (deduplicated) after the defaults / platform list, for the anonymous client-credentials token and the PKCE config the SDK builds from deployment info. They are never applied to a host-supplied PKCE config (its scopes are already fully qualified; debug log). `HookContract.getAuthScopes()` returns the resolved list.
+- **Per-agent `clientAppId`** — when the agent details API returns `clientAppId`, the built PKCE config uses it as the MSAL client id. Priority: `initParams.egclientid` → `agentDetails.clientAppId` → deployment `intClientId` / `extClientId` / `clientId`. The anonymous token keeps its fixed client id.
+- `AgentAuthDetails` type export.
+
+### Changed
+
+- **Anonymous token scopes now follow the same resolution as PKCE.** Previously the anonymous session token always requested the two bare defaults. After agent details load, the anonymous strategy is re-scoped (`AuthenticationService.updateScopes` → `AnonymousAuthStrategy.updateScopes`) with the resolved list: `core.customermgr.read` for customer agents, `initParams.scopes` / `config.scopes` when set, and the agent's `extraScopes`. The anonymous client is permitted every scope, so nothing that worked before fails; agents whose resolved list differs from the defaults make one extra token request at startup, cached for the session.
+- **Anonymous token cache key** now ends with a fingerprint of the requested scope set (`…:anonymous_token:<fnv1a>`), so a token cached for a smaller scope set is never reused for a larger one. Entries under the old key are ignored and expire with their own TTL.
+
 ## [0.2.5] - 2026-09-23
 
 ### Fixed

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.5](../README.md) / PKCEAuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / PKCEAuthStrategy
 
 # Class: PKCEAuthStrategy
 
@@ -17,6 +17,7 @@ Implements OAuth 2.0 PKCE flow for secure browser-based authentication using MSA
 
 ### Methods
 
+- [resolveClientId](PKCEAuthStrategy.md#resolveclientid)
 - [buildConfigFromDeploymentInfo](PKCEAuthStrategy.md#buildconfigfromdeploymentinfo)
 - [initialize](PKCEAuthStrategy.md#initialize)
 - [authenticate](PKCEAuthStrategy.md#authenticate)
@@ -46,9 +47,43 @@ Implements OAuth 2.0 PKCE flow for secure browser-based authentication using MSA
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:323](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L323)
+[core/auth/PKCEAuthStrategy.ts:361](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L361)
 
 ## Methods
+
+### resolveClientId
+
+▸ **resolveClientId**(`deploymentInfo`, `agentDetails`, `egClientId?`): `Object`
+
+Pick the MSAL client id for the PKCE flow. First non-empty source wins:
+`egClientId` (from `initParams.egclientid`) > `agentDetails.clientAppId` (admin console,
+Settings → Advanced) > deployment `intClientId` for agents / `extClientId` for customers >
+deployment `clientId`.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `deploymentInfo` | `any` | Deployment information carrying `intClientId`, `extClientId`, `clientId` |
+| `agentDetails` | `any` | Agent details carrying `userType` and optionally `clientAppId` |
+| `egClientId?` | `string` | Optional override from init params |
+
+#### Returns
+
+`Object`
+
+The selected client id and which source supplied it (for logging)
+
+| Name | Type |
+| :------ | :------ |
+| `clientId` | `string` |
+| `source` | [`ClientIdSource`](../README.md#clientidsource) |
+
+#### Defined in
+
+[core/auth/PKCEAuthStrategy.ts:99](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L99)
+
+___
 
 ### buildConfigFromDeploymentInfo
 
@@ -62,12 +97,12 @@ This method fetches authentication metadata and constructs the PKCE config
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `deploymentInfo` | `any` | Deployment information containing API domain, client IDs, tenant ID |
-| `agentDetails` | `any` | Agent details containing userType and other agent-specific information |
+| `agentDetails` | `any` | Agent details containing userType and, when configured on the agent, `clientAppId` |
 | `endpoint` | `string` | The endpoint URL used to fetch deployment info (used for nextRoute) |
-| `scopes` | `string`[] | Scopes to request (passed from AuthenticationService) |
+| `scopes` | `string`[] | Scopes to request, already merged with the agent's `extraScopes` by AiAgent |
 | `logger?` | [`Logger`](Logger.md) | Optional logger instance for logging |
 | `authScheme?` | ``"popup"`` \| ``"redirect"`` | Authentication scheme: 'popup' or 'redirect' (defaults to 'popup') |
-| `egClientId?` | `string` | Optional client ID override from initParams (takes priority over deployment client IDs) |
+| `egClientId?` | `string` | Optional client ID override from initParams. Priority: `egClientId` > `agentDetails.clientAppId` > deployment `intClientId` (agent) / `extClientId` (customer) / `clientId` |
 | `localLogin?` | `boolean` | When true, forces local account login instead of federated SSO |
 
 #### Returns
@@ -78,7 +113,7 @@ Promise resolving to PKCEAuthConfig
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:93](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L93)
+[core/auth/PKCEAuthStrategy.ts:132](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L132)
 
 ___
 
@@ -104,7 +139,7 @@ Initialize the PKCE authentication strategy
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:338](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L338)
+[core/auth/PKCEAuthStrategy.ts:376](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L376)
 
 ___
 
@@ -124,7 +159,7 @@ Authenticate using PKCE flow
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:479](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L479)
+[core/auth/PKCEAuthStrategy.ts:517](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L517)
 
 ___
 
@@ -144,7 +179,7 @@ Check if the user is currently authenticated
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:542](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L542)
+[core/auth/PKCEAuthStrategy.ts:580](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L580)
 
 ___
 
@@ -164,7 +199,7 @@ Get authentication token using PKCE flow
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:549](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L549)
+[core/auth/PKCEAuthStrategy.ts:587](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L587)
 
 ___
 
@@ -181,7 +216,7 @@ Redirects user to authorization server
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:621](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L621)
+[core/auth/PKCEAuthStrategy.ts:659](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L659)
 
 ___
 
@@ -205,7 +240,7 @@ This is handled automatically by MSAL's handleRedirectPromise
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:629](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L629)
+[core/auth/PKCEAuthStrategy.ts:667](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L667)
 
 ___
 
@@ -229,7 +264,7 @@ If MSAL throws, navigate to the JWT `logout` claim, else `end_session_endpoint`.
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:642](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L642)
+[core/auth/PKCEAuthStrategy.ts:680](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L680)
 
 ___
 
@@ -245,7 +280,7 @@ Refresh the access token using refresh token
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:723](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L723)
+[core/auth/PKCEAuthStrategy.ts:761](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L761)
 
 ___
 
@@ -265,4 +300,4 @@ Cleanup resources
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:782](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L782)
+[core/auth/PKCEAuthStrategy.ts:820](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L820)

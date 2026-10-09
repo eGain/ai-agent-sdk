@@ -15,6 +15,7 @@ const authServiceMock = vi.hoisted(() => ({
   getStrategy: vi.fn().mockReturnValue({ isAuthenticated: () => false }),
   setTokenExpiringCallback: vi.fn(),
   switchStrategyTo: vi.fn().mockResolvedValue(true),
+  updateScopes: vi.fn().mockResolvedValue(undefined),
   cleanup: vi.fn().mockResolvedValue(undefined),
   logout: vi.fn().mockResolvedValue(undefined),
 }));
@@ -153,6 +154,7 @@ describe('AiAgent language → API integration', () => {
     authServiceMock.getStrategy.mockReturnValue({ isAuthenticated: () => false });
     authServiceMock.setTokenExpiringCallback.mockReset();
     authServiceMock.switchStrategyTo.mockResolvedValue(true);
+    authServiceMock.updateScopes.mockResolvedValue(undefined);
     authServiceMock.cleanup.mockResolvedValue(undefined);
   });
 

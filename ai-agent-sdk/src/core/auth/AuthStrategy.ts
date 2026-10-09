@@ -83,6 +83,15 @@ export interface AuthStrategy extends AuthProvider {
     logout?(): Promise<void>;
 
     /**
+     * Replace the scopes used for subsequent token requests without re-running initialization.
+     * Optional; the anonymous strategy implements it so per-agent `extraScopes` learned after the
+     * first token can apply to the next one.
+     * @param scopes - Unprefixed resource scopes
+     * @param deploymentInfo - Optional refreshed deployment info
+     */
+    updateScopes?(scopes: string[], deploymentInfo?: any): Promise<void>;
+
+    /**
      * Cleanup resources when the strategy is no longer needed
      */
     cleanup?(): Promise<void>;

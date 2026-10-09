@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.5](../README.md) / AuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / AuthStrategy
 
 # Interface: AuthStrategy
 
@@ -28,6 +28,7 @@ All authentication strategies must implement this interface
 - [authenticate](AuthStrategy.md#authenticate)
 - [isAuthenticated](AuthStrategy.md#isauthenticated)
 - [logout](AuthStrategy.md#logout)
+- [updateScopes](AuthStrategy.md#updatescopes)
 - [cleanup](AuthStrategy.md#cleanup)
 - [getDomain](AuthStrategy.md#getdomain)
 
@@ -130,6 +131,31 @@ using the same popup/redirect scheme as login. Takes no options.
 
 ___
 
+### updateScopes
+
+▸ **updateScopes**(`scopes`, `deploymentInfo?`): `Promise`\<`void`\>
+
+Replace the scopes used for subsequent token requests without re-running initialization.
+Optional; the anonymous strategy implements it so per-agent `extraScopes` learned after the
+first token can apply to the next one.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `scopes` | `string`[] | Unprefixed resource scopes |
+| `deploymentInfo?` | `any` | Optional refreshed deployment info |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Defined in
+
+[core/auth/AuthStrategy.ts:92](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L92)
+
+___
+
 ### cleanup
 
 ▸ **cleanup**(): `Promise`\<`void`\>
@@ -142,7 +168,7 @@ Cleanup resources when the strategy is no longer needed
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:88](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L88)
+[core/auth/AuthStrategy.ts:97](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L97)
 
 ___
 
@@ -158,4 +184,4 @@ Get the domain for authentication
 
 #### Defined in
 
-[core/auth/AuthStrategy.ts:93](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L93)
+[core/auth/AuthStrategy.ts:102](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L102)

@@ -68,6 +68,36 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe("PKCEAuthStrategy", () => {
+  describe("resolveClientId", () => {
+    const deploymentInfo = {
+      intClientId: "int-client-id",
+      extClientId: "ext-client-id",
+      clientId: "default-client-id"
+    };
+
+    it.each([
+      ["egClientId over everything", { userType: "agent", clientAppId: "app-id" }, "query-id", "query-id", "initParams.egclientid"],
+      ["agent clientAppId over intClientId", { userType: "agent", clientAppId: "app-id" }, undefined, "app-id", "agentDetails.clientAppId"],
+      ["customer clientAppId over extClientId", { userType: "customer", clientAppId: " app-id " }, undefined, "app-id", "agentDetails.clientAppId"],
+      ["intClientId for agents", { userType: "agent" }, undefined, "int-client-id", "deploymentInfo.intClientId"],
+      ["extClientId for customers", { userType: "customer", clientAppId: null }, undefined, "ext-client-id", "deploymentInfo.extClientId"],
+      ["clientId when userType is unknown", { clientAppId: "" }, undefined, "default-client-id", "deploymentInfo.clientId"],
+      ["clientId when agentDetails is missing", undefined, undefined, "default-client-id", "deploymentInfo.clientId"]
+    ])("picks %s", (_label, agentDetails, egClientId, expectedId, expectedSource) => {
+      expect(PKCEAuthStrategy.resolveClientId(deploymentInfo, agentDetails, egClientId)).toEqual({
+        clientId: expectedId,
+        source: expectedSource
+      });
+    });
+
+    it("falls through to clientId when the user-type specific id is absent", () => {
+      expect(PKCEAuthStrategy.resolveClientId({ clientId: "only-id" }, { userType: "agent" })).toEqual({
+        clientId: "only-id",
+        source: "deploymentInfo.clientId"
+      });
+    });
+  });
+
   describe("buildConfigFromDeploymentInfo", () => {
     const mockDeploymentInfo = {
       apiDomain: "https://api.example.com",
@@ -481,6 +511,73 @@ describe("PKCEAuthStrategy", () => {
       );
 
       expect(config.localLogin).toBeUndefined();
+    });
+
+    describe("agentDetails.clientAppId", () => {
+      const build = (agentDetails: any, egClientId?: string) =>
+        PKCEAuthStrategy.buildConfigFromDeploymentInfo(
+          mockDeploymentInfo,
+          agentDetails,
+          "https://endpoint.example.com",
+          ["scope1"],
+          undefined,
+          undefined,
+          egClientId
+        );
+
+      it("should use clientAppId instead of intClientId for agent userType", async () => {
+        const config = await build({ userType: "agent", clientAppId: "app-client-id" });
+        expect(config.clientId).toBe("app-client-id");
+      });
+
+      it("should use clientAppId instead of extClientId for customer userType", async () => {
+        const config = await build({ userType: "customer", clientAppId: "app-client-id" });
+        expect(config.clientId).toBe("app-client-id");
+      });
+
+      it("should prefer egClientId from initParams over clientAppId", async () => {
+        const config = await build({ userType: "agent", clientAppId: "app-client-id" }, "query-client-id");
+        expect(config.clientId).toBe("query-client-id");
+      });
+
+      it("should fall back to the deployment client id when clientAppId is null", async () => {
+        const config = await build({ userType: "agent", clientAppId: null });
+        expect(config.clientId).toBe("int-client-id");
+      });
+
+      it("should fall back to the deployment client id when clientAppId is blank", async () => {
+        const config = await build({ userType: "customer", clientAppId: "   " });
+        expect(config.clientId).toBe("ext-client-id");
+      });
+
+      it("should trim clientAppId", async () => {
+        const config = await build({ userType: "agent", clientAppId: "  app-client-id  " });
+        expect(config.clientId).toBe("app-client-id");
+      });
+
+      it("should keep the tenant authority when clientAppId replaces the client id", async () => {
+        const config = await build({ userType: "customer", clientAppId: "app-client-id" });
+
+        expect(mockFetch.mock.calls[0][0]).toBe(
+          "https://api.example.com/core/authmgr/v3/metadata/tenant/tenant-123"
+        );
+        expect(config.clientId).toBe("app-client-id");
+        expect(config.authorizationUrl).toBe(
+          "https://login.example.com/tenant-123/B2C_1A_Customer_SignIn"
+        );
+        expect(config.knownAuthorities).toEqual(["login.example.com"]);
+        expect(config.scopes).toEqual(["api://external/scope1"]);
+      });
+
+      it("should prefix the scopes it is given without merging agent extraScopes itself", async () => {
+        const config = await PKCEAuthStrategy.buildConfigFromDeploymentInfo(
+          mockDeploymentInfo,
+          { userType: "agent", extraScopes: ["not.merged.here"] },
+          "https://endpoint.example.com",
+          ["scope1", "extra.scope"]
+        );
+        expect(config.scopes).toEqual(["api://internal/scope1", "api://internal/extra.scope"]);
+      });
     });
   });
 

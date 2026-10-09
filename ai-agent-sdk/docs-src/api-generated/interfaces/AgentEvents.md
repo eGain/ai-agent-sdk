@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.2.5](../README.md) / AgentEvents
+[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / AgentEvents
 
 # Interface: AgentEvents
 
@@ -40,7 +40,7 @@ Emitted when connection is established
 
 #### Defined in
 
-[core/AiAgent.ts:336](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L336)
+[core/AiAgent.ts:322](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L322)
 
 ___
 
@@ -52,7 +52,7 @@ Emitted when a message is received
 
 #### Defined in
 
-[core/AiAgent.ts:341](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L341)
+[core/AiAgent.ts:327](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L327)
 
 ___
 
@@ -64,7 +64,7 @@ Emitted when an agent message is received
 
 #### Defined in
 
-[core/AiAgent.ts:346](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L346)
+[core/AiAgent.ts:332](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L332)
 
 ___
 
@@ -76,7 +76,7 @@ Emitted when some context attributes were rejected without terminating the sessi
 
 #### Defined in
 
-[core/AiAgent.ts:351](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L351)
+[core/AiAgent.ts:337](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L337)
 
 ___
 
@@ -88,7 +88,7 @@ Emitted when an error message is received
 
 #### Defined in
 
-[core/AiAgent.ts:356](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L356)
+[core/AiAgent.ts:342](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L342)
 
 ___
 
@@ -100,7 +100,7 @@ Emitted when an error occurs
 
 #### Defined in
 
-[core/AiAgent.ts:361](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L361)
+[core/AiAgent.ts:347](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L347)
 
 ___
 
@@ -112,7 +112,7 @@ Emitted when connection is closed
 
 #### Defined in
 
-[core/AiAgent.ts:366](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L366)
+[core/AiAgent.ts:352](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L352)
 
 ___
 
@@ -124,7 +124,7 @@ Emitted when connection state changes
 
 #### Defined in
 
-[core/AiAgent.ts:371](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L371)
+[core/AiAgent.ts:357](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L357)
 
 ___
 
@@ -136,7 +136,7 @@ Emitted when queue is flushed
 
 #### Defined in
 
-[core/AiAgent.ts:376](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L376)
+[core/AiAgent.ts:362](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L362)
 
 ___
 
@@ -149,7 +149,7 @@ Indicates the agent is processing/typing - UI can show a loader
 
 #### Defined in
 
-[core/AiAgent.ts:382](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L382)
+[core/AiAgent.ts:368](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L368)
 
 ___
 
@@ -162,7 +162,7 @@ Triggered by JWT expiration detection (with 3-min buffer) or transport layer req
 
 #### Defined in
 
-[core/AiAgent.ts:388](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L388)
+[core/AiAgent.ts:374](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L374)
 
 ___
 
@@ -175,7 +175,7 @@ Contains the new transcript entry with message and direction
 
 #### Defined in
 
-[core/AiAgent.ts:394](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L394)
+[core/AiAgent.ts:380](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L380)
 
 ___
 
@@ -188,7 +188,7 @@ via HookContract.addToTranscript(). Entries arrive incrementally during a call.
 
 #### Defined in
 
-[core/AiAgent.ts:400](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L400)
+[core/AiAgent.ts:386](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L386)
 
 ___
 
@@ -201,7 +201,7 @@ via HookContract.setCallerInfo().
 
 #### Defined in
 
-[core/AiAgent.ts:406](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L406)
+[core/AiAgent.ts:392](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L392)
 
 ___
 
@@ -214,7 +214,7 @@ via HookContract.setConversationId().
 
 #### Defined in
 
-[core/AiAgent.ts:412](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L412)
+[core/AiAgent.ts:398](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L398)
 
 ___
 
@@ -227,7 +227,7 @@ via HookContract.setUserContext(). Payload contains the merged context.
 
 #### Defined in
 
-[core/AiAgent.ts:418](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L418)
+[core/AiAgent.ts:404](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L404)
 
 ___
 
@@ -240,7 +240,7 @@ via HookContract.setUserFilterTags().
 
 #### Defined in
 
-[core/AiAgent.ts:424](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L424)
+[core/AiAgent.ts:410](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L410)
 
 ___
 
@@ -255,7 +255,7 @@ completed, also includes portal, optional portalDetails, optional agent, profile
 
 #### Defined in
 
-[core/AiAgent.ts:432](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L432)
+[core/AiAgent.ts:418](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L418)
 
 ___
 
@@ -268,7 +268,7 @@ Consumer must call selectPortal(portal) to continue.
 
 #### Defined in
 
-[core/AiAgent.ts:438](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L438)
+[core/AiAgent.ts:424](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L424)
 
 ___
 
@@ -281,7 +281,7 @@ Consumer must call selectAgent(agent) to continue.
 
 #### Defined in
 
-[core/AiAgent.ts:444](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L444)
+[core/AiAgent.ts:430](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L430)
 
 ___
 
@@ -294,4 +294,4 @@ Payload includes profiles and selectedPortal. Consumer must call selectUserProfi
 
 #### Defined in
 
-[core/AiAgent.ts:450](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L450)
+[core/AiAgent.ts:436](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L436)

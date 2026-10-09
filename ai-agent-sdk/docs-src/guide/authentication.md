@@ -167,8 +167,16 @@ When you do **not** pass a full `PKCEAuthConfig` and the SDK builds PKCE setting
 | Option | Description |
 |--------|-------------|
 | `authScheme` | `'popup'` (default) opens a login popup; `'redirect'` sends the full page to the IdP. Logout uses the same scheme. |
-| `scopes` | Custom OAuth **resource** scopes; defaults add customer scope when the user is a customer |
-| `initParams.scopes` | Comma-separated scopes; when non-empty after parsing, **overrides** `config.scopes` and defaults |
+| `initParams.scopes` | Comma-separated scopes, used **exactly as given**: no defaults, no agent `extraScopes`, no platform augmentation. A host-supplied `PKCEAuthConfig.scopes` takes precedence over this. |
+| `agentDetails.extraScopes` | Scopes configured on the agent (admin console → Settings → Advanced), returned by the agent details API. Only on the SDK-managed path (no host-supplied scopes): **appended** (deduplicated) after the defaults / platform `addCustomAuthScopes` list, for the anonymous client-credentials token and the PKCE config the SDK builds. |
+
+Scope resolution, first match wins:
+
+1. Host `PKCEAuthConfig.scopes` (authenticated agents) — used as-is; the config is never modified.
+2. `initParams.scopes` — used as-is. Also fills a host `PKCEAuthConfig` that has no `scopes`.
+3. SDK-managed: platform `addCustomAuthScopes(defaults)` result if the connector provides it, else the defaults for the agent's user type (`knowledge.portalmgr.manage`, `core.aiservices.read`, plus `core.customermgr.read` for customers); the agent's `extraScopes` are appended last.
+
+The anonymous client-credentials token follows the same resolution, except that MSAL-qualified host PKCE scopes never apply to it.
 
 ### `PKCEAuthConfig` extras
 
@@ -182,6 +190,8 @@ When you supply `auth: { type: 'pkce', config: { ... } }`, you can also use:
 ### Custom client id from init params
 
 Host apps can pass **`egclientid`** (and related variants supported by the SDK) inside `initParams` so the built PKCE config uses your Azure AD / app registration client id instead of the deployment default.
+
+An agent can also carry its own client id (**`clientAppId`**, set in the admin console under Settings → Advanced and returned by the agent details API). The built PKCE config picks the client id in this order: `initParams.egclientid` → `agentDetails.clientAppId` → deployment `intClientId` (agent) / `extClientId` (customer) / `clientId`. The anonymous client-credentials token is not affected by `clientAppId`.
 
 ### Domain hint
 

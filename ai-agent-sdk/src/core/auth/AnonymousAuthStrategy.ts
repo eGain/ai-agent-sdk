@@ -115,7 +115,47 @@ export class AnonymousAuthStrategy implements AuthStrategy {
         this.#postAuthentication = options?.postAuthentication;
         this.#deploymentInfo = options?.deploymentInfo;
         this.#isInitialized = true;
-        this.#scopes = options?.scopes || [];
+        this.#scopes = AnonymousAuthStrategy.#normalizeScopes(options?.scopes);
+    }
+
+    /**
+     * Replace the scopes used for the next token request, e.g. once agent details reveal
+     * per-agent `extraScopes`. The token cache key carries a fingerprint of the scope list, so a
+     * token cached for a different scope set is not reused and a token cached for the same set
+     * (in any order) is.
+     * @param scopes - Unprefixed resource scopes; the permission prefix is applied at request time
+     * @param deploymentInfo - Optional refreshed deployment info
+     */
+    async updateScopes(scopes: string[], deploymentInfo?: any): Promise<void> {
+        this.#scopes = AnonymousAuthStrategy.#normalizeScopes(scopes);
+        if (deploymentInfo !== undefined) {
+            this.#deploymentInfo = deploymentInfo;
+        }
+    }
+
+    /** Trim, drop empties and deduplicate, keeping the caller's order for the request body. */
+    static #normalizeScopes(scopes?: string[]): string[] {
+        const normalized: string[] = [];
+        for (const scope of scopes || []) {
+            if (typeof scope !== 'string') continue;
+            const trimmed = scope.trim();
+            if (trimmed.length > 0 && !normalized.includes(trimmed)) normalized.push(trimmed);
+        }
+        return normalized;
+    }
+
+    /**
+     * Short, order-independent fingerprint of the current scope list (FNV-1a, hex) for the token
+     * cache key. Synchronous on purpose: the key is needed on every getToken() call.
+     */
+    #getScopeFingerprint(): string {
+        const joined = [...(this.#scopes ?? [])].sort().join(' ');
+        let hash = 0x811c9dc5;
+        for (let i = 0; i < joined.length; i++) {
+            hash ^= joined.charCodeAt(i);
+            hash = Math.imul(hash, 0x01000193) >>> 0;
+        }
+        return hash.toString(16).padStart(8, '0');
     }
 
     /**
@@ -220,11 +260,12 @@ export class AnonymousAuthStrategy implements AuthStrategy {
     /**
      * Get the full cache key for the anonymous token
      * Uses the same prefix as metadata cache for consistency
-     * Includes tenantId to ensure tokens are tenant-specific
+     * Includes tenantId to ensure tokens are tenant-specific, and a fingerprint of the scope list
+     * so a token requested with fewer scopes is never handed out for a larger set.
      */
     #getTokenCacheKey(): string {
         const tenantId = this.#deploymentInfo?.tenantId || 'tenantId';
-        return `${this.#cacheKeyPrefix}${tenantId}:${ANONYMOUS_TOKEN_CACHE_KEY_SUFFIX}`;
+        return `${this.#cacheKeyPrefix}${tenantId}:${ANONYMOUS_TOKEN_CACHE_KEY_SUFFIX}:${this.#getScopeFingerprint()}`;
     }
 
     /**
@@ -270,7 +311,12 @@ export class AnonymousAuthStrategy implements AuthStrategy {
         if (this.#isTokenValid() && cachedToken) {
             return cachedToken.accessToken;
         }
-        
+
+        // Resolve the key for the scope set this request is for, before any await: if
+        // updateScopes() runs while the fetch is in flight, the token must still be stored
+        // under the scopes it was actually requested with.
+        const tokenCacheKey = this.#getTokenCacheKey();
+
         const metaData = await this.getUserSpecificMetaData("customer", this.#deploymentInfo, false);
         if (metaData) {
             const tenantId = this.#deploymentInfo?.tenantId;
@@ -319,7 +365,7 @@ export class AnonymousAuthStrategy implements AuthStrategy {
                 
                 // Store in cache adapter using the same prefix as metadata
                 if (this.#cacheEnabled && this.#cacheAdapter) {
-                    this.#cacheAdapter.set(this.#getTokenCacheKey(), {
+                    this.#cacheAdapter.set(tokenCacheKey, {
                         value: tokenEntry,
                         timestamp: Date.now(),
                     });
@@ -332,8 +378,10 @@ export class AnonymousAuthStrategy implements AuthStrategy {
     }
     
     /**
-     * Clear the cached token
-     * Forces a new token to be fetched on next getToken() call
+     * Clear the cached token for the current scope set
+     * Forces a new token to be fetched on next getToken() call. Tokens cached for other scope
+     * sets are left alone (they expire on their own); {@link clearMetadataCache} clears the
+     * whole prefix, token entries included.
      */
     clearTokenCache(): void {
         if (this.#cacheAdapter) {

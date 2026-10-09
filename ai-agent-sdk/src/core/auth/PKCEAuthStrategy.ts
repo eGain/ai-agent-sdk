@@ -7,6 +7,15 @@ import {
 import { Logger } from "../logging/Logger.js";
 import { PublicClientApplication } from "./msal-loader.js";
 import { AuthError } from "../errors/SDKError.js";
+import { getAgentClientAppId } from "../types/AgentDetailsTypes.js";
+
+/** Where {@link PKCEAuthStrategy.resolveClientId} found the client id. */
+export type ClientIdSource =
+  | "initParams.egclientid"
+  | "agentDetails.clientAppId"
+  | "deploymentInfo.intClientId"
+  | "deploymentInfo.extClientId"
+  | "deploymentInfo.clientId";
 
 /**
  * Configuration for PKCE authentication strategy
@@ -78,15 +87,45 @@ export interface PKCEAuthConfig {
  */
 export class PKCEAuthStrategy implements AuthStrategy {
   /**
+   * Pick the MSAL client id for the PKCE flow. First non-empty source wins:
+   * `egClientId` (from `initParams.egclientid`) > `agentDetails.clientAppId` (admin console,
+   * Settings → Advanced) > deployment `intClientId` for agents / `extClientId` for customers >
+   * deployment `clientId`.
+   * @param deploymentInfo - Deployment information carrying `intClientId`, `extClientId`, `clientId`
+   * @param agentDetails - Agent details carrying `userType` and optionally `clientAppId`
+   * @param egClientId - Optional override from init params
+   * @returns The selected client id and which source supplied it (for logging)
+   */
+  static resolveClientId(
+    deploymentInfo: any,
+    agentDetails: any,
+    egClientId?: string
+  ): { clientId: string; source: ClientIdSource } {
+    const userType = agentDetails?.userType;
+    const candidates: Array<[ClientIdSource, string | undefined]> = [
+      ["initParams.egclientid", egClientId],
+      ["agentDetails.clientAppId", getAgentClientAppId(agentDetails)],
+      ["deploymentInfo.intClientId", userType === "agent" ? deploymentInfo?.intClientId : undefined],
+      ["deploymentInfo.extClientId", userType === "customer" ? deploymentInfo?.extClientId : undefined],
+    ];
+    const found = candidates.find(([, value]) => Boolean(value));
+    if (found) {
+      return { clientId: found[1] as string, source: found[0] };
+    }
+    return { clientId: deploymentInfo?.clientId, source: "deploymentInfo.clientId" };
+  }
+
+  /**
    * Build PKCE configuration from deployment info and agent details
    * This method fetches authentication metadata and constructs the PKCE config
    * @param deploymentInfo - Deployment information containing API domain, client IDs, tenant ID
-   * @param agentDetails - Agent details containing userType and other agent-specific information
+   * @param agentDetails - Agent details containing userType and, when configured on the agent, `clientAppId`
    * @param endpoint - The endpoint URL used to fetch deployment info (used for nextRoute)
-   * @param scopes - Scopes to request (passed from AuthenticationService)
+   * @param scopes - Scopes to request, already merged with the agent's `extraScopes` by AiAgent
    * @param logger - Optional logger instance for logging
    * @param authScheme - Authentication scheme: 'popup' or 'redirect' (defaults to 'popup')
-   * @param egClientId - Optional client ID override from initParams (takes priority over deployment client IDs)
+   * @param egClientId - Optional client ID override from initParams. Priority:
+   *   `egClientId` > `agentDetails.clientAppId` > deployment `intClientId` (agent) / `extClientId` (customer) / `clientId`
    * @param localLogin - When true, forces local account login instead of federated SSO
    * @returns Promise resolving to PKCEAuthConfig
    */
@@ -103,10 +142,12 @@ export class PKCEAuthStrategy implements AuthStrategy {
     const intClientId = deploymentInfo.intClientId;
     const extClientId = deploymentInfo.extClientId;
     const tenantId = deploymentInfo.tenantId;
-    const clientId = deploymentInfo.clientId;
     const userType = agentDetails?.userType;
 
-    // Determine metadata URL based on user type and client IDs
+    // Determine metadata URL based on user type and client IDs. Deployment info always carries
+    // intClientId / extClientId, so the tenant metadata (authority, policies, permission prefix)
+    // is what gets used. A per-agent clientAppId only swaps the client id under that same
+    // authority (see resolveClientId); it never changes which metadata is fetched.
     let metaDataUrl = "";
     if (
       (userType === "agent" && intClientId) ||
@@ -276,15 +317,12 @@ export class PKCEAuthStrategy implements AuthStrategy {
       );
     }
 
-    // Select appropriate client ID (egClientId from initParams takes priority)
-    let selectedClientId = egClientId || clientId;
-    if (!egClientId) {
-      if (userType === "agent" && intClientId) {
-        selectedClientId = intClientId;
-      } else if (userType === "customer" && extClientId) {
-        selectedClientId = extClientId;
-      }
-    }
+    const { clientId: selectedClientId, source: clientIdSource } = PKCEAuthStrategy.resolveClientId(
+      deploymentInfo,
+      agentDetails,
+      egClientId
+    );
+    logger?.debug("PKCE client id selected", { source: clientIdSource });
 
     // Build redirect URI from domainHint
     const domainHint = deploymentInfo.domainHint;

@@ -643,4 +643,38 @@ describe('AuthenticationService', () => {
       expect(postAuthCallback).toHaveBeenCalledWith('test-token');
     });
   });
+
+  describe('updateScopes', () => {
+    it('should delegate to the strategy and drop the cached access token', async () => {
+      const mockStrategy = {
+        initialize: vi.fn().mockResolvedValue(undefined),
+        authenticate: vi.fn().mockResolvedValue(undefined),
+        getToken: vi.fn().mockResolvedValue('token'),
+        cleanup: vi.fn().mockResolvedValue(undefined),
+        updateScopes: vi.fn().mockResolvedValue(undefined),
+      };
+      (AnonymousAuthStrategy as any).mockImplementation(() => mockStrategy);
+
+      const service = new AuthenticationService();
+      await service.initialize({ deploymentInfo: { apiDomain: 'test.example.com' } });
+      await service.getToken();
+      expect(service.getCachedToken()).toBe('token');
+
+      const deploymentInfo = { apiDomain: 'test.example.com', tenantId: 'tenant-123' };
+      await service.updateScopes(['scope.a', 'extra.scope'], deploymentInfo);
+
+      expect(mockStrategy.updateScopes).toHaveBeenCalledWith(['scope.a', 'extra.scope'], deploymentInfo);
+      expect(service.getCachedToken()).toBeNull();
+    });
+
+    it('should be a no-op for strategies without updateScopes', async () => {
+      const service = new AuthenticationService({ type: 'pre-auth', config: { token: 'pre-auth-token' } });
+      await service.initialize({ deploymentInfo: { apiDomain: 'test.example.com' } });
+      await service.getToken();
+
+      await expect(service.updateScopes(['scope.a'])).resolves.toBeUndefined();
+
+      expect(service.getCachedToken()).toBe('pre-auth-token');
+    });
+  });
 });

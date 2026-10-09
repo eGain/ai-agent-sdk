@@ -25,7 +25,7 @@ Implement this interface on the global object:
 | `getPortalList`       | No       | Filter or reorder portals after the SDK fetches them                           |
 | `getDefaultPortal`    | No       | Suggest a default portal; return `null` to use SDK count-based logic           |
 | `onPortalSelected`    | No       | After portal selection; may return filter tags (`Record<string, string[]>`)    |
-| `addCustomAuthScopes` | No       | Augment OAuth scopes before login                                              |
+| `addCustomAuthScopes` | No       | Augment OAuth scopes before login. Only called when the host supplied no scopes (no `initParams.scopes`, no PKCE `config.scopes`); receives the defaults, and the agent's `extraScopes` are appended to its result |
 | `loadCustomHook`      | No       | Attach custom behavior to the hook contract                                    |
 | `setHookContract`     | No       | Receive the same contract reference (optional duplicate of `initPlatform` arg) |
 
