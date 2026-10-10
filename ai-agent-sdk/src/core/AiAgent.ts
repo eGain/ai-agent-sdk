@@ -1522,7 +1522,17 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   }
 
   /**
-   * Get WebSocket endpoint
+   * Get WebSocket endpoint.
+   *
+   * Resolution order:
+   * 1. `wss://<agentDetails.webSocketDomain>` — the host the agent details API returns for the
+   *    deployment that answered it. This is what makes a DR region reachable: its chat stack
+   *    listens on a region-suffixed host that cannot be derived from tenant-wide deployment info.
+   * 2. `wss://chat.<deploymentInfo.aiAgentDomain>` — the legacy derivation, kept as the fallback
+   *    for backends that do not return the field yet (or cached responses from before they did).
+   *
+   * `sessionId` and `externalCallId` are appended as query params in both cases.
+   *
    * @param sessionId - The session ID
    * @returns The WebSocket endpoint
    */
@@ -1536,18 +1546,31 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       throw err;
     }
 
-    let websocketUrl = this.deploymentInfo?.aiAgentDomain;
-    websocketUrl = websocketUrl.indexOf("http") !== 0 ? "https://" + websocketUrl : websocketUrl;
+    const advertisedDomain = this.agentDetails?.webSocketDomain;
+    const useAdvertised = typeof advertisedDomain === 'string' && advertisedDomain.trim() !== '';
+
+    let websocketUrl: string;
     try {
-      const parsedUrl = new URL(websocketUrl);
-      parsedUrl.hostname = `chat.${parsedUrl.hostname}`;
+      let parsedUrl: URL;
+      if (useAdvertised) {
+        parsedUrl = new URL(`wss://${advertisedDomain.trim()}`);
+      } else {
+        let base = this.deploymentInfo?.aiAgentDomain;
+        base = base.indexOf('http') !== 0 ? 'https://' + base : base;
+        parsedUrl = new URL(base);
+        parsedUrl.hostname = `chat.${parsedUrl.hostname}`;
+      }
       parsedUrl.searchParams.set('sessionId', String(sessionId));
       if (this.conversationId) {
-        this.logger.debug("getWsEndpoint: setting externalCallId to chat websocket url", { conversationId: this.conversationId });
+        this.logger.debug('getWsEndpoint: setting externalCallId to chat websocket url', { conversationId: this.conversationId });
         parsedUrl.searchParams.set('externalCallId', this.conversationId);
       }
       websocketUrl = parsedUrl.toString();
-      this.logger.debug('WebSocket endpoint constructed', { endpoint: websocketUrl, sessionId });
+      this.logger.debug('WebSocket endpoint constructed', {
+        endpoint: websocketUrl,
+        sessionId,
+        source: useAdvertised ? 'agentDetails.webSocketDomain' : 'deploymentInfo.aiAgentDomain',
+      });
     } catch (error) {
       const err = new Error('Failed to get WebSocket endpoint');
       this.logger.error('Failed to construct WebSocket endpoint', err, { sessionId });

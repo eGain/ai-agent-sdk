@@ -2816,6 +2816,69 @@ describe('AiAgent', () => {
     });
   });
 
+  describe('getWsEndpoint', () => {
+    const newAgent = () =>
+      new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        autoConnect: false,
+      });
+
+    it('prefers the webSocketDomain advertised by the agent details API', () => {
+      const agent = newAgent();
+      (agent as any).deploymentInfo = { aiAgentDomain: 'test.example.com' };
+      (agent as any).agentDetails = { webSocketDomain: 'chat-nv.example.com' };
+
+      const endpoint = new URL((agent as any).getWsEndpoint('session-123'));
+
+      expect(endpoint.protocol).toBe('wss:');
+      expect(endpoint.host).toBe('chat-nv.example.com');
+      expect(endpoint.pathname).toBe('/');
+      expect(endpoint.searchParams.get('sessionId')).toBe('session-123');
+    });
+
+    it('appends externalCallId to the advertised host when a conversation id is set', () => {
+      const agent = newAgent();
+      (agent as any).deploymentInfo = { aiAgentDomain: 'test.example.com' };
+      (agent as any).agentDetails = { webSocketDomain: 'chat-nv.example.com' };
+      (agent as any).conversationId = 'conv-1';
+
+      const endpoint = new URL((agent as any).getWsEndpoint('session-123'));
+
+      expect(endpoint.host).toBe('chat-nv.example.com');
+      expect(endpoint.searchParams.get('externalCallId')).toBe('conv-1');
+    });
+
+    it('falls back to chat.<aiAgentDomain> when the agent details carry no webSocketDomain', () => {
+      const agent = newAgent();
+      (agent as any).deploymentInfo = { aiAgentDomain: 'test.example.com' };
+      (agent as any).agentDetails = { name: 'Test Agent' };
+
+      const endpoint = new URL((agent as any).getWsEndpoint('session-123'));
+
+      expect(endpoint.host).toBe('chat.test.example.com');
+      expect(endpoint.searchParams.get('sessionId')).toBe('session-123');
+    });
+
+    it.each(['', '   ', null, undefined])('falls back when webSocketDomain is %j', value => {
+      const agent = newAgent();
+      (agent as any).deploymentInfo = { aiAgentDomain: 'test.example.com' };
+      (agent as any).agentDetails = { webSocketDomain: value };
+
+      const endpoint = new URL((agent as any).getWsEndpoint('session-123'));
+
+      expect(endpoint.host).toBe('chat.test.example.com');
+    });
+
+    it('throws a wrapped error when the advertised domain is not a valid host', () => {
+      const agent = newAgent();
+      (agent as any).deploymentInfo = { aiAgentDomain: 'test.example.com' };
+      (agent as any).agentDetails = { webSocketDomain: 'not a host' };
+
+      expect(() => (agent as any).getWsEndpoint('session-123')).toThrow('Failed to get WebSocket endpoint');
+    });
+  });
+
   describe('cache.enabled', () => {
     it('should use in-memory context cache when caching is disabled', () => {
       const agent = new AiAgent({

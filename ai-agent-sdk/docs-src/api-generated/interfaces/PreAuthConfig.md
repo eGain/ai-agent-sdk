@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / PreAuthConfig
+[@egain/ai-agent-sdk API Reference - v0.3.1](../README.md) / PreAuthConfig
 
 # Interface: PreAuthConfig
 

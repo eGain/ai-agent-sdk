@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.0](../README.md) / HeartbeatHandler
+[@egain/ai-agent-sdk API Reference - v0.3.1](../README.md) / HeartbeatHandler
 
 # Class: HeartbeatHandler
 

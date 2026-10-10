@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-10-09
+
+### Changed
+
+- **Chat WebSocket host comes from the agent details API when available.** `GET /core/aiservices/v4/aiagent/details/agent/{agentId}` can now return `webSocketDomain`, the host of the WebSocket APIs of the deployment that answered the request. When present and non-empty, the SDK connects to `wss://<webSocketDomain>`, appending `sessionId` / `externalCallId` as before. Otherwise it keeps deriving `wss://chat.<deploymentInfo.aiAgentDomain>`. This lets a DR region, whose chat stack listens on a region-suffixed host, be reached without any change to the tenant's deployment info.
+
 ## [0.3.0] - 2026-10-08
 
 ### Removed

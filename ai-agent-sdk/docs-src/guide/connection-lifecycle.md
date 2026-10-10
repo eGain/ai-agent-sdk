@@ -51,6 +51,20 @@ await agent.initialize();
 await agent.connect();
 ```
 
+### WebSocket Endpoint Resolution
+
+`endpoint` is the eGain server the SDK bootstraps from (deployment info, agent details, session). The
+chat WebSocket itself is resolved during `initialize()`, in this order:
+
+1. `wss://<webSocketDomain>`, where `webSocketDomain` comes from the agent details API
+   (`GET /core/aiservices/v4/aiagent/details/agent/{agentId}`) when the backend returns it. It is the
+   WebSocket host of the deployment that answered the request, so a disaster-recovery region whose chat
+   stack listens on a region-suffixed host is reached without any change on the host page.
+2. Otherwise `wss://chat.<aiAgentDomain>`, derived from `/system/deploymentInfo` (older backends).
+
+In both cases the SDK appends `sessionId` and, when set, `externalCallId`. The resolved endpoint is
+logged at debug level with its `source`.
+
 ### Using Pre-Provided Session ID
 
 If you already have a session ID (e.g., from a previous session or external source), you can provide it in the config to skip fetching from the network:
