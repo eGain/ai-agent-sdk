@@ -1,14 +1,14 @@
-import { AuthStrategy, PostAuthenticationCallback, AuthStrategyInitializeOptions } from './AuthStrategy.js';
+import {
+    ACCESS_TOKEN_REFRESH_BUFFER_MS,
+    AuthStrategy,
+    PostAuthenticationCallback,
+    AuthStrategyInitializeOptions,
+} from './AuthStrategy.js';
 
 /**
  * Callback type for token expiring notification
  */
 export type TokenExpiringCallback = (expiresAt: number) => void;
-
-/**
- * Buffer time before token expiry to trigger the expiring event (3 minutes in ms)
- */
-const TOKEN_EXPIRY_BUFFER_MS = 3 * 60 * 1000;
 
 /**
  * Configuration for pre-auth authentication strategy
@@ -27,7 +27,7 @@ export interface PreAuthConfig {
 
   /**
    * Buffer time in milliseconds before token expiry to trigger the expiring event
-   * @default 180000 (3 minutes)
+   * @default {@link ACCESS_TOKEN_REFRESH_BUFFER_MS} (5 minutes)
    */
   expiryBufferMs?: number;
 }
@@ -56,7 +56,7 @@ export class PreAuthStrategy implements AuthStrategy {
 
   constructor(private readonly config: PreAuthConfig) {
     this.currentToken = config.accessToken;
-    this.expiryBufferMs = config.expiryBufferMs ?? TOKEN_EXPIRY_BUFFER_MS;
+    this.expiryBufferMs = config.expiryBufferMs ?? ACCESS_TOKEN_REFRESH_BUFFER_MS;
   }
 
   /**

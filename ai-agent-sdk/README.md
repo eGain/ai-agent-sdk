@@ -2,7 +2,7 @@
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
-**Current release:** v0.3.1
+**Current release:** v0.3.2
 
 [![npm version](https://img.shields.io/npm/v/@egain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@egain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -35,6 +35,7 @@ The sample below uses the **pre-auth** option, where your server obtains an acce
 ### [Generating An Access Token using PKCE Flow](https://apidev.egain.com/developer-portal/guides/authentication/pkce-flow)
 
 **Required scopes:**
+
 - `core.aiservices.read`
 - `knowledge.portalmgr.manage`
 - `core.customermgr.read` _(required for AI Agent for Customer Self Service only)_
@@ -74,11 +75,13 @@ const agent = new AiAgent({
   id: "your-agent-id",
   endpoint: "https://your-endpoint.com",
   initParams: { authType: "user", userid: "user-1", platform: "standalone" },
-  authScheme: "popup",
+  authScheme: "popup"
 });
 
 agent.on("portalsAvailable", (e) => agent.selectPortal(e.payload.portals[0]));
-agent.on("profilesAvailable", (e) => agent.selectUserProfile(e.payload.profiles[0]));
+agent.on("profilesAvailable", (e) =>
+  agent.selectUserProfile(e.payload.profiles[0])
+);
 agent.on("initialized", async () => {
   await agent.connect();
 });
@@ -94,18 +97,18 @@ Published docs and TypeDoc on the site below describe the **current release** (v
 
 📚 **[Full Documentation](https://egain.github.io/ai-agent-sdk/)**
 
-| Guide | Description |
-|-------|-------------|
-| [Getting Started](https://egain.github.io/ai-agent-sdk/guide/) | Introduction and concepts |
-| [Installation](https://egain.github.io/ai-agent-sdk/guide/installation.html) | Setup instructions |
-| [Quick Start](https://egain.github.io/ai-agent-sdk/guide/quick-start.html) | First integration |
-| [Authentication](https://egain.github.io/ai-agent-sdk/guide/authentication.html) | Auth strategies |
-| [Events](https://egain.github.io/ai-agent-sdk/guide/events.html) | Event handling |
-| [Portal initialization](https://egain.github.io/ai-agent-sdk/guide/portal-initialization.html) | CC portal / agent / profile pipeline |
-| [Platform connectors](https://egain.github.io/ai-agent-sdk/guide/platform-connectors.html) | Connector scripts and `HookContract` |
-| [Message Flow](https://egain.github.io/ai-agent-sdk/guide/message-flow.html) | Sending/receiving messages |
-| [API Reference](https://egain.github.io/ai-agent-sdk/api-generated/README.html) | TypeDoc: classes, interfaces, and methods |
-| [Types](https://egain.github.io/ai-agent-sdk/api-generated/README.html) | `Portal`, `UserProfile`, `AgentListItem`, API options (see TypeDoc index) |
+| Guide                                                                                                      | Description                                                               |
+| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [Getting Started](https://egain.github.io/ai-agent-sdk/guide/)                                 | Introduction and concepts                                                 |
+| [Installation](https://egain.github.io/ai-agent-sdk/guide/installation.html)                   | Setup instructions                                                        |
+| [Quick Start](https://egain.github.io/ai-agent-sdk/guide/quick-start.html)                     | First integration                                                         |
+| [Authentication](https://egain.github.io/ai-agent-sdk/guide/authentication.html)               | Auth strategies                                                           |
+| [Events](https://egain.github.io/ai-agent-sdk/guide/events.html)                               | Event handling                                                            |
+| [Portal initialization](https://egain.github.io/ai-agent-sdk/guide/portal-initialization.html) | CC portal / agent / profile pipeline                                      |
+| [Platform connectors](https://egain.github.io/ai-agent-sdk/guide/platform-connectors.html)     | Connector scripts and `HookContract`                                      |
+| [Message Flow](https://egain.github.io/ai-agent-sdk/guide/message-flow.html)                   | Sending/receiving messages                                                |
+| [API Reference](https://egain.github.io/ai-agent-sdk/api-generated/README.html)                | TypeDoc: classes, interfaces, and methods                                 |
+| [Types](https://egain.github.io/ai-agent-sdk/api-generated/README.html)                        | `Portal`, `UserProfile`, `AgentListItem`, API options (see TypeDoc index) |
 
 ## Authentication Options
 
@@ -134,24 +137,63 @@ auth: {
 }
 ```
 
+All built-in strategies treat an access token as stale **five minutes** before its JWT `exp`, so session create and other APIs stay ahead of the server’s ~290s “token will expire soon” guard. The same value is exported for custom hosts:
+
+```typescript
+import {
+  ACCESS_TOKEN_REFRESH_BUFFER_MS,
+  ACCESS_TOKEN_REFRESH_BUFFER_MINUTES
+} from "@egain/ai-agent-sdk";
+```
+
 ## Events
 
 ```typescript
-agent.on("connected", (event) => { /* Connected */ });
-agent.on("agentMessage", (event) => { /* Agent response */ });
-agent.on("message", (event) => { /* Any message */ });
-agent.on("heartbeat", (event) => { /* Agent typing */ });
-agent.on("error", (event) => { /* Error occurred */ });
-agent.on("closed", (event) => { /* Disconnected */ });
-agent.on("stateChanged", (event) => { /* State change */ });
-agent.on("queueFlushed", (event) => { /* Queue sent */ });
-agent.on("tokenExpiring", (event) => { /* Token refresh needed */ });
-agent.on("transcriptUpdate", (event) => { /* Chat transcript line */ });
-agent.on("initialized", (event) => { /* CC init done; safe to connect */ });
-agent.on("portalsAvailable", (event) => { /* Call selectPortal */ });
-agent.on("agentsAvailable", (event) => { /* Call selectAgent */ });
-agent.on("profilesAvailable", (event) => { /* Call selectUserProfile */ });
-agent.on("contextValidation", (event) => { /* Rejected context attributes */ });
+agent.on("connected", (event) => {
+  /* Connected */
+});
+agent.on("agentMessage", (event) => {
+  /* Agent response */
+});
+agent.on("message", (event) => {
+  /* Any message */
+});
+agent.on("heartbeat", (event) => {
+  /* Agent typing */
+});
+agent.on("error", (event) => {
+  /* Error occurred */
+});
+agent.on("closed", (event) => {
+  /* Disconnected */
+});
+agent.on("stateChanged", (event) => {
+  /* State change */
+});
+agent.on("queueFlushed", (event) => {
+  /* Queue sent */
+});
+agent.on("tokenExpiring", (event) => {
+  /* Token refresh needed */
+});
+agent.on("transcriptUpdate", (event) => {
+  /* Chat transcript line */
+});
+agent.on("initialized", (event) => {
+  /* CC init done; safe to connect */
+});
+agent.on("portalsAvailable", (event) => {
+  /* Call selectPortal */
+});
+agent.on("agentsAvailable", (event) => {
+  /* Call selectAgent */
+});
+agent.on("profilesAvailable", (event) => {
+  /* Call selectUserProfile */
+});
+agent.on("contextValidation", (event) => {
+  /* Rejected context attributes */
+});
 ```
 
 ## Message Helpers
@@ -164,20 +206,26 @@ import {
 } from "@egain/ai-agent-sdk";
 
 // Send context (auto-cached for reconnect)
-await agent.send(createContextMessage({
-  context: { userId: "123", language: "en" }
-}));
+await agent.send(
+  createContextMessage({
+    context: { userId: "123", language: "en" }
+  })
+);
 
 // Send feedback
-await agent.send(createFeedbackMessage({
-  rating: 5,
-  answerMessageId: "msg-456"
-}));
+await agent.send(
+  createFeedbackMessage({
+    rating: 5,
+    answerMessageId: "msg-456"
+  })
+);
 
 // Trigger escalation
-await agent.send(createEscalationMessage({
-  escalationEvent: { type: "transfer", reason: "complex" }
-}));
+await agent.send(
+  createEscalationMessage({
+    escalationEvent: { type: "transfer", reason: "complex" }
+  })
+);
 ```
 
 ## Node.js Setup
@@ -238,6 +286,7 @@ npm run docs:build   # Build docs
 ## Examples
 
 See [usage-examples](https://github.com/egain/ai-agent-sdk/tree/master/ai-agent-sdk/usage-examples) in this repository for complete examples:
+
 - **Basic Usage** - Simple getting started
 - **Browser Test** - Browser integration with UI
 - **Server Test** - Node.js implementation
@@ -246,30 +295,30 @@ See [usage-examples](https://github.com/egain/ai-agent-sdk/tree/master/ai-agent-
 
 ### AiAgent Methods
 
-| Method | Description |
-|--------|-------------|
-| `initialize(options?)` | Initialize the agent (optional `{ context }` for portal/profile auto-select) |
-| `connect()` | Connect to the server |
-| `disconnect(options?)` | Disconnect from server |
-| `restartConnection()` | Restart with new session |
-| `send(data, options?)` | Send a message |
-| `maskContent(text)` | Mask plain text with loaded patterns (UI/escalation; `send()` masks eligible messages automatically) |
-| `getState()` | Get connection state |
-| `isConnected()` | Check if connected |
-| `getTranscript(options?)` | Get conversation transcript |
-| `getContext()` | Get stored context |
-| `removeContext()` | Remove stored context |
-| `updateAccessToken(token)` | Update auth token |
-| `selectPortal(portal)` | CC: continue after `portalsAvailable` |
-| `selectAgent(agent)` | CC Flow B: continue after `agentsAvailable` |
-| `selectUserProfile(profile)` | CC: continue after `profilesAvailable` |
-| `getInitParams()` | Copy of configured `initParams` |
-| `getIsInitialized()` | Whether `initialize()` completed |
-| `restartPortalInitializer()` | Re-run CC portal pipeline (or `restartConnection` fallback) |
-| `updateUserProfile(profile)` | Switch profile after CC init (persists select, busts profile list caches, restarts session) |
-| `getUserDetails()` | User/customer details from init when the agent is authenticated (or `null`) |
-| `getCallTranscript()` / `clearCallTranscript()` | Telephony call transcript (connector) |
-| `getCallerInfo()` / `getConversationId()` | Connector-provided CTI state |
+| Method                                          | Description                                                                                          |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `initialize(options?)`                          | Initialize the agent (optional `{ context }` for portal/profile auto-select)                         |
+| `connect()`                                     | Connect to the server                                                                                |
+| `disconnect(options?)`                          | Disconnect from server                                                                               |
+| `restartConnection()`                           | Restart with new session                                                                             |
+| `send(data, options?)`                          | Send a message                                                                                       |
+| `maskContent(text)`                             | Mask plain text with loaded patterns (UI/escalation; `send()` masks eligible messages automatically) |
+| `getState()`                                    | Get connection state                                                                                 |
+| `isConnected()`                                 | Check if connected                                                                                   |
+| `getTranscript(options?)`                       | Get conversation transcript                                                                          |
+| `getContext()`                                  | Get stored context                                                                                   |
+| `removeContext()`                               | Remove stored context                                                                                |
+| `updateAccessToken(token)`                      | Update auth token                                                                                    |
+| `selectPortal(portal)`                          | CC: continue after `portalsAvailable`                                                                |
+| `selectAgent(agent)`                            | CC Flow B: continue after `agentsAvailable`                                                          |
+| `selectUserProfile(profile)`                    | CC: continue after `profilesAvailable`                                                               |
+| `getInitParams()`                               | Copy of configured `initParams`                                                                      |
+| `getIsInitialized()`                            | Whether `initialize()` completed                                                                     |
+| `restartPortalInitializer()`                    | Re-run CC portal pipeline (or `restartConnection` fallback)                                          |
+| `updateUserProfile(profile)`                    | Switch profile after CC init (persists select, busts profile list caches, restarts session)          |
+| `getUserDetails()`                              | User/customer details from init when the agent is authenticated (or `null`)                          |
+| `getCallTranscript()` / `clearCallTranscript()` | Telephony call transcript (connector)                                                                |
+| `getCallerInfo()` / `getConversationId()`       | Connector-provided CTI state                                                                         |
 
 ### Configuration
 

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.1](../README.md) / AnonymousAuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / AnonymousAuthStrategy
 
 # Class: AnonymousAuthStrategy
 
@@ -49,20 +49,17 @@ No authentication required - user remains anonymous
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:94](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L94)
+[core/auth/AnonymousAuthStrategy.ts:95](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L95)
 
 ## Properties
 
 ### TOKEN\_EXPIRY\_BUFFER\_MS
 
-▪ `Static` `Readonly` **TOKEN\_EXPIRY\_BUFFER\_MS**: `number`
-
-Buffer time in milliseconds to refresh token before it expires
-This prevents using a token that's about to expire
+▪ `Static` `Readonly` **TOKEN\_EXPIRY\_BUFFER\_MS**: `number` = `ACCESS_TOKEN_REFRESH_BUFFER_MS`
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:92](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L92)
+[core/auth/AnonymousAuthStrategy.ts:93](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L93)
 
 ## Methods
 
@@ -88,7 +85,7 @@ Initialize the anonymous authentication strategy
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:114](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L114)
+[core/auth/AnonymousAuthStrategy.ts:115](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L115)
 
 ___
 
@@ -118,7 +115,7 @@ token cached for a different scope set is not reused and a token cached for the 
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:129](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L129)
+[core/auth/AnonymousAuthStrategy.ts:130](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L130)
 
 ___
 
@@ -134,7 +131,7 @@ Clears all cached metadata entries
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:206](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L206)
+[core/auth/AnonymousAuthStrategy.ts:207](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L207)
 
 ___
 
@@ -154,7 +151,7 @@ Authenticate the anonymous user
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:243](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L243)
+[core/auth/AnonymousAuthStrategy.ts:244](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L244)
 
 ___
 
@@ -174,7 +171,7 @@ Check if the user is currently authenticated
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:256](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L256)
+[core/auth/AnonymousAuthStrategy.ts:257](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L257)
 
 ___
 
@@ -196,7 +193,7 @@ Token is cached with TTL based on expires_in from the token response
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:308](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L308)
+[core/auth/AnonymousAuthStrategy.ts:309](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L309)
 
 ___
 
@@ -215,7 +212,7 @@ whole prefix, token entries included.
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:386](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L386)
+[core/auth/AnonymousAuthStrategy.ts:387](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L387)
 
 ___
 
@@ -240,7 +237,7 @@ Call [clearTokenCache](AnonymousAuthStrategy.md#cleartokencache) / [clearMetadat
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:400](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L400)
+[core/auth/AnonymousAuthStrategy.ts:401](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L401)
 
 ___
 
@@ -262,4 +259,4 @@ Get deployment information a given domain
 
 #### Defined in
 
-[core/auth/AnonymousAuthStrategy.ts:408](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L408)
+[core/auth/AnonymousAuthStrategy.ts:409](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AnonymousAuthStrategy.ts#L409)

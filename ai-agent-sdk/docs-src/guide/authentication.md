@@ -96,6 +96,19 @@ const agent = new AiAgent({
 });
 ```
 
+### Access token refresh window
+
+Anonymous, pre-auth, and PKCE strategies all treat an access token as stale **five minutes** before its JWT `exp` (anonymous refetches the client-credentials token; PKCE refreshes via MSAL; pre-auth schedules `tokenExpiring` and uses `refreshTokenFn` when provided).
+
+Pre-auth hosts can override the schedule with `expiryBufferMs` on the auth config. Integrators can reuse the same default:
+
+```typescript
+import {
+  ACCESS_TOKEN_REFRESH_BUFFER_MS,
+  ACCESS_TOKEN_REFRESH_BUFFER_MINUTES,
+} from "@egain/ai-agent-sdk";
+```
+
 ### Getting the Current Token
 
 Retrieve the current access token for use in external API calls:

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.1](../README.md) / PreAuthConfig
+[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / PreAuthConfig
 
 # Interface: PreAuthConfig
 
@@ -56,7 +56,7 @@ Buffer time in milliseconds before token expiry to trigger the expiring event
 **`Default`**
 
 ```ts
-180000 (3 minutes)
+{@link ACCESS_TOKEN_REFRESH_BUFFER_MS} (5 minutes)
 ```
 
 #### Defined in

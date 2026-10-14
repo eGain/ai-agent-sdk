@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import {
+  ACCESS_TOKEN_REFRESH_BUFFER_MINUTES,
   AuthStrategy,
   PostAuthenticationCallback,
   AuthStrategyInitializeOptions
@@ -467,9 +468,11 @@ export class PKCEAuthStrategy implements AuthStrategy {
 
   /**
    * Check if the cached access token is still valid.
-   * Matches cc-widget `isValidToken` (5-minute default buffer).
+   * Matches cc-widget `isValidToken` and {@link ACCESS_TOKEN_REFRESH_BUFFER_MINUTES}.
    */
-  private isAccessTokenValid(bufferTimeMinutes: number = 5): boolean {
+  private isAccessTokenValid(
+    bufferTimeMinutes: number = ACCESS_TOKEN_REFRESH_BUFFER_MINUTES
+  ): boolean {
     if (!this.accessToken) {
       return false;
     }

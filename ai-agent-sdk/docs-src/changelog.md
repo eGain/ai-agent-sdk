@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-10-13
+
+### Fixed
+
+- **Access token refresh buffer aligned across auth strategies.** Anonymous and pre-auth strategies now refresh cached tokens **five minutes** before JWT expiry (was 1 minute and 3 minutes respectively), matching PKCE and cc-widget `isValidToken`. This avoids `POST …/session` returning `401` with `"Token will expire soon"` while the SDK still considered the anonymous token valid (session create rejects tokens with less than ~290s remaining).
+
+### Added
+
+- **`ACCESS_TOKEN_REFRESH_BUFFER_MS`** and **`ACCESS_TOKEN_REFRESH_BUFFER_MINUTES`** on `AuthStrategy` and re-exported from the package entry for integrators who need the same threshold.
+
 ## [0.3.1] - 2026-10-09
 
 ### Changed

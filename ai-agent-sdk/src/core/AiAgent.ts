@@ -369,7 +369,7 @@ export interface AgentEvents {
 
   /**
    * Emitted when the access token is about to expire or needs refresh
-   * Triggered by JWT expiration detection (with 3-min buffer) or transport layer request
+   * Triggered by JWT expiration detection (with 5-min buffer) or transport layer request
    */
   tokenExpiring: AgentEvent<'tokenExpiring'>;
 

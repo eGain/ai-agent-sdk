@@ -69,6 +69,10 @@ export type { PlatformComponentService } from './core/platform/PlatformComponent
 // Authentication
 export type { AuthProvider } from './core/auth/AuthProvider.js';
 export type { AuthStrategy, PostAuthenticationCallback, AuthStrategyInitializeOptions } from './core/auth/AuthStrategy.js';
+export {
+  ACCESS_TOKEN_REFRESH_BUFFER_MS,
+  ACCESS_TOKEN_REFRESH_BUFFER_MINUTES,
+} from './core/auth/AuthStrategy.js';
 export { AnonymousAuthStrategy } from './core/auth/AnonymousAuthStrategy.js';
 export type { AnonymousAuthConfig, AnonymousAuthCacheConfig } from './core/auth/AnonymousAuthStrategy.js';
 export { PKCEAuthStrategy } from './core/auth/PKCEAuthStrategy.js';

@@ -102,3 +102,9 @@ export interface AuthStrategy extends AuthProvider {
     getDomain?(): string;
 }
 
+/**
+ * How long before JWT `exp` clients should treat an access token as stale and refresh.
+ * Must stay above the session-create API grace period (290s in session-processor).
+ */
+export const ACCESS_TOKEN_REFRESH_BUFFER_MINUTES = 5;
+export const ACCESS_TOKEN_REFRESH_BUFFER_MS = ACCESS_TOKEN_REFRESH_BUFFER_MINUTES * 60 * 1000;

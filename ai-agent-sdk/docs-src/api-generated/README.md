@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.3.1
+# @egain/ai-agent-sdk API Reference - v0.3.2
 
 # @egain/ai-agent-sdk
 
@@ -164,6 +164,8 @@ await agent.send("Hello!");
 
 ### Variables
 
+- [ACCESS\_TOKEN\_REFRESH\_BUFFER\_MINUTES](README.md#access_token_refresh_buffer_minutes)
+- [ACCESS\_TOKEN\_REFRESH\_BUFFER\_MS](README.md#access_token_refresh_buffer_ms)
 - [InitializationPipelineErrorCode](README.md#initializationpipelineerrorcode)
 - [globalLogger](README.md#globallogger)
 - [PERSONA](README.md#persona)
@@ -296,7 +298,7 @@ Where [PKCEAuthStrategy.resolveClientId](classes/PKCEAuthStrategy.md#resolveclie
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:13](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L13)
+[core/auth/PKCEAuthStrategy.ts:14](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L14)
 
 ___
 
@@ -322,7 +324,7 @@ Callback type for token expiring notification
 
 #### Defined in
 
-[core/auth/PreAuthStrategy.ts:6](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L6)
+[core/auth/PreAuthStrategy.ts:11](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PreAuthStrategy.ts#L11)
 
 ___
 
@@ -392,6 +394,29 @@ Type definitions for role values
 [core/message/types.ts:42](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L42)
 
 ## Variables
+
+### ACCESS\_TOKEN\_REFRESH\_BUFFER\_MINUTES
+
+• `Const` **ACCESS\_TOKEN\_REFRESH\_BUFFER\_MINUTES**: ``5``
+
+How long before JWT `exp` clients should treat an access token as stale and refresh.
+Must stay above the session-create API grace period (290s in session-processor).
+
+#### Defined in
+
+[core/auth/AuthStrategy.ts:109](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L109)
+
+___
+
+### ACCESS\_TOKEN\_REFRESH\_BUFFER\_MS
+
+• `Const` **ACCESS\_TOKEN\_REFRESH\_BUFFER\_MS**: `number`
+
+#### Defined in
+
+[core/auth/AuthStrategy.ts:110](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L110)
+
+___
 
 ### InitializationPipelineErrorCode
 

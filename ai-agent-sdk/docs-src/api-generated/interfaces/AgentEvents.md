@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.1](../README.md) / AgentEvents
+[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / AgentEvents
 
 # Interface: AgentEvents
 
@@ -158,7 +158,7 @@ ___
 • **tokenExpiring**: [`AgentEvent`](AgentEvent.md)\<``"tokenExpiring"``\>
 
 Emitted when the access token is about to expire or needs refresh
-Triggered by JWT expiration detection (with 3-min buffer) or transport layer request
+Triggered by JWT expiration detection (with 5-min buffer) or transport layer request
 
 #### Defined in
 

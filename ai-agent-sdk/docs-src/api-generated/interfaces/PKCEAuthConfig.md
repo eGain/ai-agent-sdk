@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.1](../README.md) / PKCEAuthConfig
+[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / PKCEAuthConfig
 
 # Interface: PKCEAuthConfig
 
@@ -30,7 +30,7 @@ Authorization server URL (authority)
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:27](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L27)
+[core/auth/PKCEAuthStrategy.ts:28](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L28)
 
 ___
 
@@ -42,7 +42,7 @@ Token endpoint URL (not used directly by MSAL, but kept for compatibility)
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:32](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L32)
+[core/auth/PKCEAuthStrategy.ts:33](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L33)
 
 ___
 
@@ -54,7 +54,7 @@ Client ID
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:37](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L37)
+[core/auth/PKCEAuthStrategy.ts:38](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L38)
 
 ___
 
@@ -66,7 +66,7 @@ Redirect URI for OAuth callback
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:42](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L42)
+[core/auth/PKCEAuthStrategy.ts:43](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L43)
 
 ___
 
@@ -78,7 +78,7 @@ Optional scopes to request
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:47](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L47)
+[core/auth/PKCEAuthStrategy.ts:48](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L48)
 
 ___
 
@@ -96,7 +96,7 @@ Authentication scheme: 'popup' or 'redirect'. Login and logout use the same sche
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:53](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L53)
+[core/auth/PKCEAuthStrategy.ts:54](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L54)
 
 ___
 
@@ -114,7 +114,7 @@ Cache location: 'localStorage' or 'sessionStorage'
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:59](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L59)
+[core/auth/PKCEAuthStrategy.ts:60](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L60)
 
 ___
 
@@ -126,7 +126,7 @@ Known authorities
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:64](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L64)
+[core/auth/PKCEAuthStrategy.ts:65](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L65)
 
 ___
 
@@ -138,7 +138,7 @@ Authority metadata
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:69](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L69)
+[core/auth/PKCEAuthStrategy.ts:70](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L70)
 
 ___
 
@@ -152,7 +152,7 @@ the popup to the app. Redirect logout uses this, else `window.location.href`.
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:76](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L76)
+[core/auth/PKCEAuthStrategy.ts:77](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L77)
 
 ___
 
@@ -164,4 +164,4 @@ When true, forces local account login instead of federated SSO.
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:81](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L81)
+[core/auth/PKCEAuthStrategy.ts:82](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L82)

@@ -1,4 +1,9 @@
-import { AuthStrategy, PostAuthenticationCallback, AuthStrategyInitializeOptions } from './AuthStrategy.js';
+import {
+    ACCESS_TOKEN_REFRESH_BUFFER_MS,
+    AuthStrategy,
+    PostAuthenticationCallback,
+    AuthStrategyInitializeOptions,
+} from './AuthStrategy.js';
 import {
     CacheAdapter,
     CacheStorageType,
@@ -85,11 +90,7 @@ export class AnonymousAuthStrategy implements AuthStrategy {
     #cacheKeyPrefix: string;
     #cacheTtl: number;
     
-    /**
-     * Buffer time in milliseconds to refresh token before it expires
-     * This prevents using a token that's about to expire
-     */
-    static readonly TOKEN_EXPIRY_BUFFER_MS = 60 * 1000; // 1 minute
+    static readonly TOKEN_EXPIRY_BUFFER_MS = ACCESS_TOKEN_REFRESH_BUFFER_MS;
 
     constructor(private readonly config?: AnonymousAuthConfig) {
         // Initialize cache settings

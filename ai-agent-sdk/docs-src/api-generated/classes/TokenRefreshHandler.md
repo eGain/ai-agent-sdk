@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.1](../README.md) / TokenRefreshHandler
+[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / TokenRefreshHandler
 
 # Class: TokenRefreshHandler
 
