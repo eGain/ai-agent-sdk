@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / GetAiAgentDetailsOptions
+[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / GetAiAgentDetailsOptions
 
 # Interface: GetAiAgentDetailsOptions
 
@@ -19,7 +19,7 @@ Agent ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:96](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L96)
+[core/api/ApiHelper.ts:101](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L101)
 
 ___
 
@@ -31,4 +31,4 @@ Authentication token
 
 #### Defined in
 
-[core/api/ApiHelper.ts:101](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L101)
+[core/api/ApiHelper.ts:106](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L106)

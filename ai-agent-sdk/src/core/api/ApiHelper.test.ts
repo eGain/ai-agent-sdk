@@ -1127,18 +1127,23 @@ describe('ApiHelper', () => {
   });
 
   describe('getUserDetails', () => {
-    it('should fetch user details from the correct endpoint and unwrap user[0]', async () => {
-      const userRecord = { id: 'user-1', name: 'John Doe', email: 'john@example.com' };
+    it('should fetch user details from the correct endpoint and return the flat v4 user object', async () => {
+      const responseBody = {
+        id: '1',
+        firstName: 'Partition',
+        lastName: 'Administrator',
+        hasEmailConfigured: false,
+      };
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: [userRecord] }),
+        json: async () => responseBody,
       });
 
       const result = await apiHelper.getUserDetails({ authToken: 'test-token' });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://api.example.com/knowledge/portalmgr/v3/portals/user',
+        'https://api.example.com/knowledge/portalmgr/v4/portals/user',
         {
           method: 'GET',
           headers: {
@@ -1149,13 +1154,13 @@ describe('ApiHelper', () => {
           credentials: 'include',
         }
       );
-      expect(result).toEqual(userRecord);
+      expect(result).toEqual(responseBody);
     });
 
-    it('should return null when the response has no user array', async () => {
+    it('should return null when the response body is null or undefined', async () => {
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({}),
+        json: async () => null,
       });
 
       const result = await apiHelper.getUserDetails({ authToken: 'test-token' });
@@ -1181,6 +1186,51 @@ describe('ApiHelper', () => {
       const result = await apiHelper.getUserDetails({ authToken: 'test-token' });
 
       expect(result).toBeNull();
+    });
+
+    it('should request emailAddress when deployment version is 21.24.1.0 or greater', async () => {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: '1',
+          firstName: 'Partition',
+          lastName: 'Administrator',
+          emailAddress: 'john@example.com',
+          hasEmailConfigured: true,
+        }),
+      });
+
+      await apiHelper.getUserDetails({
+        authToken: 'test-token',
+        deploymentVersion: '21.24.1.0',
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.example.com/knowledge/portalmgr/v4/portals/user?userAdditionalAttributes=emailAddress',
+        expect.any(Object),
+      );
+    });
+
+    it('should omit userAdditionalAttributes below 21.24.1.0', async () => {
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: '1',
+          firstName: 'Partition',
+          lastName: 'Administrator',
+          hasEmailConfigured: false,
+        }),
+      });
+
+      await apiHelper.getUserDetails({
+        authToken: 'test-token',
+        deploymentVersion: '21.24.0',
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.example.com/knowledge/portalmgr/v4/portals/user',
+        expect.any(Object),
+      );
     });
   });
 

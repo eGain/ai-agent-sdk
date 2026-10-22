@@ -8,9 +8,7 @@ export default defineConfig({
   description: 'TypeScript SDK for eGain\'s AI Agent platform',
   base,
   outDir: '../../docs',
-  // Examples nav targets are reserved; pages live under repo usage-examples/ until migrated
-  ignoreDeadLinks: [/^\/examples(?:\/|$)/],
-  
+
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#B91D8F' }],
@@ -75,13 +73,7 @@ export default defineConfig({
       '/examples/': [
         {
           text: 'Examples',
-          items: [
-            { text: 'Overview', link: '/examples/' },
-            { text: 'Basic Usage', link: '/examples/basic-usage' },
-            { text: 'Browser (ESM)', link: '/examples/browser-esm' },
-            { text: 'Browser (UMD)', link: '/examples/browser-umd' },
-            { text: 'Node.js', link: '/examples/node' }
-          ]
+          items: [{ text: 'Overview', link: '/examples/' }]
         }
       ]
     },

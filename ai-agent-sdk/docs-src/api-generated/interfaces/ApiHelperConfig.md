@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / ApiHelperConfig
+[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / ApiHelperConfig
 
 # Interface: ApiHelperConfig
 
@@ -23,7 +23,7 @@ API domain/base URL
 
 #### Defined in
 
-[core/api/ApiHelper.ts:51](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L51)
+[core/api/ApiHelper.ts:54](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L54)
 
 ___
 
@@ -41,7 +41,7 @@ Language code (e.g., "en-us", "da-dk")
 
 #### Defined in
 
-[core/api/ApiHelper.ts:57](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L57)
+[core/api/ApiHelper.ts:60](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L60)
 
 ___
 
@@ -53,7 +53,7 @@ Cache configuration options
 
 #### Defined in
 
-[core/api/ApiHelper.ts:62](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L62)
+[core/api/ApiHelper.ts:65](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L65)
 
 ___
 
@@ -74,4 +74,4 @@ If omitted, each call must pass `authToken` explicitly.
 
 #### Defined in
 
-[core/api/ApiHelper.ts:68](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L68)
+[core/api/ApiHelper.ts:71](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L71)

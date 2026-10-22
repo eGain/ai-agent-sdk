@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / GetCustomerDetailsOptions
+[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / GetCustomerDetailsOptions
 
 # Interface: GetCustomerDetailsOptions
 
@@ -18,4 +18,4 @@ Authentication token (required if `ApiHelper` was constructed without `getToken`
 
 #### Defined in
 
-[core/api/ApiHelper.ts:89](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L89)
+[core/api/ApiHelper.ts:94](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L94)

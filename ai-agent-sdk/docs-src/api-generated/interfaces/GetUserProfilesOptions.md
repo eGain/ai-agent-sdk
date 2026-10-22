@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / GetUserProfilesOptions
+[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / GetUserProfilesOptions
 
 # Interface: GetUserProfilesOptions
 
@@ -22,7 +22,7 @@ Portal ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:252](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L252)
+[core/api/ApiHelper.ts:257](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L257)
 
 ___
 
@@ -34,4 +34,4 @@ Authentication token (required if `ApiHelper` was constructed without `getToken`
 
 #### Defined in
 
-[core/api/ApiHelper.ts:257](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L257)
+[core/api/ApiHelper.ts:262](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L262)

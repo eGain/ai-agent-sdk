@@ -165,4 +165,4 @@ process.on("SIGINT", async () => {
 - [Authentication](/guide/authentication) - Configure different auth strategies
 - [Message Flow](/guide/message-flow) - Understand message types and handlers
 - [Events](/guide/events) - Handle all SDK events
-- [Examples](/examples/) - Complete working examples
+- [Examples](/examples/) - Working examples on GitHub

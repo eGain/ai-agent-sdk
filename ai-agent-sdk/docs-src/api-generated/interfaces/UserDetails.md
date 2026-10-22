@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / UserDetails
+[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / UserDetails
 
 # Interface: UserDetails
 
@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[core/api/ApiHelper.ts:72](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L72)
+[core/api/ApiHelper.ts:75](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L75)
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 #### Defined in
 
-[core/api/ApiHelper.ts:73](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L73)
+[core/api/ApiHelper.ts:76](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L76)
 
 ___
 
@@ -42,4 +42,4 @@ ___
 
 #### Defined in
 
-[core/api/ApiHelper.ts:74](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L74)
+[core/api/ApiHelper.ts:77](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L77)

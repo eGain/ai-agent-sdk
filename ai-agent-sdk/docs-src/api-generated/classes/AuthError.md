@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / AuthError
+[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / AuthError
 
 # Class: AuthError
 

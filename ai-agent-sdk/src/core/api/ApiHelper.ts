@@ -3,6 +3,9 @@ import {
     CacheStorageType,
     createCacheAdapter,
 } from './CacheAdapter.js';
+import { isVersionSupported } from '../data-masking/util.js';
+
+const MIN_USER_EMAIL_ATTRIBUTE_VERSION = '21.24.1.0';
 
 /**
  * Cache configuration options
@@ -80,6 +83,8 @@ export interface GetUserDetailsOptions {
      * Authentication token (required if `ApiHelper` was constructed without `getToken`)
      */
     authToken?: string;
+    /** `deploymentInfo.version` — when >= 21.24.1.0, requests `emailAddress` */
+    deploymentVersion?: string;
 }
 
 export interface GetCustomerDetailsOptions {
@@ -1090,9 +1095,12 @@ export class ApiHelper {
      * Returns null on failure so that initialization is not blocked.
      */
     async getUserDetails(options: GetUserDetailsOptions): Promise<UserDetails | null> {
-        const { authToken } = options;
+        const { authToken, deploymentVersion } = options;
         const token = await this.resolveAuthToken(authToken);
-        const url = `${this.apiDomain}/knowledge/portalmgr/v3/portals/user`;
+        const baseUrl = `${this.apiDomain}/knowledge/portalmgr/v4/portals/user`;
+        const url = isVersionSupported(deploymentVersion, MIN_USER_EMAIL_ATTRIBUTE_VERSION)
+            ? `${baseUrl}?userAdditionalAttributes=emailAddress`
+            : baseUrl;
 
         try {
             const response = await fetch(url, {
@@ -1109,7 +1117,7 @@ export class ApiHelper {
                 return null;
             }
 
-            const data = (await response.json())?.user?.[0];
+            const data = await response.json();
             return data ?? null;
         } catch {
             return null;

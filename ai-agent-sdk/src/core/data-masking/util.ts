@@ -7,7 +7,7 @@ import type { AgentDetailsForMasking } from './types.js';
 export const MIN_MASKING_PLATFORM_VERSION = '21.22.2';
 
 /** cc-widget / eGainAiAgent parity */
-export function isPlatformMaskingSupported(
+export function isVersionSupported(
   currentVersion?: string,
   requiredVersion: string = MIN_MASKING_PLATFORM_VERSION
 ): boolean {
@@ -36,7 +36,7 @@ export interface LoadDataMaskingOptions {
 export async function loadDataMasking(options: LoadDataMaskingOptions): Promise<void> {
   const { deploymentVersion, agentDetails, apiHelper, authToken, masker, logger } = options;
 
-  const platformOk = isPlatformMaskingSupported(deploymentVersion);
+  const platformOk = isVersionSupported(deploymentVersion);
   masker.setPlatformSupported(platformOk);
 
   if (!platformOk) {

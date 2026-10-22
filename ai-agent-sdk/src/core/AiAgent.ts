@@ -1305,7 +1305,10 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       const userType = this.agentDetails?.userType || 'user';
       this.userDetails = userType === 'customer'
         ? await this.apiHelper.getCustomerDetails({ authToken: accessToken })
-        : await this.apiHelper.getUserDetails({ authToken: accessToken });
+        : await this.apiHelper.getUserDetails({
+            authToken: accessToken,
+            deploymentVersion: this.deploymentInfo?.version,
+          });
     } catch (error) {
       this.logger.warn('Failed to fetch user/customer details', {
         error: error instanceof Error ? error : new Error(String(error)),

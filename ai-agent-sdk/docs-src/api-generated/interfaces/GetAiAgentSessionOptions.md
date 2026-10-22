@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.2](../README.md) / GetAiAgentSessionOptions
+[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / GetAiAgentSessionOptions
 
 # Interface: GetAiAgentSessionOptions
 
@@ -20,7 +20,7 @@ Agent ID
 
 #### Defined in
 
-[core/api/ApiHelper.ts:108](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L108)
+[core/api/ApiHelper.ts:113](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L113)
 
 ___
 
@@ -32,7 +32,7 @@ Authentication token
 
 #### Defined in
 
-[core/api/ApiHelper.ts:113](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L113)
+[core/api/ApiHelper.ts:118](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L118)
 
 ___
 
@@ -44,4 +44,4 @@ Context to persist before the session is returned and pre-chat starts.
 
 #### Defined in
 
-[core/api/ApiHelper.ts:118](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L118)
+[core/api/ApiHelper.ts:123](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/api/ApiHelper.ts#L123)
