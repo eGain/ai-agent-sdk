@@ -2345,6 +2345,23 @@ describe('AiAgent', () => {
       await expect(agent.restartPortalInitializer()).rejects.toThrow(/No access token found/);
     });
 
+    it('should not call initPlatform again on portal restart', async () => {
+      const { agent } = setupCcAgent();
+      const initPlatform = vi.fn().mockResolvedValue(undefined);
+      (agent as any).platformComponentService = { initPlatform };
+      (agent as any).hookContract = {};
+
+      let initDone = waitForEvent(agent, 'initialized');
+      await agent.initialize();
+      await initDone;
+      expect(initPlatform).toHaveBeenCalledTimes(1);
+
+      initDone = waitForEvent(agent, 'initialized');
+      await agent.restartPortalInitializer();
+      await initDone;
+      expect(initPlatform).toHaveBeenCalledTimes(1);
+    });
+
     it('should reset isInitialized to false and re-run pipeline', async () => {
       const { agent } = setupCcAgent();
       let initDone = waitForEvent(agent, 'initialized');
@@ -2876,6 +2893,101 @@ describe('AiAgent', () => {
       (agent as any).agentDetails = { webSocketDomain: 'not a host' };
 
       expect(() => (agent as any).getWsEndpoint('session-123')).toThrow('Failed to get WebSocket endpoint');
+    });
+  });
+
+  describe('call transcript', () => {
+    const ssn = '123-45-6789';
+    const sensitiveLine = `My SSN is ${ssn}`;
+
+    function activeSsnMasker(): DataMasker {
+      const masker = new DataMasker();
+      masker.setPlatformSupported(true);
+      masker.setPatternsFromApiResponse({
+        patterns: [
+          {
+            name: 'SSN',
+            order: 1,
+            javascriptRegularExpression: '\\b\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{4}\\b',
+            numOfCharsToUnmaskFromLeft: 0,
+            numOfCharsToUnmaskFromRight: 4,
+            applyLuhnAlgorithm: false,
+            maskingCharacter: '*',
+          },
+        ],
+      });
+      return masker;
+    }
+
+    it('buffers call transcript until initialized, then emits full masked array', () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        autoConnect: false,
+      });
+      (agent as any).dataMasker = activeSsnMasker();
+
+      const updates: unknown[] = [];
+      agent.on('callTranscriptUpdate', (event) => updates.push(event.payload));
+
+      const hooks = (agent as any).buildHookContract();
+      hooks.addToTranscript({ sender: 'Customer', content: sensitiveLine });
+      expect(updates).toHaveLength(0);
+
+      (agent as any).onInitializedForCallTranscript();
+
+      expect(updates).toHaveLength(1);
+      const payload = updates[0] as { transcript: { content: string }[] };
+      expect(payload.transcript).toHaveLength(1);
+      expect(payload.transcript[0].content).toContain('*******6789');
+      expect(payload.transcript[0].content).not.toContain('123-45');
+    });
+
+    it('emits full transcript array on each add after initialized', () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        autoConnect: false,
+      });
+
+      const updates: unknown[] = [];
+      agent.on('callTranscriptUpdate', (event) => updates.push(event.payload));
+
+      const hooks = (agent as any).buildHookContract();
+      (agent as any).onInitializedForCallTranscript();
+      updates.length = 0;
+
+      hooks.addToTranscript({ sender: 'Customer', content: 'Hello' });
+      hooks.addToTranscript({ sender: 'Agent', content: 'Hi there' });
+
+      expect(updates).toHaveLength(2);
+      expect((updates[0] as { transcript: unknown[] }).transcript).toHaveLength(1);
+      expect((updates[1] as { transcript: unknown[] }).transcript).toHaveLength(2);
+    });
+
+    it('re-buffers after portal restart until initialized again', () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        autoConnect: false,
+      });
+
+      const updates: unknown[] = [];
+      agent.on('callTranscriptUpdate', (event) => updates.push(event.payload));
+
+      const hooks = (agent as any).buildHookContract();
+      (agent as any).onInitializedForCallTranscript();
+      updates.length = 0;
+
+      (agent as any).callTranscriptEventsEnabled = false;
+      hooks.addToTranscript({ sender: 'Customer', content: 'During restart' });
+      expect(updates).toHaveLength(0);
+
+      (agent as any).onInitializedForCallTranscript();
+      expect(updates).toHaveLength(1);
+      expect((updates[0] as { transcript: { content: string }[] }).transcript[0].content).toBe(
+        'During restart',
+      );
     });
   });
 

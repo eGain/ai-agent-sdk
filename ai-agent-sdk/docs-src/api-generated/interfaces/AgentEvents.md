@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / AgentEvents
+[@egain/ai-agent-sdk API Reference - v0.4.0](../README.md) / AgentEvents
 
 # Interface: AgentEvents
 
@@ -183,8 +183,8 @@ ___
 
 • **callTranscriptUpdate**: [`AgentEvent`](AgentEvent.md)\<``"callTranscriptUpdate"``\>
 
-Emitted when the platform connector pushes a call transcript entry
-via HookContract.addToTranscript(). Entries arrive incrementally during a call.
+Emitted when the call transcript changes after [AgentEvents.initialized](AgentEvents.md#initialized).
+Payload is the full telephony transcript (masked when data masking is active).
 
 #### Defined in
 

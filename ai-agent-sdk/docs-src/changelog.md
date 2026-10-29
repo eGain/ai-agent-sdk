@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-10-29
+
+### Changed
+
+- **`callTranscriptUpdate` (breaking)** — payload is now `{ transcript: CallTranscriptEntry[] }` (full telephony transcript) instead of `{ entry: CallTranscriptEntry }`. Integrators should replace the UI from `payload.transcript` rather than appending a single line.
+- **Call transcript publication timing** — `callTranscriptUpdate` is not emitted until after the first `initialized` event. Lines pushed via `HookContract.addToTranscript()` during platform init are buffered; the first event includes the full array with `content` masked when data masking is active. After `restartPortalInitializer()`, buffering applies again until the next `initialized`.
+
 ## [0.3.3] - 2026-10-22
 
 ### Changed

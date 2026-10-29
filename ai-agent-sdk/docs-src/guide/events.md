@@ -299,11 +299,17 @@ User must pick a profile. Call `agent.selectUserProfile(profile)`.
 
 ### `callTranscriptUpdate`
 
-Telephony **call** transcript (platform connector), not the WebSocket chat transcript.
+Telephony **call** transcript (platform connector), not the WebSocket chat transcript. Emitted only **after** `initialized`, and on each subsequent change. Payload is the **full** transcript array; when data masking is enabled, `content` is masked.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `entry` | `CallTranscriptEntry` | `sender`, `content`, `timestamp` |
+| `transcript` | `CallTranscriptEntry[]` | Full call transcript (`sender`, `content`, `timestamp`) |
+
+```typescript
+agent.on("callTranscriptUpdate", (event) => {
+  renderCallTranscript(event.payload.transcript);
+});
+```
 
 ### `callerInfoUpdate`
 

@@ -262,7 +262,7 @@ export interface AgentEventPayloadMap {
   heartbeat: Omit<MessageHandlerResult, 'timestamp' | 'sessionId' | 'agentId'>;
   tokenExpiring: { reason: 'expiring' | 'transport_request'; expiresAt?: number };
   transcriptUpdate: { entry: TranscriptEntry };
-  callTranscriptUpdate: { entry: CallTranscriptEntry };
+  callTranscriptUpdate: { transcript: CallTranscriptEntry[] };
   callerInfoUpdate: { callerInfo: CallerInfo };
   conversationIdUpdate: { conversationId: string };
   userContextUpdate: { userContext: Record<string, unknown> };
@@ -380,8 +380,8 @@ export interface AgentEvents {
   transcriptUpdate: AgentEvent<'transcriptUpdate'>;
 
   /**
-   * Emitted when the platform connector pushes a call transcript entry
-   * via HookContract.addToTranscript(). Entries arrive incrementally during a call.
+   * Emitted when the call transcript changes after {@link AgentEvents.initialized}.
+   * Payload is the full telephony transcript (masked when data masking is active).
    */
   callTranscriptUpdate: AgentEvent<'callTranscriptUpdate'>;
 
@@ -588,6 +588,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   private conversationId: string | null = null;
   private filterTags: Record<string, string[]> = {};
   private callTranscript: CallTranscriptEntry[] = [];
+  /** False until the first `initialized`; buffers CTI lines without emitting. */
+  private callTranscriptEventsEnabled = false;
   private hookContract?: HookContract;
   private platformComponentService?: PlatformComponentService;
   private userDetails: UserDetails | null = null;
@@ -983,7 +985,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    */
   private buildHookContract(): HookContract {
     return {
-      getTranscript: () => [...this.callTranscript],
+      getTranscript: () => this.buildPublicCallTranscript(),
       getInitParams: () => ({ ...this.initParams }),
       getQueryParams: () => ({ ...this.initParams }),
       getAgentDetails: () => this.agentDetails,
@@ -1001,15 +1003,15 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       getCallerInfo: () => this.callerInfo,
 
       addToTranscript: (entry) => {
-        const newEntry: CallTranscriptEntry = {
+        this.callTranscript.push({
           sender: entry.sender,
           content: entry.content,
           timestamp: entry.timestamp ?? new Date(),
-        };
-        this.callTranscript.push(newEntry);
-        this.emit('callTranscriptUpdate', this.createAgentEventResponse('callTranscriptUpdate', {
-          entry: newEntry,
-        }));
+        });
+        if (!this.callTranscriptEventsEnabled) {
+          return;
+        }
+        this.emitCallTranscriptUpdate();
       },
       setCallerInfo: (info) => {
         this.callerInfo = info;
@@ -1154,6 +1156,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       agent: agentDetails ?? { agentId: this.resolvedAgentId, name: 'Unknown' },
     };
     this.emit('initialized', this.createAgentEventResponse('initialized', payload));
+    this.onInitializedForCallTranscript();
     if (this.config.autoConnect) {
       await this.connect();
     }
@@ -1191,6 +1194,9 @@ export class AiAgent extends EventEmitter<AgentEvents> {
           this.isInitialized = true;
         }
         this.emit(type as any, event);
+        if (type === 'initialized') {
+          this.onInitializedForCallTranscript();
+        }
         if (type === 'initialized' && this.config.autoConnect) {
           this.connect();
         }
@@ -1213,7 +1219,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     await this.portalInitializer.start();
   }
 
-  /** Get an access token and run post-auth initialization ({@link onAuthComplete}). */
+  /** Get an access token, init the platform connector, then run {@link onAuthComplete}. */
   private readonly finishAuthentication = async (): Promise<void> => {
     const accessToken = await this.authService.getToken();
     if (!accessToken) {
@@ -1221,11 +1227,11 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       this.logger.error('finishAuthentication: Failed to get access token', error, { agentId: this.config.id });
       throw error;
     }
-    this.logger.debug("onAuthComplete: PlatformComponentService.initPlatform start");
     if (this.platformComponentService?.initPlatform) {
+      this.logger.debug('finishAuthentication: PlatformComponentService.initPlatform start');
       await this.platformComponentService.initPlatform(this.hookContract!);
+      this.logger.debug('finishAuthentication: PlatformComponentService.initPlatform end');
     }
-    this.logger.debug("onAuthComplete: PlatformComponentService.initPlatform end");
     await this.onAuthComplete(accessToken);
   };
 
@@ -1235,13 +1241,6 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * @param accessToken - The access token to use for authentication
    */
   private readonly onAuthComplete = async (accessToken: any) => {
-    const runPortalPipeline = this.shouldRunPortalInitializationPipeline();
-    this.logger.debug('onAuthComplete callback invoked', {
-      agentId: this.config.id,
-      agentType: this.agentDetails?.agentType,
-      runPortalPipeline,
-      instanceId: (this as any)._instanceId,
-    });
 
     await this.fetchUserOrCustomerDetails(accessToken);
     await loadDataMasking({
@@ -1251,6 +1250,14 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       authToken: accessToken,
       masker: this.dataMasker,
       logger: this.logger,
+    });
+
+    const runPortalPipeline = this.shouldRunPortalInitializationPipeline();
+    this.logger.debug('onAuthComplete callback invoked', {
+      agentId: this.config.id,
+      agentType: this.agentDetails?.agentType,
+      runPortalPipeline,
+      instanceId: (this as any)._instanceId,
     });
 
     if (runPortalPipeline) {
@@ -1276,6 +1283,34 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       return text;
     }
     return this.dataMasker.maskContent(text);
+  }
+
+  private buildPublicCallTranscript(): CallTranscriptEntry[] {
+    return this.callTranscript.map((entry) => ({
+      ...entry,
+      content: this.maskContent(entry.content),
+    }));
+  }
+
+  private emitCallTranscriptUpdate(): void {
+    if (this.callTranscript.length === 0) {
+      return;
+    }
+    this.emit(
+      'callTranscriptUpdate',
+      this.createAgentEventResponse('callTranscriptUpdate', {
+        transcript: this.buildPublicCallTranscript(),
+      }),
+    );
+  }
+
+  /** Enables call transcript events and publishes buffered lines after `initialized`. */
+  private onInitializedForCallTranscript(): void {
+    if (this.callTranscriptEventsEnabled) {
+      return;
+    }
+    this.callTranscriptEventsEnabled = true;
+    this.emitCallTranscriptUpdate();
   }
 
   private applyOutboundDataMasking(message: Message): Message {
@@ -1931,8 +1966,15 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     }
     this.resolvedAgentId = this.config.id;
     this.isInitialized = false;
+    this.callTranscriptEventsEnabled = false;
 
-    await this.finishAuthentication();
+    const accessToken = await this.authService.getToken();
+    if (!accessToken) {
+      const error = new Error('No access token found');
+      this.logger.error('restartPortalInitializer: Failed to get access token', error, { agentId: this.config.id });
+      throw error;
+    }
+    await this.onAuthComplete(accessToken);
   }
 
   /**
@@ -2023,6 +2065,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       agent: this.agentDetails ?? { agentId: this.resolvedAgentId, name: 'Unknown' },
     };
     this.emit('initialized', this.createAgentEventResponse('initialized', payload));
+    this.onInitializedForCallTranscript();
   }
 
   /**
@@ -2336,10 +2379,10 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * This is distinct from {@link getTranscript}, which returns the AI Agent
    * chat transcript (WebSocket messages).
    *
-   * @returns A shallow copy of the call transcript entries
+   * @returns Masked call transcript entries when data masking is active
    */
   getCallTranscript(): CallTranscriptEntry[] {
-    return [...this.callTranscript];
+    return this.buildPublicCallTranscript();
   }
 
   /**

@@ -129,6 +129,10 @@ const displayText = agent.maskContent(userPastedText);
 
 Do **not** call `maskContent()` and then `send()` with the same string — `send()` already masks eligible customer messages. Double masking is unnecessary.
 
+### Call transcript (platform CTI)
+
+Telephony lines from `HookContract.addToTranscript()` are buffered until **`initialized`**, then published via **`callTranscriptUpdate`** with the **full** `{ transcript: CallTranscriptEntry[] }` payload. Each entry’s `content` is masked with the same patterns when data masking is active. After `restartPortalInitializer()`, buffering applies again until the next `initialized`.
+
 ### When masking is inactive
 
 Masking is a no-op when:

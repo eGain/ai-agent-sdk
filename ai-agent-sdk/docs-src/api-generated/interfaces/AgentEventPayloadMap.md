@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / AgentEventPayloadMap
+[@egain/ai-agent-sdk API Reference - v0.4.0](../README.md) / AgentEventPayloadMap
 
 # Interface: AgentEventPayloadMap
 
@@ -219,7 +219,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `entry` | [`CallTranscriptEntry`](CallTranscriptEntry.md) |
+| `transcript` | [`CallTranscriptEntry`](CallTranscriptEntry.md)[] |
 
 #### Defined in
 

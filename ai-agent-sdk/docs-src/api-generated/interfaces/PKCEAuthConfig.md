@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.3.3](../README.md) / PKCEAuthConfig
+[@egain/ai-agent-sdk API Reference - v0.4.0](../README.md) / PKCEAuthConfig
 
 # Interface: PKCEAuthConfig
 
