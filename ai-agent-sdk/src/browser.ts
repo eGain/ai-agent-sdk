@@ -12,5 +12,5 @@
  *   </script>
  */
 
-// MSAL is bundled via PKCEAuthStrategy → msal-loader → vendored msal-browser.js
+// MSAL is bundled via PKCEAuthStrategy → msal-loader → vendored msal-browser.cjs
 export * from './index.js';

@@ -674,6 +674,49 @@ describe("PKCEAuthStrategy", () => {
         expect(msalConfigArg.system).toBeDefined();
         expect(msalConfigArg.system.allowRedirectInIframe).toBe(true);
       });
+
+      it("uses fragment OIDC response type for multi-tenant redirect login", async () => {
+        const redirectStrategy = new PKCEAuthStrategy({
+          authorizationUrl: "https://auth.example.com/authorize",
+          tokenUrl: "https://auth.example.com/token",
+          clientId: "test-client-id",
+          redirectUri: "https://app.example.com/s9m1/system/templates/selfservice/auth-redirect.html",
+          knownAuthorities: ["auth.example.com"],
+          authScheme: "redirect"
+        });
+
+        await redirectStrategy.initialize({
+          deploymentInfo: {
+            apiDomain: "api.example.com",
+            tenant_identifier: "s9m1"
+          }
+        });
+
+        const msalConfigArg = PublicClientApplication.mock.calls.at(-1)?.[0];
+        expect(msalConfigArg.auth.protocolMode).toBe("OIDC");
+        expect(msalConfigArg.auth.OIDCOptions.serverResponseType).toBe("fragment");
+      });
+
+      it("uses query OIDC response type for multi-tenant popup login", async () => {
+        const popupStrategy = new PKCEAuthStrategy({
+          authorizationUrl: "https://auth.example.com/authorize",
+          tokenUrl: "https://auth.example.com/token",
+          clientId: "test-client-id",
+          redirectUri: "https://app.example.com/s9m1/system/templates/selfservice/auth-redirect.html",
+          knownAuthorities: ["auth.example.com"],
+          authScheme: "popup"
+        });
+
+        await popupStrategy.initialize({
+          deploymentInfo: {
+            apiDomain: "api.example.com",
+            tenant_identifier: "s9m1"
+          }
+        });
+
+        const msalConfigArg = PublicClientApplication.mock.calls.at(-1)?.[0];
+        expect(msalConfigArg.auth.OIDCOptions.serverResponseType).toBe("query");
+      });
     });
 
     describe("authenticate", () => {

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-11-04
+
+### Fixed
+
+- **PKCE redirect on multi-tenant (Rigel) deployments** — When `tenant_identifier` is set, MSAL now uses `serverResponseType: "fragment"` for `authScheme: "redirect"` so `handleRedirectPromise()` reads `#code=` on the widget URL after `auth-redirect.html`. Popup login keeps `query` (egAuthentication parity). `nextRoute` is built without the URL hash.
+
+### Changed
+
+- **MSAL browser bundling** — vendored MSAL is the `@azure/msal-browser` 4.0.1 CommonJS build (`msal-browser.cjs`) instead of the UMD `msal-browser.js`, so Vite dev pre-bundling of `@egain/ai-agent-sdk` (e.g. cc-widget) can load PKCE without named-export errors. The eGain popup redirect path check is unchanged.
+
 ## [0.4.0] - 2026-10-29
 
 ### Changed

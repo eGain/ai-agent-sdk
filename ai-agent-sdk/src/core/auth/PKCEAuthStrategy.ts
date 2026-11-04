@@ -334,7 +334,9 @@ export class PKCEAuthStrategy implements AuthStrategy {
 
     // Use the current page URL so auth-redirect.html navigates back to the app after login
     let nextRoute =
-      typeof window !== "undefined" ? window.location.href : endpoint;
+      typeof window !== "undefined"
+        ? window.location.href.split("#")[0]
+        : endpoint;
 
     // Build and return PKCE config
     return {
@@ -435,12 +437,15 @@ export class PKCEAuthStrategy implements AuthStrategy {
       }
     };
 
-    // Add OIDC options if tenantAlias or tenantId is present (similar to egAuthentication.js)
+    // Multi-tenant OIDC: serverResponseType sets authorize response_mode and where MSAL reads
+    // the callback (search vs hash). Redirect uses fragment (MSAL default), same as single-tenant
+    // through auth-redirect.html; popup keeps query (egAuthentication parity).
     const tenantAlias = this.deploymentInfo?.tenant_identifier;
     if (tenantAlias) {
       msalConfig.auth.protocolMode = "OIDC";
       msalConfig.auth.OIDCOptions = {
-        serverResponseType: "query"
+        serverResponseType:
+          this.authScheme === "redirect" ? "fragment" : "query"
       };
     }
 

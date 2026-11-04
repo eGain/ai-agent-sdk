@@ -11,7 +11,7 @@ export default defineConfig({
       // Allows json-summary (and PR comment action) when tests or thresholds fail
       reportOnFailure: true,
       // Only the SDK's own TypeScript sources: this leaves out the vendored
-      // src/core/auth/msal-browser.js bundle, scripts/, and docs-src/.vitepress.
+      // src/core/auth/msal-browser.cjs bundle, scripts/, and docs-src/.vitepress.
       include: ['src/**/*.ts'],
       exclude: ['**/*.d.ts', '**/*.test.ts'],
       // Global floor a few points under where the suite sits today; changed-line
