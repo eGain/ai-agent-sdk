@@ -26,6 +26,7 @@
     "dist",
     "**/*.test.ts",
     "**/*.spec.ts",
+    "**/test-dom.ts",
     "usage-examples",
     "vitest.config.ts",
     "src/browser.ts"

@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.4.1](../README.md) / UserDetails
+[@egain/ai-agent-sdk API Reference - v0.4.2](../README.md) / UserDetails
 
 # Interface: UserDetails
 

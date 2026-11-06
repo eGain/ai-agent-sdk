@@ -57,6 +57,7 @@ export default defineConfig({
             { text: 'Transcript', link: '/guide/transcript' },
             { text: 'Message Queue', link: '/guide/message-queue' },
             { text: 'Caching', link: '/guide/caching' },
+            { text: 'Client Actions', link: '/guide/client-actions' },
             { text: 'Error Handling', link: '/guide/error-handling' },
             { text: 'Logging', link: '/guide/logging' }
           ]

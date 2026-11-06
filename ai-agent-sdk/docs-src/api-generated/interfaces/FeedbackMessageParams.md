@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.4.1](../README.md) / FeedbackMessageParams
+[@egain/ai-agent-sdk API Reference - v0.4.2](../README.md) / FeedbackMessageParams
 
 # Interface: FeedbackMessageParams
 
@@ -32,7 +32,7 @@ BaseMessageParams.messageId
 
 #### Defined in
 
-[core/message/MessageTypes.ts:7](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L7)
+[core/message/MessageTypes.ts:8](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
 
 ___
 
@@ -46,7 +46,7 @@ BaseMessageParams.from
 
 #### Defined in
 
-[core/message/MessageTypes.ts:8](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
+[core/message/MessageTypes.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)
 
 ___
 
@@ -60,7 +60,7 @@ BaseMessageParams.to
 
 #### Defined in
 
-[core/message/MessageTypes.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)
+[core/message/MessageTypes.ts:10](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L10)
 
 ___
 
@@ -72,7 +72,7 @@ The feedback rating - "up" for positive, "down" for negative
 
 #### Defined in
 
-[core/message/MessageTypes.ts:39](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L39)
+[core/message/MessageTypes.ts:40](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L40)
 
 ___
 
@@ -84,4 +84,4 @@ ID of the message being rated
 
 #### Defined in
 
-[core/message/MessageTypes.ts:43](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L43)
+[core/message/MessageTypes.ts:44](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L44)

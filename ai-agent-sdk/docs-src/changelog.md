@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2026-11-05
+
+### Added
+
+- **Client actions.** The server can ask the browser to do something on its behalf, through one envelope and lifecycle for every type. Register a handler per type with `registerClientActionHandler()` before connecting; an action with no handler is answered `unsupported` straight away. Answer `user-gesture` actions with `performClientAction()` (synchronously, inside the click) or `declineClientAction()`. New events `clientAction` and `clientActionUpdate`. See [Client Actions](./guide/client-actions.md).
+- **`createPkceUserAuthHandler()`** for `pkce_user_auth`, which has the end user sign in to a third-party provider mid-chat so a tool can call it as them. A cached or refreshable token finishes the action without asking, and the popup stops when the server's wait does.
+- **`clearClientActionCredentials()`** forgets every credential a client action obtained in this tab. `logout()` calls it; call it yourself when the person signs out some other way.
+
+### Changed
+
+- **A typed message cancels the pending client action.** The server reads it as the answer.
+
 ## [0.4.1] - 2026-11-04
 
 ### Fixed

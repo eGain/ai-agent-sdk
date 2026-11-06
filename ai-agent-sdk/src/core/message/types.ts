@@ -1,3 +1,5 @@
+import type { ClientActionEnvelope } from "../client-actions/types.js";
+
 /**
  * Message type constants
  */
@@ -23,6 +25,10 @@ export const ROLE = Object.freeze({
   ESCALATION: "escalation",
   FEEDBACK: "feedback",
   HUMAN: "human",
+  /** Server -> client: something the browser should do on the server's behalf. */
+  CLIENT_ACTION: "client action",
+  /** Client -> server: how a client action the server is waiting on ended. */
+  CLIENT_ACTION_RESULT: "client action result",
 } as const);
 
 export const ERROR_CODES = Object.freeze({
@@ -69,6 +75,11 @@ export interface MessageData {
     email?: boolean;
   };
   sources?: any[];
+  /**
+   * Present on a `client action` agent message: something the server asks the browser to do,
+   * such as having the person sign in so a paused tool can act as them.
+   */
+  clientAction?: ClientActionEnvelope;
   reasoning?: string;
   context?: object;
   feedback?: {
@@ -80,6 +91,8 @@ export interface MessageData {
   workflowType?: "preChatWorkflow" | "escalationWorkflow" | "agentWorkflow" | null;
   workflowNodeType?: string | null;
   inputType?: string | null;
+  /** Time-only inputs are submitted as local clocks in this IANA timezone. */
+  inputTimezone?: string | null;
 }
 
 /**

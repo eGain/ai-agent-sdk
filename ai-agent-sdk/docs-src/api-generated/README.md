@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.4.1
+# @egain/ai-agent-sdk API Reference - v0.4.2
 
 # @egain/ai-agent-sdk
 
@@ -119,6 +119,13 @@ await agent.send("Hello!");
 - [ClientCredentialsAuthConfig](interfaces/ClientCredentialsAuthConfig.md)
 - [PKCEAuthConfig](interfaces/PKCEAuthConfig.md)
 - [PreAuthConfig](interfaces/PreAuthConfig.md)
+- [PkceUserAuthPayload](interfaces/PkceUserAuthPayload.md)
+- [PkceUserAuthHandlerOptions](interfaces/PkceUserAuthHandlerOptions.md)
+- [ClientActionOutcome](interfaces/ClientActionOutcome.md)
+- [ClientActionContext](interfaces/ClientActionContext.md)
+- [ClientActionHandler](interfaces/ClientActionHandler.md)
+- [ClientAction](interfaces/ClientAction.md)
+- [ClientActionUpdate](interfaces/ClientActionUpdate.md)
 - [ConnectionEvents](interfaces/ConnectionEvents.md)
 - [ConnectionConfig](interfaces/ConnectionConfig.md)
 - [TransportEvents](interfaces/TransportEvents.md)
@@ -156,6 +163,10 @@ await agent.send("Hello!");
 - [AuthenticationInput](README.md#authenticationinput)
 - [ClientIdSource](README.md#clientidsource)
 - [TokenExpiringCallback](README.md#tokenexpiringcallback)
+- [OidcClientConstructor](README.md#oidcclientconstructor)
+- [ClientActionStatus](README.md#clientactionstatus)
+- [ClientActionInteraction](README.md#clientactioninteraction)
+- [ClientActionLifecycle](README.md#clientactionlifecycle)
 - [InitializationPipelineStage](README.md#initializationpipelinestage)
 - [InitializationPipelineErrorCode](README.md#initializationpipelineerrorcode-1)
 - [InitializationPipelineErrorOptions](README.md#initializationpipelineerroroptions)
@@ -166,6 +177,8 @@ await agent.send("Hello!");
 
 - [ACCESS\_TOKEN\_REFRESH\_BUFFER\_MINUTES](README.md#access_token_refresh_buffer_minutes)
 - [ACCESS\_TOKEN\_REFRESH\_BUFFER\_MS](README.md#access_token_refresh_buffer_ms)
+- [PKCE\_USER\_AUTH\_ACTION\_TYPE](README.md#pkce_user_auth_action_type)
+- [PKCE\_CALLBACK\_MESSAGE\_SOURCE](README.md#pkce_callback_message_source)
 - [InitializationPipelineErrorCode](README.md#initializationpipelineerrorcode)
 - [globalLogger](README.md#globallogger)
 - [PERSONA](README.md#persona)
@@ -174,6 +187,7 @@ await agent.send("Hello!");
 
 ### Functions
 
+- [createPkceUserAuthHandler](README.md#createpkceuserauthhandler)
 - [getLevelName](README.md#getlevelname)
 - [getLevelValue](README.md#getlevelvalue)
 - [isLevelEnabled](README.md#islevelenabled)
@@ -213,13 +227,13 @@ await agent.send("Hello!");
 
 ### AgentEventType
 
-Ƭ **AgentEventType**: ``"connected"`` \| ``"message"`` \| ``"agentMessage"`` \| ``"contextValidation"`` \| ``"errorMessage"`` \| ``"error"`` \| ``"closed"`` \| ``"stateChanged"`` \| ``"queueFlushed"`` \| ``"heartbeat"`` \| ``"tokenExpiring"`` \| ``"transcriptUpdate"`` \| ``"callTranscriptUpdate"`` \| ``"callerInfoUpdate"`` \| ``"conversationIdUpdate"`` \| ``"userContextUpdate"`` \| ``"filterTagsUpdate"`` \| ``"initialized"`` \| ``"portalsAvailable"`` \| ``"agentsAvailable"`` \| ``"profilesAvailable"``
+Ƭ **AgentEventType**: ``"connected"`` \| ``"message"`` \| ``"agentMessage"`` \| ``"contextValidation"`` \| ``"errorMessage"`` \| ``"error"`` \| ``"closed"`` \| ``"stateChanged"`` \| ``"queueFlushed"`` \| ``"heartbeat"`` \| ``"tokenExpiring"`` \| ``"transcriptUpdate"`` \| ``"callTranscriptUpdate"`` \| ``"callerInfoUpdate"`` \| ``"conversationIdUpdate"`` \| ``"userContextUpdate"`` \| ``"filterTagsUpdate"`` \| ``"initialized"`` \| ``"portalsAvailable"`` \| ``"agentsAvailable"`` \| ``"profilesAvailable"`` \| ``"clientAction"`` \| ``"clientActionUpdate"``
 
 Agent event type identifiers
 
 #### Defined in
 
-[core/AiAgent.ts:223](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L223)
+[core/AiAgent.ts:233](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L233)
 
 ___
 
@@ -328,6 +342,82 @@ Callback type for token expiring notification
 
 ___
 
+### OidcClientConstructor
+
+Ƭ **OidcClientConstructor**: (`settings`: `Record`\<`string`, `unknown`\>) => `OidcClientLike`
+
+The `OidcClient` constructor, as `oidc-client-ts` exports it.
+
+Injected rather than imported so this module stays testable without the library resolved, and so
+a host that already loads `oidc-client-ts` can hand in the copy it has instead of bundling a
+second one.
+
+#### Type declaration
+
+• (`settings`): `OidcClientLike`
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `settings` | `Record`\<`string`, `unknown`\> |
+
+##### Returns
+
+`OidcClientLike`
+
+#### Defined in
+
+[core/client-actions/pkce/oauth/createOidcClient.ts:11](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/client-actions/pkce/oauth/createOidcClient.ts#L11)
+
+___
+
+### ClientActionStatus
+
+Ƭ **ClientActionStatus**: ``"completed"`` \| ``"failed"`` \| ``"declined"`` \| ``"cancelled"`` \| ``"superseded"`` \| ``"unsupported"`` \| ``"timeout"``
+
+How an action ended. One vocabulary for every type, so the server and the host can treat them
+alike; the type-specific detail goes in [ClientActionOutcome.reason](interfaces/ClientActionOutcome.md#reason).
+
+`cancelled` (the person typed instead) and `superseded` (a newer action replaced this one) are
+decided here and never sent: the typed message is itself the server's signal, and a superseded
+action's server-side wait has already been replaced.
+
+#### Defined in
+
+[core/client-actions/types.ts:19](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/client-actions/types.ts#L19)
+
+___
+
+### ClientActionInteraction
+
+Ƭ **ClientActionInteraction**: ``"none"`` \| ``"user-gesture"``
+
+Whether an action needs the person to do something.
+
+`user-gesture` actions wait for the host to call [AiAgent.performClientAction](classes/AiAgent.md#performclientaction) from a click
+handler -- browsers only let a page open a popup while a click is being handled. `none` actions
+run as soon as they arrive.
+
+#### Defined in
+
+[core/client-actions/types.ts:35](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/client-actions/types.ts#L35)
+
+___
+
+### ClientActionLifecycle
+
+Ƭ **ClientActionLifecycle**: ``"pending"`` \| ``"in_progress"`` \| ``"completed"`` \| ``"failed"`` \| ``"cancelled"`` \| ``"expired"``
+
+Where an action is, for whatever renders it. The same states for every type, so one card
+component can follow any action.
+
+#### Defined in
+
+[core/client-actions/types.ts:41](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/client-actions/types.ts#L41)
+
+___
+
 ### InitializationPipelineStage
 
 Ƭ **InitializationPipelineStage**: ``"start"`` \| ``"portal"`` \| ``"agent"`` \| ``"profile"``
@@ -379,7 +469,7 @@ Type definitions for persona values
 
 #### Defined in
 
-[core/message/types.ts:37](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L37)
+[core/message/types.ts:43](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L43)
 
 ___
 
@@ -391,7 +481,7 @@ Type definitions for role values
 
 #### Defined in
 
-[core/message/types.ts:42](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L42)
+[core/message/types.ts:48](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L48)
 
 ## Variables
 
@@ -415,6 +505,34 @@ ___
 #### Defined in
 
 [core/auth/AuthStrategy.ts:110](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/AuthStrategy.ts#L110)
+
+___
+
+### PKCE\_USER\_AUTH\_ACTION\_TYPE
+
+• `Const` **PKCE\_USER\_AUTH\_ACTION\_TYPE**: ``"pkce_user_auth"``
+
+The client action that has the person sign in to a third-party provider for a paused tool call.
+
+#### Defined in
+
+[core/client-actions/pkce/PkceUserAuthHandler.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/client-actions/pkce/PkceUserAuthHandler.ts#L9)
+
+___
+
+### PKCE\_CALLBACK\_MESSAGE\_SOURCE
+
+• `Const` **PKCE\_CALLBACK\_MESSAGE\_SOURCE**: ``"egain-tool-auth"``
+
+The `source` a PKCE callback page must put on the message it posts back to the widget.
+
+Exported because the page is not part of the SDK: eGain's is a static file in cc-widget
+(`public/oauth-callback.html`), which cannot import this, so the widget's test of that page
+asserts against this constant instead of repeating the string.
+
+#### Defined in
+
+[core/client-actions/pkce/oauth/AuthorizationPopup.ts:10](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/client-actions/pkce/oauth/AuthorizationPopup.ts#L10)
 
 ___
 
@@ -468,17 +586,17 @@ Message type constants
 
 #### Defined in
 
-[core/message/types.ts:4](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L4)
+[core/message/types.ts:6](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L6)
 
 ___
 
 ### ROLE
 
-• `Const` **ROLE**: `Readonly`\<\{ `STALE_TOKEN`: ``"stale_token"`` = "stale\_token"; `EXPIRED_TOKEN`: ``"expired_token"`` = "expired\_token"; `TOKEN`: ``"token"`` = "token"; `CHAT_HISTORY`: ``"chat history"`` = "chat history"; `ERROR`: ``"error"`` = "error"; `HEARTBEAT`: ``"heartbeat"`` = "heartbeat"; `CONTEXT_VALIDATION`: ``"context validation"`` = "context validation"; `FOLLOW_UP_QUESTION`: ``"follow up question agent"`` = "follow up question agent"; `CUSTOMER_SUPPORT`: ``"customer support agent"`` = "customer support agent"; `CONTEXT`: ``"context"`` = "context"; `GRACEFUL_DISCONNECT`: ``"graceful disconnect"`` = "graceful disconnect"; `ESCALATION`: ``"escalation"`` = "escalation"; `FEEDBACK`: ``"feedback"`` = "feedback"; `HUMAN`: ``"human"`` = "human" }\>
+• `Const` **ROLE**: `Readonly`\<\{ `STALE_TOKEN`: ``"stale_token"`` = "stale\_token"; `EXPIRED_TOKEN`: ``"expired_token"`` = "expired\_token"; `TOKEN`: ``"token"`` = "token"; `CHAT_HISTORY`: ``"chat history"`` = "chat history"; `ERROR`: ``"error"`` = "error"; `HEARTBEAT`: ``"heartbeat"`` = "heartbeat"; `CONTEXT_VALIDATION`: ``"context validation"`` = "context validation"; `FOLLOW_UP_QUESTION`: ``"follow up question agent"`` = "follow up question agent"; `CUSTOMER_SUPPORT`: ``"customer support agent"`` = "customer support agent"; `CONTEXT`: ``"context"`` = "context"; `GRACEFUL_DISCONNECT`: ``"graceful disconnect"`` = "graceful disconnect"; `ESCALATION`: ``"escalation"`` = "escalation"; `FEEDBACK`: ``"feedback"`` = "feedback"; `HUMAN`: ``"human"`` = "human"; `CLIENT_ACTION`: ``"client action"`` = "client action"; `CLIENT_ACTION_RESULT`: ``"client action result"`` = "client action result" }\>
 
 #### Defined in
 
-[core/message/types.ts:11](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L11)
+[core/message/types.ts:13](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L13)
 
 ___
 
@@ -488,9 +606,36 @@ ___
 
 #### Defined in
 
-[core/message/types.ts:28](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L28)
+[core/message/types.ts:34](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L34)
 
 ## Functions
+
+### createPkceUserAuthHandler
+
+▸ **createPkceUserAuthHandler**(`options?`): [`ClientActionHandler`](interfaces/ClientActionHandler.md)\<[`PkceUserAuthPayload`](interfaces/PkceUserAuthPayload.md)\>
+
+The handler for [PKCE_USER_AUTH_ACTION_TYPE](README.md#pkce_user_auth_action_type). Register it to let this client ask people to
+sign in mid-chat. The server pauses every PKCE-linked tool call regardless; without this handler
+the client answers `unsupported` and the agent answers without that tool's data.
+
+A person is only asked when they have to be: a token cached from an earlier sign-in, or one a
+stored refresh token can renew, finishes the action before any card waits for a click.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `options` | [`PkceUserAuthHandlerOptions`](interfaces/PkceUserAuthHandlerOptions.md) |
+
+#### Returns
+
+[`ClientActionHandler`](interfaces/ClientActionHandler.md)\<[`PkceUserAuthPayload`](interfaces/PkceUserAuthPayload.md)\>
+
+#### Defined in
+
+[core/client-actions/pkce/PkceUserAuthHandler.ts:78](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/client-actions/pkce/PkceUserAuthHandler.ts#L78)
+
+___
 
 ### getLevelName
 
@@ -586,7 +731,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:90](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L90)
+[core/message/MessageTypes.ts:91](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L91)
 
 ___
 
@@ -610,7 +755,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:109](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L109)
+[core/message/MessageTypes.ts:110](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L110)
 
 ___
 
@@ -634,7 +779,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:128](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L128)
+[core/message/MessageTypes.ts:129](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L129)
 
 ___
 
@@ -658,7 +803,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:149](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L149)
+[core/message/MessageTypes.ts:150](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L150)
 
 ___
 
@@ -682,7 +827,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:165](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L165)
+[core/message/MessageTypes.ts:166](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L166)
 
 ___
 
@@ -707,7 +852,7 @@ Message object compatible with AiAgent.send()
 
 #### Defined in
 
-[core/message/MessageTypes.ts:191](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L191)
+[core/message/MessageTypes.ts:208](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L208)
 
 ## Features Caching
 

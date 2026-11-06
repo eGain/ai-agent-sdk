@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.4.1](../README.md) / AiAgentConfig
+[@egain/ai-agent-sdk API Reference - v0.4.2](../README.md) / AiAgentConfig
 
 # Interface: AiAgentConfig
 
@@ -49,7 +49,7 @@ Agent ID
 
 #### Defined in
 
-[core/AiAgent.ts:59](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L59)
+[core/AiAgent.ts:69](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L69)
 
 ___
 
@@ -61,7 +61,7 @@ WebSocket endpoint URL
 
 #### Defined in
 
-[core/AiAgent.ts:64](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L64)
+[core/AiAgent.ts:74](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L74)
 
 ___
 
@@ -78,7 +78,7 @@ Can be:
 
 #### Defined in
 
-[core/AiAgent.ts:74](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L74)
+[core/AiAgent.ts:84](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L84)
 
 ___
 
@@ -96,7 +96,7 @@ false
 
 #### Defined in
 
-[core/AiAgent.ts:80](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L80)
+[core/AiAgent.ts:90](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L90)
 
 ___
 
@@ -114,7 +114,7 @@ Maximum queue size
 
 #### Defined in
 
-[core/AiAgent.ts:86](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L86)
+[core/AiAgent.ts:96](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L96)
 
 ___
 
@@ -132,7 +132,7 @@ Infinity
 
 #### Defined in
 
-[core/AiAgent.ts:92](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L92)
+[core/AiAgent.ts:102](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L102)
 
 ___
 
@@ -150,7 +150,7 @@ Base reconnection delay in milliseconds
 
 #### Defined in
 
-[core/AiAgent.ts:98](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L98)
+[core/AiAgent.ts:108](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L108)
 
 ___
 
@@ -168,7 +168,7 @@ Maximum reconnection delay in milliseconds
 
 #### Defined in
 
-[core/AiAgent.ts:104](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L104)
+[core/AiAgent.ts:114](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L114)
 
 ___
 
@@ -187,7 +187,7 @@ undefined (creates new instance)
 
 #### Defined in
 
-[core/AiAgent.ts:111](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L111)
+[core/AiAgent.ts:121](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L121)
 
 ___
 
@@ -205,7 +205,7 @@ INFO
 
 #### Defined in
 
-[core/AiAgent.ts:117](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L117)
+[core/AiAgent.ts:127](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L127)
 
 ___
 
@@ -223,7 +223,7 @@ true
 
 #### Defined in
 
-[core/AiAgent.ts:123](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L123)
+[core/AiAgent.ts:133](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L133)
 
 ___
 
@@ -236,7 +236,7 @@ Controls whether and how messages are stored in the transcript
 
 #### Defined in
 
-[core/AiAgent.ts:129](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L129)
+[core/AiAgent.ts:139](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L139)
 
 ___
 
@@ -255,7 +255,7 @@ Controls caching of agent details, portal details, and other API responses
 
 #### Defined in
 
-[core/AiAgent.ts:136](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L136)
+[core/AiAgent.ts:146](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L146)
 
 ___
 
@@ -286,7 +286,7 @@ const agent = new AiAgent({
 
 #### Defined in
 
-[core/AiAgent.ts:155](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L155)
+[core/AiAgent.ts:165](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L165)
 
 ___
 
@@ -324,7 +324,7 @@ initParams: {
 
 #### Defined in
 
-[core/AiAgent.ts:185](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L185)
+[core/AiAgent.ts:195](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L195)
 
 ___
 
@@ -337,7 +337,7 @@ Used for portal/profile auto-select during the portal pipeline and stored for ch
 
 #### Defined in
 
-[core/AiAgent.ts:191](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L191)
+[core/AiAgent.ts:201](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L201)
 
 ___
 
@@ -351,7 +351,7 @@ When `connectorUrl` is omitted, the SDK loads from `https://apps.egain.services/
 
 #### Defined in
 
-[core/AiAgent.ts:198](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L198)
+[core/AiAgent.ts:208](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L208)
 
 ___
 
@@ -374,4 +374,4 @@ Ignored when a full PKCEAuthConfig is supplied via `config.auth`.
 
 #### Defined in
 
-[core/AiAgent.ts:209](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L209)
+[core/AiAgent.ts:219](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L219)

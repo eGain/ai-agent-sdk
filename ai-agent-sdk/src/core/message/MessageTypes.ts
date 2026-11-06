@@ -1,4 +1,5 @@
 import { PERSONA, ROLE, MessageData } from './types.js';
+import type { ClientActionResult } from '../client-actions/types.js';
 
 /**
  * Base interface for message parameters with common optional fields
@@ -180,6 +181,22 @@ export interface TokenMessageParams extends BaseMessageParams {
    * The authentication token to send
    */
   token: string;
+}
+
+/**
+ * A client action result, on its way back to the server that is waiting on it.
+ *
+ * A failure is sent just as a success is. The server stays paused until something answers it, so
+ * saying nothing strands the turn instead of ending it -- for a sign-in, the agent needs to be told
+ * it cannot have the data so it can reply with what it has.
+ */
+export function createClientActionResultMessage(result: ClientActionResult): MessageObject {
+  return {
+    persona: PERSONA.METADATA,
+    role: ROLE.CLIENT_ACTION_RESULT,
+    content: '',
+    messageData: { ...result },
+  };
 }
 
 /**

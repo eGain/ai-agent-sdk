@@ -153,6 +153,50 @@ agent.on("heartbeat", (event) => {
 });
 ```
 
+### `clientAction`
+
+Emitted when the server asks the browser to do something, for a type a handler was registered for. See [Client Actions](./client-actions.md).
+
+```typescript
+agent.on("clientAction", (event) => {
+  const { action } = event.payload;
+  if (action.interaction === "user-gesture") {
+    showCard(action); // answer with agent.performClientAction / agent.declineClientAction
+  }
+});
+```
+
+**Payload:**
+| Property | Type | Description |
+|----------|------|-------------|
+| `action.actionId` | `string` | Pass to `performClientAction` / `declineClientAction` |
+| `action.type` | `string` | The action type, e.g. `pkce_user_auth` |
+| `action.interaction` | `'none' \| 'user-gesture'` | Whether it waits for a click |
+| `action.awaitsResult` | `boolean` | Whether the server is waiting on it |
+| `action.expiresAt` | `number?` | Epoch ms when the server stops waiting |
+| `action.payload` | `unknown` | The payload as the handler parsed it |
+| `action.lifecycle` | `ClientActionLifecycle` | `pending` or `in_progress` |
+
+### `clientActionUpdate`
+
+Emitted whenever a client action moves on.
+
+```typescript
+agent.on("clientActionUpdate", (event) => {
+  const { actionId, lifecycle, status, reason, progress } = event.payload;
+});
+```
+
+**Payload:**
+| Property | Type | Description |
+|----------|------|-------------|
+| `actionId` | `string` | The action this update is about |
+| `type` | `string` | The action type |
+| `lifecycle` | `ClientActionLifecycle` | `pending`, `in_progress`, `completed`, `failed`, `cancelled` or `expired` |
+| `status` | `ClientActionStatus?` | How it ended, once it has |
+| `reason` | `string?` | Type-specific detail for a failure |
+| `progress` | `string?` | The handler's latest step while in progress |
+
 ## System Events
 
 ### `error`

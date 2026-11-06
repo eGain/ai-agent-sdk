@@ -13,7 +13,17 @@ import { MessageData, MessageHandlerResult, PERSONA, ROLE } from './message/type
 import { TokenRefreshHandler } from './message/handlers/TokenRefreshHandler.js';
 import { Logger } from './logging/Logger.js';
 import { LogLevel } from './logging/LogLevel.js';
-import { createGracefulDisconnectMessage, createTokenMessage, createContextMessage } from './message/MessageTypes.js';
+import { createGracefulDisconnectMessage, createTokenMessage, createContextMessage, createClientActionResultMessage } from './message/MessageTypes.js';
+import { ClientActionManager } from './client-actions/ClientActionManager.js';
+import { ToolTokenCache } from './client-actions/pkce/oauth/ToolTokenCache.js';
+import { clearSignInAttempts } from './client-actions/pkce/oauth/createOidcClient.js';
+import type {
+  ClientAction,
+  ClientActionHandler,
+  ClientActionOutcome,
+  ClientActionResult,
+  ClientActionUpdate,
+} from './client-actions/types.js';
 import { Transcript, TranscriptConfig, TranscriptOptions, TranscriptEntry } from './message/Transcript.js';
 import { PortalInitializer } from './portal-initializer/PortalInitializer.js';
 import type { Portal, UserProfile, AgentListItem } from './types/PortalTypes.js';
@@ -241,7 +251,9 @@ export type AgentEventType =
   | 'initialized'
   | 'portalsAvailable'
   | 'agentsAvailable'
-  | 'profilesAvailable';
+  | 'profilesAvailable'
+  | 'clientAction'
+  | 'clientActionUpdate';
 
 /**
  * Payload map for agent events
@@ -250,6 +262,8 @@ export interface AgentEventPayloadMap {
   connected: Record<string, never>;
   message: { data: any };
   agentMessage: Omit<MessageHandlerResult, 'timestamp' | 'sessionId' | 'agentId'>;
+  clientAction: { action: ClientAction };
+  clientActionUpdate: ClientActionUpdate;
   contextValidation: {
     message: Message;
     issues: NonNullable<MessageData['contextValidationErrors']>;
@@ -330,6 +344,20 @@ export interface AgentEvents {
    * Emitted when an agent message is received
    */
   agentMessage: AgentEvent<'agentMessage'>;
+
+  /**
+   * Emitted when the server asks the browser to do something, for a type a handler was
+   * registered for (see {@link AiAgent.registerClientActionHandler}). A `user-gesture` action
+   * waits for {@link AiAgent.performClientAction} -- called from a click -- or
+   * {@link AiAgent.declineClientAction}; the SDK answers the server either way.
+   */
+  clientAction: AgentEvent<'clientAction'>;
+
+  /**
+   * Emitted whenever a client action moves on: started, a handler step (`progress`), or ended
+   * (`status`). The same lifecycle for every type, so one card can follow any action.
+   */
+  clientActionUpdate: AgentEvent<'clientActionUpdate'>;
 
   /**
    * Emitted when some context attributes were rejected without terminating the session.
@@ -579,6 +607,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   private readonly dataMasker = new DataMasker();
   /** Last selected portal from pipeline (needed for updateUserProfile). */
   private lastSelectedPortal?: Portal;
+  /** Runs the client actions the server sends; see {@link registerClientActionHandler}. */
+  private readonly clientActions: ClientActionManager;
 
   // --- Platform connector state (Phase 2) ---
   private callerInfo: CallerInfo | null = null;
@@ -673,6 +703,13 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     } else {
       this.contextCacheAdapter = createCacheAdapter(config.cache?.storageType || 'session');
     }
+
+    this.clientActions = new ClientActionManager({
+      logger: this.logger.createChild('ClientActions'),
+      sendResult: (result) => this.sendClientActionResult(result),
+      onAction: (action) => this.emit('clientAction', this.createAgentEventResponse('clientAction', { action })),
+      onUpdate: (update) => this.emit('clientActionUpdate', this.createAgentEventResponse('clientActionUpdate', update)),
+    });
 
     // Replace default TokenRefreshHandler with one that has callbacks for token refresh
     this.setupTokenRefreshHandler();
@@ -1313,13 +1350,17 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     this.emitCallTranscriptUpdate();
   }
 
+  private isTypedCustomerMessage(message: Message): message is Message & { content: string } {
+    return (
+      message.persona === PERSONA.CUSTOMER &&
+      message.role === ROLE.HUMAN &&
+      typeof message.content === 'string' &&
+      message.content.length > 0
+    );
+  }
+
   private applyOutboundDataMasking(message: Message): Message {
-    if (
-      message.persona !== PERSONA.CUSTOMER ||
-      message.role !== ROLE.HUMAN ||
-      typeof message.content !== 'string' ||
-      message.content.length === 0
-    ) {
+    if (!this.isTypedCustomerMessage(message)) {
       return message;
     }
     const masked = this.dataMasker.maskContent(message.content);
@@ -1805,6 +1846,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     }
 
     this.logger.info('Disconnecting from agent', { agentId: this.resolvedAgentId });
+    this.clientActions.clear();
     this.connection.disconnect();
   }
 
@@ -2238,6 +2280,75 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   }
 
   /**
+   * Opt in to a client action type by registering what carries it out.
+   *
+   * An action of a type with no handler is answered `unsupported` at once, so the agent carries on
+   * without it. Register before {@link connect} so no action arrives before its handler does.
+   *
+   * @example
+   * ```typescript
+   * agent.registerClientActionHandler(createPkceUserAuthHandler());
+   * ```
+   */
+  registerClientActionHandler(handler: ClientActionHandler<any>): void {
+    this.clientActions.register(handler);
+  }
+
+  /**
+   * Carry out a `user-gesture` client action the person clicked to accept.
+   *
+   * **Call it synchronously from the click handler**, with nothing awaited first: a sign-in opens
+   * its popup inside this call, and browsers refuse a popup once the click has been awaited past.
+   *
+   * @param actionId The action's id, from the `clientAction` event.
+   * @returns How the action ended. The server has already been told.
+   */
+  performClientAction(actionId: string): Promise<ClientActionOutcome> {
+    return this.clientActions.perform(actionId);
+  }
+
+  /**
+   * The person turned a client action down. The server is told, so the agent can carry on without
+   * whatever the action would have provided.
+   */
+  declineClientAction(actionId: string): void {
+    this.clientActions.decline(actionId);
+  }
+
+  /**
+   * Forget every credential a client action obtained in this tab, such as the end user's tokens
+   * from PKCE sign-ins, so the next person to use the tab has to sign in for themselves. A sign-in
+   * still in progress does not write its token back afterwards.
+   *
+   * {@link logout} already calls this. Call it yourself when the person signs out some other way,
+   * for example through your own sign-out endpoint rather than {@link logout}.
+   */
+  clearClientActionCredentials(): void {
+    new ToolTokenCache().clearAll();
+    clearSignInAttempts();
+  }
+
+  private async sendClientActionResult(result: ClientActionResult): Promise<void> {
+    if (!this.connection?.isConnected()) {
+      // Deliberately not queued. The server-side wait has its own expiry, so a result delivered
+      // after a reconnect would likely be refused anyway -- and holding an end user's access
+      // token in a queue is worse than losing the turn.
+      this.logger.warn('Cannot send a client action result: connection not available', {
+        actionId: result.actionId,
+        type: result.type,
+      });
+      return;
+    }
+
+    await this.connection.send(JSON.stringify(createClientActionResultMessage(result)));
+    this.logger.debug('Client action result sent', {
+      actionId: result.actionId,
+      type: result.type,
+      status: result.status,
+    });
+  }
+
+  /**
    * Send a message to the agent
    * Messages are queued if offline and automatically sent when connected
    * Context messages are automatically stored in cache for use on reconnection
@@ -2269,6 +2380,12 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
     // Validate message
     message.validate();
+
+    if (this.isTypedCustomerMessage(message)) {
+      // Typing is how a person says "never mind" to whatever action is waiting on them. The server
+      // reads the typed message as the answer, so the action ends here without a reply of its own.
+      this.clientActions.cancelPending();
+    }
 
     message = this.applyOutboundDataMasking(message);
 
@@ -2644,6 +2761,24 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         }));
 
         // Emit typed events based on handler result
+        const clientAction = message.messageData?.clientAction;
+        if (message.role === ROLE.CLIENT_ACTION && clientAction?.actionId) {
+          // Handled before the ordinary agent-message path. The action *is* the turn -- the
+          // content is deliberately empty -- so letting it fall through would render a blank bubble.
+          this.logger.debug('Client action received', {
+            actionId: clientAction.actionId,
+            type: clientAction.type,
+          });
+          this.clientActions.handle({
+            type: clientAction.type,
+            actionId: clientAction.actionId,
+            awaitsResult: clientAction.awaitsResult === true,
+            expiresAt: typeof clientAction.expiresAt === 'number' ? clientAction.expiresAt : undefined,
+            payload: clientAction.payload,
+          });
+          return;
+        }
+
         if (result) {
           if (result.type === 'agent_message') {
             this.logger.debug('Agent message processed', {
@@ -2971,6 +3106,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    */
   async logout(): Promise<void> {
     await this.disconnect({ skipGracefulDisconnect: true }).catch(() => undefined);
+    this.clearClientActionCredentials();
     await this.authService.logout();
   }
 

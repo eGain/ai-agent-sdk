@@ -205,3 +205,25 @@ export type {
   TranscriptConfig,
   TranscriptOptions,
 } from './core/message/Transcript.js';
+
+// Client actions: things the server asks the browser to do on its behalf, such as having the end
+// user sign in to a third-party provider mid-chat so a tool can call that provider's API as them.
+// Distinct from the `auth` strategies, which authenticate the widget session to eGain.
+export {
+  createPkceUserAuthHandler,
+  PKCE_CALLBACK_MESSAGE_SOURCE,
+  PKCE_USER_AUTH_ACTION_TYPE,
+} from './core/client-actions/index.js';
+export type {
+  ClientAction,
+  ClientActionContext,
+  ClientActionHandler,
+  ClientActionInteraction,
+  ClientActionLifecycle,
+  ClientActionOutcome,
+  ClientActionStatus,
+  ClientActionUpdate,
+  PkceUserAuthHandlerOptions,
+  PkceUserAuthPayload,
+} from './core/client-actions/index.js';
+export type { OidcClientConstructor } from './core/client-actions/pkce/oauth/index.js';

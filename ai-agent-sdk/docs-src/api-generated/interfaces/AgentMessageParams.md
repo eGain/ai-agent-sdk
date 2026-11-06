@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.4.1](../README.md) / AgentMessageParams
+[@egain/ai-agent-sdk API Reference - v0.4.2](../README.md) / AgentMessageParams
 
 # Interface: AgentMessageParams
 
@@ -33,7 +33,7 @@ BaseMessageParams.messageId
 
 #### Defined in
 
-[core/message/MessageTypes.ts:7](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L7)
+[core/message/MessageTypes.ts:8](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
 
 ___
 
@@ -47,7 +47,7 @@ BaseMessageParams.from
 
 #### Defined in
 
-[core/message/MessageTypes.ts:8](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L8)
+[core/message/MessageTypes.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)
 
 ___
 
@@ -61,7 +61,7 @@ BaseMessageParams.to
 
 #### Defined in
 
-[core/message/MessageTypes.ts:9](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L9)
+[core/message/MessageTypes.ts:10](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L10)
 
 ___
 
@@ -73,7 +73,7 @@ Message content
 
 #### Defined in
 
-[core/message/MessageTypes.ts:53](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L53)
+[core/message/MessageTypes.ts:54](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L54)
 
 ___
 
@@ -85,7 +85,7 @@ Persona (defaults to "customer")
 
 #### Defined in
 
-[core/message/MessageTypes.ts:57](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L57)
+[core/message/MessageTypes.ts:58](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L58)
 
 ___
 
@@ -97,4 +97,4 @@ Role (defaults to "human")
 
 #### Defined in
 
-[core/message/MessageTypes.ts:61](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L61)
+[core/message/MessageTypes.ts:62](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/MessageTypes.ts#L62)
