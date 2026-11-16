@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-11-16
+
+### Fixed
+
+- **Flow B agent preserved on profile change.** After the user picks an agent in agent-selection mode (`initParams.isDefaultAgent === "true"`), `updateUserProfile()` now emits `initialized` with that pipeline agent instead of the URL template agent loaded into `agentDetails`. Contact-center widgets (for example cc-widget) merge `initialized.payload.agent` into UI state, so the header no longer reverts to the default template name when switching profiles.
+
+- **PKCE redirect logout on multi-tenant (Rigel) deployments.** `logout()` with `authScheme: "redirect"` now percent-encodes `state` once more before handing it to MSAL. The eGain IdP's `/connect/logout` echoes `state` decoded into its redirect, so every `&` in the widget URL split it apart and `auth-redirect.html` returned to the widget without `auth=redirect`. The widget then started in popup mode, never ran `handleRedirectPromise()`, and failed with `interaction_in_progress` instead of showing the login page. `auth-redirect.html` already decodes `state` twice, so this works whether or not the IdP re-encodes it.
+
+### Removed
+
+- **UMD browser bundle.** `dist/browser.js`, the `./browser` package export and the `window.eGain` global are gone, along with the `build:browser` / `build:all` scripts and the esbuild and Rollup dev dependencies behind them. Nothing in the eGain widgets used it; they import the package's ES module entry. Load the SDK through a bundler (`import { AiAgent } from "@egain/ai-agent-sdk"`) instead of a `<script>` tag.
+
 ## [0.4.2] - 2026-11-05
 
 ### Added

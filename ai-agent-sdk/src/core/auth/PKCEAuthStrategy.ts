@@ -726,9 +726,10 @@ export class PKCEAuthStrategy implements AuthStrategy {
     };
 
     if (this.authScheme === "redirect") {
-      logoutRequest.state = (
-        this.config.nextRoute ?? window.location.href
-      ).split("#")[0];
+      // The eGain IdP echoes `state` decoded into its redirect; encoding once more keeps the query intact.
+      logoutRequest.state = encodeURIComponent(
+        (this.config.nextRoute ?? window.location.href).split("#")[0]
+      );
     }
 
     this.accessToken = null;

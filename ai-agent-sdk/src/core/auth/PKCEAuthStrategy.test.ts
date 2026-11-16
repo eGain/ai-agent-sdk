@@ -1133,7 +1133,9 @@ describe("PKCEAuthStrategy", () => {
         expect(request.postLogoutRedirectUri).toBe(
           "https://app.example.com/callback"
         );
-        expect(request.state).toBe("https://app.example.com/widget?flavor=cc");
+        expect(request.state).toBe(
+          encodeURIComponent("https://app.example.com/widget?flavor=cc")
+        );
         expect(mockMsalInstance.logoutPopup).not.toHaveBeenCalled();
         expect(mockMsalInstance.clearCache).not.toHaveBeenCalled();
         expect(mockMsalInstance.removeAccount).not.toHaveBeenCalled();

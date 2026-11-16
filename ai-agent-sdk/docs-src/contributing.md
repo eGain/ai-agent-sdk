@@ -13,7 +13,7 @@ cd ai-agent/ai-agent-sdk
 npm install
 
 # Build
-npm run build:all
+npm run build
 
 # Run tests
 npm test

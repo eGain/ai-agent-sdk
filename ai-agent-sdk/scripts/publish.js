@@ -141,7 +141,7 @@ try {
     console.error('❌ Publishing aborted due to prepublishOnly hook failure!');
     console.error('   The package was NOT published.');
     console.error('');
-    console.error('   The prepublishOnly hook runs: npm run clean && npm run build:all && npm run test');
+    console.error('   The prepublishOnly hook runs: npm run clean && npm run build && npm run test');
     console.error('   One of these steps failed. Please fix the errors above and try again.');
     console.error('');
     if (fullError.includes('ERR_UNKNOWN_BUILTIN_MODULE')) {

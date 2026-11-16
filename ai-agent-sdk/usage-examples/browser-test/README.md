@@ -2,12 +2,9 @@
 
 A browser-based test environment for the `@eGainDev/ai-agent-sdk` SDK.
 
-## Test Pages
+## Test Page
 
-This directory contains two test pages:
-
-1. **`index.html`** - ES Module test (uses Vite bundler with ES6 imports)
-2. **`browser-umd.html`** - UMD Bundle test (uses global `window.eGain` variable, no bundler required)
+`index.html` is an ES Module test (uses Vite bundler with ES6 imports).
 
 ## Features
 
@@ -17,7 +14,6 @@ This directory contains two test pages:
 - 📝 Event log with color-coded messages
 - 💬 Send messages with JSON support
 - 🔄 Automatic state updates
-- 🧪 SDK class availability testing (UMD page)
 
 ## Prerequisites
 
@@ -33,33 +29,7 @@ nvm use 25.0.0
 
 ## Quick Start
 
-### Option 1: UMD Bundle Test (No Bundler Required!)
-
-The `browser-umd.html` page tests the SDK as a global variable - perfect for plain JavaScript:
-
-```bash
-# 1. Build the SDK and browser bundle
-cd ../../
-npm run build:browser
-
-# 2. Serve with any HTTP server
-cd usage-examples/browser-test
-python3 -m http.server 8080
-# or
-npx http-server -p 8080
-
-# 3. Open browser-umd.html
-# Navigate to: http://localhost:8080/browser-umd.html
-```
-
-**Features:**
-- ✅ No bundler required
-- ✅ No ES6 modules needed
-- ✅ Uses `window.eGain` global variable
-- ✅ Tests all SDK classes availability
-- ✅ Works with plain HTML/JavaScript
-
-### Option 2: Using Vite (ES Modules)
+### Option 1: Using Vite (ES Modules)
 
 Vite handles module resolution and bundling automatically for the ES module test (`index.html`):
 
@@ -118,28 +88,6 @@ python3 -m http.server 8080
 **Note:** Simple HTTP servers may have issues with ES modules. Vite is recommended.
 
 ## Usage
-
-### UMD Bundle Test (`browser-umd.html`)
-
-1. **Build the browser bundle:**
-   ```bash
-   cd ../../
-   npm run build:browser
-   ```
-
-2. **Open the page:**
-   - Serve with any HTTP server (Python, http-server, etc.)
-   - Navigate to `browser-umd.html`
-
-3. **Test SDK Classes:**
-   - Click "Test SDK Classes" button to verify all classes are available
-   - Should show all classes like `eGain.AiAgent`, `eGain.PreAuthStrategy`, etc.
-
-4. **Use the SDK:**
-   - Enter Server URL and agent ID
-   - Optionally enter authentication token
-   - Click "Connect" to test the connection
-   - Send messages and monitor the transcript
 
 ### ES Module Test (`index.html`)
 

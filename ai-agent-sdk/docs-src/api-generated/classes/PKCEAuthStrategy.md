@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.4.2](../README.md) / PKCEAuthStrategy
+[@egain/ai-agent-sdk API Reference - v0.5.0](../README.md) / PKCEAuthStrategy
 
 # Class: PKCEAuthStrategy
 
@@ -280,7 +280,7 @@ Refresh the access token using refresh token
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:769](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L769)
+[core/auth/PKCEAuthStrategy.ts:770](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L770)
 
 ___
 
@@ -300,4 +300,4 @@ Cleanup resources
 
 #### Defined in
 
-[core/auth/PKCEAuthStrategy.ts:828](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L828)
+[core/auth/PKCEAuthStrategy.ts:829](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/auth/PKCEAuthStrategy.ts#L829)

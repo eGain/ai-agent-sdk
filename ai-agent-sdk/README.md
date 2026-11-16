@@ -2,7 +2,7 @@
 
 TypeScript-first SDK for eGain's AI Agent platform with WebSocket communication, automatic reconnection, and comprehensive message handling.
 
-**Current release:** v0.3.3
+**Current release:** v0.5.0
 
 [![npm version](https://img.shields.io/npm/v/@egain/ai-agent-sdk.svg)](https://www.npmjs.com/package/@egain/ai-agent-sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -257,15 +257,6 @@ import { AiAgent } from "@egain/ai-agent-sdk";
 // ... rest of code
 ```
 
-## Browser (UMD)
-
-```html
-<script src="https://unpkg.com/@egain/ai-agent-sdk/dist/browser.js"></script>
-<script>
-  const agent = new eGain.AiAgent({ ... });
-</script>
-```
-
 ## Development
 
 ```bash
@@ -273,7 +264,7 @@ import { AiAgent } from "@egain/ai-agent-sdk";
 npm install
 
 # Build
-npm run build:all
+npm run build
 
 # Test
 npm test

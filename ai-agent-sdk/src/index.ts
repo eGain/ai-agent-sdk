@@ -206,6 +206,8 @@ export type {
   TranscriptOptions,
 } from './core/message/Transcript.js';
 
+export { SESSION_REPLACED_ERROR_CODE } from './core/AiAgent.js';
+
 // Client actions: things the server asks the browser to do on its behalf, such as having the end
 // user sign in to a third-party provider mid-chat so a tool can call that provider's API as them.
 // Distinct from the `auth` strategies, which authenticate the widget session to eGain.

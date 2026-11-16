@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { AiAgent } from './AiAgent.js';
+import { AiAgent, SESSION_REPLACED_ERROR_CODE } from './AiAgent.js';
 import { Connection } from './connection/Connection.js';
 import { ConnectionState } from './connection/ConnectionState.js';
 import { Message } from './message/Message.js';
@@ -1913,6 +1913,48 @@ describe('AiAgent', () => {
       );
       expect(errorMessageHandler).not.toHaveBeenCalled();
     });
+
+    describe('metadata error frames', () => {
+      const receiveError = async (errorCode: string) => {
+        const errorMessageHandler = vi.fn();
+        agent.on('errorMessage', errorMessageHandler);
+        (agent as any).connection = mockConnection;
+        (agent as any).sessionId = 'session-123';
+        (agent as any).resolvedAgentId = mockAgentId;
+        (agent as any).setupConnectionEvents();
+        const incomingHandler = mockConnection.on.mock.calls.find(
+          ([eventName]: [string]) => eventName === 'message'
+        )[1];
+
+        await incomingHandler({
+          data: JSON.stringify({
+            messageId: 'error-1',
+            persona: PERSONA.METADATA,
+            role: ROLE.ERROR,
+            messageData: { error_code: errorCode },
+          }),
+          timestamp: Date.now(),
+        });
+        return errorMessageHandler;
+      };
+
+      it('stops reconnecting when another connection took over the session', async () => {
+        const errorMessageHandler = await receiveError(SESSION_REPLACED_ERROR_CODE);
+
+        expect(errorMessageHandler).toHaveBeenCalledOnce();
+        // Connection.disconnect() is what turns reconnection off
+        expect(mockConnection.disconnect).toHaveBeenCalledOnce();
+        // a graceful disconnect message would end the conversation for the new connection
+        expect(mockConnection.send).not.toHaveBeenCalled();
+      });
+
+      it('leaves the connection to the consumer for any other error code', async () => {
+        const errorMessageHandler = await receiveError('500');
+
+        expect(errorMessageHandler).toHaveBeenCalledOnce();
+        expect(mockConnection.disconnect).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('message normalization', () => {
@@ -2644,6 +2686,58 @@ describe('AiAgent', () => {
       expect(emittedPayload).toBeDefined();
       expect(emittedPayload.profile).toEqual(newProfile);
       expect(emittedPayload.portal).toEqual(mockPortal);
+    });
+
+    it('should emit initialized with Flow B picked agent, not template agentDetails', async () => {
+      const templateAgentId = mockAgentId;
+      const pickedAgent = { agentId: 'picked-agent-b', name: 'Agent B' };
+      const flowBPortal: Portal = {
+        id: 1,
+        name: 'Portal A',
+        department: { id: 100, name: 'Dept' },
+      };
+      const ccApiHelper = {
+        ...mockApiHelper,
+        getMyPortals: vi.fn().mockResolvedValue([flowBPortal]),
+        getPortalDetails: vi.fn().mockResolvedValue({ id: 1, departmentId: 100 }),
+        getUserProfiles: vi.fn().mockResolvedValue([mockProfile]),
+        getAgentsByPortal: vi.fn().mockResolvedValue([pickedAgent]),
+        selectUserProfile: vi.fn().mockResolvedValue(undefined),
+      };
+      vi.spyOn(ApiHelper, 'getDeploymentInfo').mockResolvedValue({
+        aiAgentDomain: 'test.example.com',
+        apiDomain: 'api.test.example.com',
+      });
+      const agent = new AiAgent({
+        id: templateAgentId,
+        endpoint: mockEndpoint,
+        initParams: { isDefaultAgent: 'true' },
+      });
+      (agent as any).apiHelper = ccApiHelper;
+      vi.spyOn(agent as any, 'fetchAgentDetails').mockResolvedValue({
+        name: 'Template Agent',
+        agentType: 'contact-center',
+        isAuthenticated: false,
+        departmentId: 100,
+      });
+      vi.spyOn((agent as any).authService, 'getToken').mockResolvedValue('mock-token');
+      vi.spyOn(agent as any, 'getSessionId').mockResolvedValue('session-123');
+      vi.spyOn(agent as any, 'createConnection').mockResolvedValue(undefined);
+      const initDone = waitForEvent(agent, 'initialized');
+      await agent.initialize();
+      await initDone;
+      expect((agent as any).resolvedAgentId).toBe(pickedAgent.agentId);
+
+      let emittedPayload: any;
+      agent.on('initialized', (e: any) => {
+        emittedPayload = e.payload;
+      });
+      vi.spyOn(agent, 'restartConnection').mockResolvedValue(undefined);
+      await agent.updateUserProfile(newProfile);
+
+      expect(emittedPayload).toBeDefined();
+      expect(emittedPayload.agent).toEqual(expect.objectContaining({ agentId: pickedAgent.agentId }));
+      expect((emittedPayload.agent as { agentId?: string }).agentId).not.toBe(templateAgentId);
     });
   });
 

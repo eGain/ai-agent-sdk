@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.4.2](../README.md) / ApiHelper
+[@egain/ai-agent-sdk API Reference - v0.5.0](../README.md) / ApiHelper
 
 # Class: ApiHelper
 

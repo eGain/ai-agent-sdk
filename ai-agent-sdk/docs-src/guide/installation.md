@@ -47,19 +47,6 @@ const agent = new AiAgent({
 });
 ```
 
-### Browser (UMD / Script Tag)
-
-```html
-<script src="https://unpkg.com/@egain/ai-agent-sdk/dist/browser.js"></script>
-<script>
-  const agent = new eGain.AiAgent({
-    id: "agent-id",
-    endpoint: "https://your-endpoint.com",
-    auth: { type: "pre-auth", accessToken: "your-access-token" }
-  });
-</script>
-```
-
 ### Node.js
 
 Node.js requires the `ws` package for WebSocket support. The SDK automatically loads it when running in Node.js:

@@ -467,6 +467,12 @@ export interface AgentEvents {
 /**
  * Cache key prefix for context storage
  */
+/**
+ * Error code the server sends on a connection it is about to close because a newer
+ * connection took over the same session (another tab, window or client instance).
+ */
+export const SESSION_REPLACED_ERROR_CODE = '409-001';
+
 const CONTEXT_CACHE_KEY_PREFIX = 'egain_aiagent_context_';
 
 /** Session-scoped cache key prefix for profile list (restart reuse). Suffix: agentId_portalId. */
@@ -607,6 +613,8 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   private readonly dataMasker = new DataMasker();
   /** Last selected portal from pipeline (needed for updateUserProfile). */
   private lastSelectedPortal?: Portal;
+  /** User-picked agent from the CC pipeline (Flow B); template agent stays in agentDetails. */
+  private lastPipelineAgent?: AgentListItem;
   /** Runs the client actions the server sends; see {@link registerClientActionHandler}. */
   private readonly clientActions: ClientActionManager;
 
@@ -1212,6 +1220,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
         if (type === 'initialized') {
           const payload = event?.payload;
           if (payload?.agent) {
+            this.lastPipelineAgent = payload.agent as AgentListItem;
             this.resolvedAgentId = (payload.agent as any).agentId ?? (payload.agent as any).id ?? this.resolvedAgentId;
           }
           this.completedPortalPipeline = true;
@@ -2007,6 +2016,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       this.clearCallTranscript();
     }
     this.resolvedAgentId = this.config.id;
+    this.lastPipelineAgent = undefined;
     this.isInitialized = false;
     this.callTranscriptEventsEnabled = false;
 
@@ -2104,7 +2114,10 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       portal: this.lastSelectedPortal,
       profile,
       availableProfiles: this.cachedProfiles,
-      agent: this.agentDetails ?? { agentId: this.resolvedAgentId, name: 'Unknown' },
+      agent:
+        this.lastPipelineAgent ??
+        this.agentDetails ??
+        { agentId: this.resolvedAgentId, name: 'Unknown' },
     };
     this.emit('initialized', this.createAgentEventResponse('initialized', payload));
     this.onInitializedForCallTranscript();
@@ -2816,9 +2829,21 @@ export class AiAgent extends EventEmitter<AgentEvents> {
               error,
             }));
 
-            // Optionally close connection on error (similar to reference implementation)
-            // Consumers can handle connection closure in the errorMessage event handler if needed
-            this.logger.debug('Error message event emitted, connection may need to be closed by consumer');
+            if (message.messageData?.error_code === SESSION_REPLACED_ERROR_CODE) {
+              // Another connection now owns this session. Reconnecting would take the session
+              // back and close that one, and two clients would keep replacing each other, so
+              // stop here whatever close code the server's disconnect surfaces as. No graceful
+              // disconnect message either: it would end the conversation for the new connection.
+              this.logger.info('Session is active on another connection, closing without reconnecting', {
+                sessionId: this.sessionId,
+                agentId: this.resolvedAgentId
+              });
+              this.connection?.disconnect();
+            } else {
+              // Optionally close connection on error (similar to reference implementation)
+              // Consumers can handle connection closure in the errorMessage event handler if needed
+              this.logger.debug('Error message event emitted, connection may need to be closed by consumer');
+            }
           } else if (result.type === 'heartbeat_processed') {
             this.logger.debug('Heartbeat processed', { messageId: message.messageId });
             // Extract payload from result, excluding timestamp, sessionId, agentId

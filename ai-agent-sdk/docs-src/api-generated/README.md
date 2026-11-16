@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.4.2
+# @egain/ai-agent-sdk API Reference - v0.5.0
 
 # @egain/ai-agent-sdk
 
@@ -175,6 +175,7 @@ await agent.send("Hello!");
 
 ### Variables
 
+- [SESSION\_REPLACED\_ERROR\_CODE](README.md#session_replaced_error_code)
 - [ACCESS\_TOKEN\_REFRESH\_BUFFER\_MINUTES](README.md#access_token_refresh_buffer_minutes)
 - [ACCESS\_TOKEN\_REFRESH\_BUFFER\_MS](README.md#access_token_refresh_buffer_ms)
 - [PKCE\_USER\_AUTH\_ACTION\_TYPE](README.md#pkce_user_auth_action_type)
@@ -484,6 +485,19 @@ Type definitions for role values
 [core/message/types.ts:48](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/message/types.ts#L48)
 
 ## Variables
+
+### SESSION\_REPLACED\_ERROR\_CODE
+
+• `Const` **SESSION\_REPLACED\_ERROR\_CODE**: ``"409-001"``
+
+Error code the server sends on a connection it is about to close because a newer
+connection took over the same session (another tab, window or client instance).
+
+#### Defined in
+
+[core/AiAgent.ts:474](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L474)
+
+___
 
 ### ACCESS\_TOKEN\_REFRESH\_BUFFER\_MINUTES
 

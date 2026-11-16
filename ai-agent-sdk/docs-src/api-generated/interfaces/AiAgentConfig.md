@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.4.2](../README.md) / AiAgentConfig
+[@egain/ai-agent-sdk API Reference - v0.5.0](../README.md) / AiAgentConfig
 
 # Interface: AiAgentConfig
 
