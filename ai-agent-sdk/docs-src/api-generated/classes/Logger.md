@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.5.0](../README.md) / Logger
+[@egain/ai-agent-sdk API Reference - v0.5.1](../README.md) / Logger
 
 # Class: Logger
 

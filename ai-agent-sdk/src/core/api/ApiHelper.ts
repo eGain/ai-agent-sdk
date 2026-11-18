@@ -558,26 +558,33 @@ export class ApiHelper {
         const token = await this.resolveAuthToken(authToken);
 
         const url = `${this.apiDomain}/core/aiservices/v4/aiagent/chat/agent/${agentId}/session`;
-        let response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(context ? { context } : {}),
-        });
+        let needsFallback = false;
+        let response = null;
+        try {
+            response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(context ? { context } : {}),
+            });
+
+        } catch (error) {
+            needsFallback = true;
+        }
 
         // REST API Gateway returns 403 for an undeployed method; other gateways use 404 or 405.
-        if ([403, 404, 405].includes(response.status)) {
+        if (needsFallback || (response && [403, 404, 405].includes(response.status))) {
             response = await fetch(url, {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${token}` },
             });
         }
 
-        if (!response.ok) {
+        if (!response || !response.ok) {
             throw new Error(
-                `Failed to fetch AI Agent session: ${response.status} ${response.statusText}`
+                `Failed to fetch AI Agent session: ${response?.status} ${response?.statusText}`
             );
         }
 
