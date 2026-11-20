@@ -33,6 +33,12 @@ This package is published to GitHub Packages. Configure your `.npmrc`:
 3. Replace `YOUR_GITHUB_TOKEN` with your token
 :::
 
+## Connector client SDK (agent-assist, v0.6.0+)
+
+`@egain/ai-agent-sdk` depends on **`@egain/connector-client-sdk`** on the public npm registry. It is installed transitively with the AI Agent SDK. Hosts that use agent-assist URLs (`platform` plus `integrationId` in `initParams`) do not need a separate install unless you import the connector package directly.
+
+The AI Agent SDK loads the connector package with a dynamic `import()` on the agent-assist path only. Vite and similar bundlers can emit a separate chunk; avoid prebundling `@egain/connector-client-sdk` into the main app chunk if you want the same lazy-load behavior.
+
 ## Environment-Specific Setup
 
 ### Browser (ES Modules)

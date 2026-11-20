@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.5.1](../README.md) / GetPortalDetailsOptions
+[@egain/ai-agent-sdk API Reference - v0.6.0](../README.md) / GetPortalDetailsOptions
 
 # Interface: GetPortalDetailsOptions
 

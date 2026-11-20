@@ -1,4 +1,4 @@
-[@egain/ai-agent-sdk API Reference - v0.5.1](../README.md) / PlatformComponentService
+[@egain/ai-agent-sdk API Reference - v0.6.0](../README.md) / PlatformComponentService
 
 # Interface: PlatformComponentService
 

@@ -6,9 +6,21 @@ Contact center integrations (e.g. Genesys, Amazon Connect) use a **platform conn
 `HookContract` and `PlatformComponentService` types are exported for **connector authors**. Typical SDK consumers set `initParams.platform` and `connector` (`env`, `connectorUrl`) on `AiAgent` and handle [portal initialization](./portal-initialization.md) events.
 :::
 
-## Lifecycle
+## Legacy script vs agent-assist (v0.6.0+)
 
-1. During `initialize()`, when `initParams.platform` is set, the SDK loads the connector script from `AiAgentConfig.connector.connectorUrl` when provided; otherwise it uses a production default URL derived from `initParams.platform` (`test` maps to the standalone connector path).
+The SDK chooses one path from `initParams` (same query string cc-widget passes into `AiAgent`):
+
+| `initParams` | Path |
+| --- | --- |
+| `platform` + `integrationId` | **Agent-assist** — `@egain/connector-client-sdk` after auth; no platform script, no `PlatformComponentService` |
+| `platform` without `integrationId` (optional `appid`, `connectorId`, etc.) | **Legacy** — load connector script before auth; `initPlatform` after auth |
+| No `platform` | No platform connector |
+
+`integrationId` keys are trimmed; the lowercase form `integrationid` is accepted. **`connectorId` alone does not select agent-assist** — URLs with only `connectorId` (and `platform`) use the legacy script path. Agent-assist does not fall back to the script path on failure.
+
+## Lifecycle (legacy script path)
+
+1. During `initialize()`, when the legacy path applies, the SDK loads the connector script from `AiAgentConfig.connector.connectorUrl` when provided; otherwise it uses a production default URL derived from `initParams.platform` (`test` maps to the standalone connector path).
 2. The script is injected in the browser (`<script>`) or dynamically imported in Node.
 3. The SDK expects `globalThis.PlatformComponentService` (or `window.PlatformComponentService`) to exist after load.
 4. The SDK wires **`HookContract`** (via `setHookContract` / `loadCustomHook` as available) so the connector can augment auth scopes before login, then continues authentication and the portal initialization pipeline as needed.
@@ -85,7 +97,8 @@ The SDK surfaces connector-driven updates as events on `AiAgent` (e.g. `callTran
 
 - **`connector.connectorUrl`** — Full URL of the connector script (host-resolved).
 - **`connector.env`** — Environment label returned by `HookContract.getEnvironment()`.
-- **`initParams.platform`** — Connector family id; used only for the SDK’s production default URL when `connectorUrl` is omitted. Loaded for contact-center agents whenever set (including `standalone` / `test`).
+- **`initParams.platform`** — Required for either path. On the legacy path, also drives the default script URL when `connectorUrl` is omitted (including `standalone` / `test`).
+- **`initParams.integrationId`** — Selects agent-assist (v0.6.0+). Other init params (including `connectorId` when present) are still passed through to the connector SDK as `queryParams`.
 
 ## See also
 

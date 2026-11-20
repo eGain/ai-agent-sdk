@@ -29,9 +29,28 @@ const authServiceMock = vi.hoisted(() => ({
   logout: vi.fn().mockResolvedValue(undefined),
 }));
 
+const platformBranchMocks = vi.hoisted(() => {
+  const loadPlatformScript = vi.fn().mockResolvedValue(undefined);
+  const agentAssistStart = vi.fn().mockResolvedValue(undefined);
+  const agentAssistStop = vi.fn().mockResolvedValue(undefined);
+  const AgentAssistConnector = vi.fn(function AgentAssistConnector() {
+    return {
+      start: agentAssistStart,
+      stop: agentAssistStop,
+    };
+  });
+  return { loadPlatformScript, agentAssistStart, agentAssistStop, AgentAssistConnector };
+});
+
 // Mock dependencies
 vi.mock('./connection/Connection.js');
 vi.mock('./api/ApiHelper.js');
+vi.mock('./platform/PlatformScriptLoader.js', () => ({
+  loadPlatformScript: platformBranchMocks.loadPlatformScript,
+}));
+vi.mock('./platform/AgentAssistConnector.js', () => ({
+  AgentAssistConnector: platformBranchMocks.AgentAssistConnector,
+}));
 vi.mock('./auth/AuthenticationService.js', () => ({
   AuthenticationService: vi.fn(function AuthenticationService() {
     return authServiceMock;
@@ -1576,6 +1595,79 @@ describe('AiAgent', () => {
       expect(sendSpy).not.toHaveBeenCalled();
       expect(mockConnection.disconnect).toHaveBeenCalled();
     });
+
+    it('does not stop agent-assist connector when disconnect omits teardownAgentAssist', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+      });
+      const stop = vi.fn().mockResolvedValue(undefined);
+      (agent as any).agentAssistConnector = { stop };
+      (agent as any).connection = mockConnection;
+      mockConnection.isConnected.mockReturnValue(false);
+
+      await agent.disconnect();
+
+      expect(stop).not.toHaveBeenCalled();
+      expect((agent as any).agentAssistConnector).toEqual({ stop });
+    });
+
+    it('stops agent-assist connector when teardownAgentAssist is true', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+      });
+      const stop = vi.fn().mockResolvedValue(undefined);
+      (agent as any).agentAssistConnector = { stop };
+      (agent as any).connection = mockConnection;
+      mockConnection.isConnected.mockReturnValue(false);
+
+      await agent.disconnect({ teardownAgentAssist: true });
+
+      expect(stop).toHaveBeenCalledOnce();
+      expect((agent as any).agentAssistConnector).toBeUndefined();
+    });
+
+    it('does not stop agent-assist connector when teardownAgentAssist is false', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+      });
+      const stop = vi.fn().mockResolvedValue(undefined);
+      (agent as any).agentAssistConnector = { stop };
+      (agent as any).connection = mockConnection;
+      mockConnection.isConnected.mockReturnValue(false);
+
+      await agent.disconnect({ teardownAgentAssist: false });
+
+      expect(stop).not.toHaveBeenCalled();
+      expect((agent as any).agentAssistConnector).toEqual({ stop });
+    });
+  });
+
+  describe('restartConnection', () => {
+    it('disconnects WebSocket without tearing down agent-assist connector', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+      });
+      (agent as any).isInitialized = true;
+      (agent as any).resolvedAgentId = mockAgentId;
+      (agent as any).apiHelper = {
+        ...mockApiHelper,
+        getAiAgentSession: vi.fn().mockResolvedValue('new-session'),
+      };
+      (agent as any).connection = mockConnection;
+      mockConnection.isConnected.mockReturnValue(false);
+
+      const disconnectSpy = vi.spyOn(agent, 'disconnect');
+      vi.spyOn(agent as any, 'createConnection').mockResolvedValue(undefined);
+      vi.spyOn(agent, 'connect').mockResolvedValue(undefined);
+
+      await agent.restartConnection();
+
+      expect(disconnectSpy).toHaveBeenCalledWith({ teardownAgentAssist: false });
+    });
   });
 
   describe('send', () => {
@@ -2167,7 +2259,10 @@ describe('AiAgent', () => {
 
       await agent.logout();
 
-      expect(disconnectSpy).toHaveBeenCalledWith({ skipGracefulDisconnect: true });
+      expect(disconnectSpy).toHaveBeenCalledWith({
+        skipGracefulDisconnect: true,
+        teardownAgentAssist: true,
+      });
       expect(authServiceMock.logout).toHaveBeenCalled();
     });
   });
@@ -3095,6 +3190,102 @@ describe('AiAgent', () => {
       });
 
       expect((agent as any).contextCacheAdapter).toBeInstanceOf(MemoryCacheAdapter);
+    });
+  });
+
+  describe('platform connector routing', () => {
+    const deploymentInfo = {
+      aiAgentDomain: 'test.example.com',
+      apiDomain: 'api.test.example.com',
+    };
+
+    function mockInitializePrereqs(agent: AiAgent): void {
+      vi.spyOn(ApiHelper, 'getDeploymentInfo').mockResolvedValue(deploymentInfo);
+      vi.spyOn(agent as any, 'fetchAgentDetails').mockResolvedValue({
+        name: 'Test Agent',
+        isAuthenticated: false,
+      });
+      vi.spyOn(agent as any, 'onAuthComplete').mockResolvedValue(undefined);
+    }
+
+    afterEach(() => {
+      delete (globalThis as any).PlatformComponentService;
+      platformBranchMocks.loadPlatformScript.mockResolvedValue(undefined);
+      platformBranchMocks.agentAssistStart.mockResolvedValue(undefined);
+    });
+
+    it('legacy path loads platform script and calls initPlatform after auth', async () => {
+      const initPlatform = vi.fn().mockResolvedValue(undefined);
+      (globalThis as any).PlatformComponentService = { initPlatform };
+
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        initParams: { platform: 'genesys' },
+      });
+      mockInitializePrereqs(agent);
+
+      await agent.initialize();
+
+      expect(platformBranchMocks.loadPlatformScript).toHaveBeenCalled();
+      expect(initPlatform).toHaveBeenCalled();
+      expect(platformBranchMocks.AgentAssistConnector).not.toHaveBeenCalled();
+    });
+
+    it('agent-assist path skips platform script and starts connector after auth', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        initParams: { platform: 'genesys', integrationId: 'int-1' },
+      });
+      mockInitializePrereqs(agent);
+
+      await agent.initialize();
+
+      expect(platformBranchMocks.loadPlatformScript).not.toHaveBeenCalled();
+      expect(platformBranchMocks.AgentAssistConnector).toHaveBeenCalled();
+      expect(platformBranchMocks.agentAssistStart).toHaveBeenCalledWith({
+        apiDomain: deploymentInfo.apiDomain,
+        integrationId: 'int-1',
+        aiAgentId: mockAgentId,
+        getToken: expect.any(Function),
+        queryParams: { platform: 'genesys', integrationId: 'int-1' },
+        hooks: expect.objectContaining({
+          addToTranscript: expect.any(Function),
+          setCallerInfo: expect.any(Function),
+          setConversationId: expect.any(Function),
+          setPlatformToken: expect.any(Function),
+        }),
+      });
+    });
+
+    it('agent-assist initialize fails when connector start rejects', async () => {
+      platformBranchMocks.agentAssistStart.mockRejectedValueOnce(new Error('assist start failed'));
+
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        initParams: { platform: 'genesys', integrationId: 'int-1' },
+      });
+      mockInitializePrereqs(agent);
+
+      await expect(agent.initialize()).rejects.toThrow('assist start failed');
+      expect((agent as any).isInitialized).toBe(false);
+    });
+
+    it('disconnect stops agent-assist when teardownAgentAssist is true even if connection was never created', async () => {
+      const agent = new AiAgent({
+        id: mockAgentId,
+        endpoint: mockEndpoint,
+        initParams: { platform: 'genesys', integrationId: 'int-1' },
+      });
+      mockInitializePrereqs(agent);
+      await agent.initialize();
+      (agent as any).connection = undefined;
+
+      await agent.disconnect({ teardownAgentAssist: true });
+
+      expect(platformBranchMocks.agentAssistStop).toHaveBeenCalled();
     });
   });
 });

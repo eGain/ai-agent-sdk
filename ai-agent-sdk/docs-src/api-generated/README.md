@@ -1,6 +1,6 @@
 @egain/ai-agent-sdk API Reference
 
-# @egain/ai-agent-sdk API Reference - v0.5.1
+# @egain/ai-agent-sdk API Reference - v0.6.0
 
 # @egain/ai-agent-sdk
 
@@ -234,7 +234,7 @@ Agent event type identifiers
 
 #### Defined in
 
-[core/AiAgent.ts:233](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L233)
+[core/AiAgent.ts:238](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L238)
 
 ___
 
@@ -495,7 +495,7 @@ connection took over the same session (another tab, window or client instance).
 
 #### Defined in
 
-[core/AiAgent.ts:474](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L474)
+[core/AiAgent.ts:479](https://github.com/eGainDev/ai-agent/blob/master/ai-agent-sdk/src/core/AiAgent.ts#L479)
 
 ___
 

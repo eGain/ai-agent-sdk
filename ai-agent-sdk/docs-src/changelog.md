@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.6.0] - 2026-11-19
+
+### Added
+
+- **Agent-assist platform path** — when `initParams` include `platform` and `integrationId` (case-insensitive `integrationid`; trimmed empty values ignored), `AiAgent` starts an agent-assist session through `@egain/connector-client-sdk` after authentication instead of loading the legacy platform connector script. `connectorId` alone does not select this path; other init params (including `connectorId`) are still passed through as `queryParams`. `appid` alone does not select agent-assist. Existing URLs with only `platform` (and optional `appid`) keep the script + `PlatformComponentService` flow.
+- **`resolvePlatformConnector` / `AgentAssistConnector`** — internal routing and session lifecycle (`init` with `mode: 'agent-assist'`, `createSession` with a shallow copy of `initParams`, `endSession` / `destroy` on `logout()` or `disconnect({ teardownAgentAssist: true })`; plain `disconnect()` leaves the assist session so WebSocket recycle paths can reconnect). Agent-assist sessions wire `transcript`, `context_changed`, and `platform_token` into the same `HookContract` mutators the legacy script used (`addToTranscript`, caller/conversation id, platform token).
+
+### Fixed
+
+- **Agent-assist failed start cleanup** — if `createSession` rejects, the connector SDK session is torn down with `endSession` and `destroy` so a retry does not leave a stale manager.
+
+### Dependencies
+
+- **`@egain/connector-client-sdk`** (^0.6.2) — required dependency on public npm. Loaded with dynamic `import()` on the agent-assist path so ESM hosts can code-split.
+
+### Documentation
+
+- [Platform connectors](./guide/platform-connectors.md) — legacy vs agent-assist selection and lifecycle.
+- [Installation](./guide/installation.md) — transitive connector SDK and bundler notes.
+
 ## [0.5.1] - 2026-11-18
 
 ### Fixed

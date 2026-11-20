@@ -31,6 +31,11 @@ import { buildDefaultAuthScopes, getAgentExtraScopes, mergeAgentExtraScopes } fr
 import type { HookContract, CallerInfo, CallTranscriptEntry } from './platform/HookContract.js';
 import type { PlatformComponentService } from './platform/PlatformComponentService.js';
 import { loadPlatformScript } from './platform/PlatformScriptLoader.js';
+import { AgentAssistConnector } from './platform/AgentAssistConnector.js';
+import {
+  resolveAgentAssistIntegrationId,
+  resolvePlatformConnector,
+} from './platform/resolvePlatformConnector.js';
 import { DataMasker } from './data-masking/DataMasker.js';
 import { loadDataMasking } from './data-masking/util.js';
 
@@ -630,6 +635,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
   private callTranscriptEventsEnabled = false;
   private hookContract?: HookContract;
   private platformComponentService?: PlatformComponentService;
+  private agentAssistConnector?: AgentAssistConnector;
   private userDetails: UserDetails | null = null;
   /**
    * The list the platform connector's `addCustomAuthScopes` returned, if it ran. Only consulted
@@ -907,9 +913,15 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       this.logger.debug("initialize: fetchAgentDetails end");
 
       this.logger.debug("initialize: loadAndInitializePlatform start");
-      // Load platform connector script if platform is set (before auth so scopes can be augmented).
-      // Parity with cc-widget: includes standalone/test (test → standalone URL) for CC and SS.
-      if (this.initParams.platform) {
+      // Legacy path: load platform script before auth so scopes can be augmented.
+      const platformKind = resolvePlatformConnector(this.initParams);
+      if (platformKind === 'agent-assist') {
+        const id = (key: string) => (this.initParams[key] ?? '').trim();
+        this.logger.info('Agent-assist connector selected', {
+          integrationId: id('integrationId') || id('integrationid'),
+        });
+      }
+      if (platformKind === 'legacy') {
         await this.loadAndInitializePlatform();
       }
       this.logger.debug("initialize: loadAndInitializePlatform end");
@@ -1273,10 +1285,27 @@ export class AiAgent extends EventEmitter<AgentEvents> {
       this.logger.error('finishAuthentication: Failed to get access token', error, { agentId: this.config.id });
       throw error;
     }
-    if (this.platformComponentService?.initPlatform) {
-      this.logger.debug('finishAuthentication: PlatformComponentService.initPlatform start');
-      await this.platformComponentService.initPlatform(this.hookContract!);
-      this.logger.debug('finishAuthentication: PlatformComponentService.initPlatform end');
+    if (resolvePlatformConnector(this.initParams) === 'agent-assist') {
+      this.logger.debug("finishAuthentication: resolvePlatformConnector is agent-assist; starting init process");
+      if (!this.hookContract) {
+        this.hookContract = this.buildHookContract();
+      }
+      await this.agentAssistConnector?.stop().catch(() => undefined);
+      this.agentAssistConnector = new AgentAssistConnector(this.logger);
+      await this.agentAssistConnector.start({
+        apiDomain: this.deploymentInfo.apiDomain,
+        integrationId: resolveAgentAssistIntegrationId(this.initParams),
+        aiAgentId: this.config.id,
+        getToken: () => this.authService.getToken(),
+        queryParams: { ...this.initParams },
+        hooks: this.hookContract,
+      });
+    } else {
+      this.logger.debug("onAuthComplete: PlatformComponentService.initPlatform start");
+      if (this.platformComponentService?.initPlatform) {
+        await this.platformComponentService.initPlatform(this.hookContract!);
+      }
+      this.logger.debug("onAuthComplete: PlatformComponentService.initPlatform end");
     }
     await this.onAuthComplete(accessToken);
   };
@@ -1819,6 +1848,10 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * 
    * @param options - Disconnect options
    * @param options.skipGracefulDisconnect - If true, skip sending graceful disconnect message
+   * @param options.teardownAgentAssist - If true, stop the agent-assist connector and clear the
+   *   reference. Defaults to false so a plain disconnect only tears down chat transport; pass true for
+   *   a full teardown. WebSocket recycle paths pass false explicitly
+   *   ({@link restartConnection} / {@link restartPortalInitializer}).
    * 
    * @example Graceful disconnect
    * ```typescript
@@ -1830,7 +1863,19 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * await agent.disconnect({ skipGracefulDisconnect: true });
    * ```
    */
-  async disconnect(options?: { skipGracefulDisconnect?: boolean }): Promise<void> {
+  async disconnect(options?: {
+    skipGracefulDisconnect?: boolean;
+    /** @default false — pass true for full agent-assist teardown; false when recycling only the WebSocket (see {@link restartConnection}). */
+    teardownAgentAssist?: boolean;
+  }): Promise<void> {
+    const teardownAgentAssist = options?.teardownAgentAssist ?? false;
+    // Stop the agent-assist connector (for connector-client-sdk), unless this is an internal
+    // WebSocket recycle (restartConnection / restartPortalInitializer) that does not re-run auth.
+    if (teardownAgentAssist) {
+      await this.agentAssistConnector?.stop();
+      this.agentAssistConnector = undefined;
+    }
+
     if (!this.connection) {
       this.logger.debug('Connection not initialized, skipping disconnect', { agentId: this.resolvedAgentId });
       return; // Already disconnected or not initialized
@@ -2005,7 +2050,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
     }
 
     if (this.connection) {
-      await this.disconnect();
+      await this.disconnect({ teardownAgentAssist: false });
     }
 
     this.connection = undefined;
@@ -2170,7 +2215,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
 
       // Step 1: Gracefully disconnect from current session
       if (this.connection) {
-        await this.disconnect();
+        await this.disconnect({ teardownAgentAssist: false });
       }
 
       // Step 2: Clear all queued messages and transcript - previous messages will be lost
@@ -3123,6 +3168,7 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * PKCE matches login `authScheme` (`logoutPopup` / `logoutRedirect`). Takes no options —
    * post-logout URI, `idTokenHint`, and redirect `state` are built inside PKCE.
    * Strategies without `logout()` (anonymous, pre-auth) no-op after the disconnect.
+   * Tears down the agent-assist connector session (unlike plain {@link disconnect}).
    *
    * @example
    * ```typescript
@@ -3130,7 +3176,10 @@ export class AiAgent extends EventEmitter<AgentEvents> {
    * ```
    */
   async logout(): Promise<void> {
-    await this.disconnect({ skipGracefulDisconnect: true }).catch(() => undefined);
+    await this.disconnect({
+      skipGracefulDisconnect: true,
+      teardownAgentAssist: true,
+    }).catch(() => undefined);
     this.clearClientActionCredentials();
     await this.authService.logout();
   }
